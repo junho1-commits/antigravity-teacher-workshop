@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이것만 알면 준호처럼 할 수 있다 - 안티그래비티 교사 연수</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- QRCode.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="./css/custom.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col h-screen overflow-hidden select-none">
+
+  <!-- ========================================================= -->
+  <!-- TOP HEADER & PROGRESS BAR -->
+  <!-- ========================================================= -->
+  <header class="h-16 border-b border-slate-800/80 px-4 md:px-8 flex items-center justify-between glass-panel z-30 shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h1 class="font-extrabold text-base md:text-lg text-slate-100 tracking-tight flex items-center gap-2">
+          <span>이것만 알면 준호처럼 할 수 있다</span>
+          <span class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">안티그래비티 연수</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Center Badge -->
+    <div id="slide-badge" class="hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/90 border border-slate-700 text-sm font-bold text-indigo-300">
+      🚀 오프닝
+    </div>
+
+    <!-- Right Quick Actions -->
+    <div class="flex items-center gap-3">
+      <!-- Agent Insights Button -->
+      <button onclick="window.toggleAgentDrawer()" data-tooltip="5인 에이전트 회의록 (단축키: A)" class="px-3.5 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 text-xs md:text-sm font-bold transition-all flex items-center gap-2">
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">에이전트 인사이트</span>
+      </button>
+
+      <!-- Presenter Note Button -->
+      <button onclick="window.togglePresenterModal()" data-tooltip="강사용 티칭 꿀팁 (단축키: P)" class="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs md:text-sm font-bold transition-all flex items-center gap-2">
+        <i data-lucide="mic" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">강사 꿀팁</span>
+      </button>
+
+      <!-- Overview Grid Button -->
+      <button onclick="window.toggleOverviewModal()" data-tooltip="전체 목차 맵 (단축키: M)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+        <i data-lucide="layout-grid" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Fullscreen Button -->
+      <button onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+        <i data-lucide="maximize" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Progress Bar (Thin Top Line) -->
+  <div class="w-full bg-slate-900 h-1 z-30 shrink-0">
+    <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-300 ease-out" style="width: 6.25%;"></div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MAIN SLIDE VIEWPORT -->
+  <!-- ========================================================= -->
+  <main class="flex-1 relative overflow-hidden slide-container px-6 md:px-12 py-4 flex items-center justify-center">
+    <div id="slide-viewport" class="w-full max-w-7xl h-full flex flex-col justify-center">
+      <!-- Dynamic Slide Content Injected Here by app.js -->
+    </div>
+  </main>
+
+  <!-- ========================================================= -->
+  <!-- BOTTOM CONTROLLER BAR -->
+  <!-- ========================================================= -->
+  <footer class="h-18 py-3 border-t border-slate-800/80 px-4 md:px-8 flex items-center justify-between glass-panel z-30 shrink-0">
+    <div class="flex items-center gap-2">
+      <span class="text-xs md:text-sm font-mono text-slate-400">단축키:</span>
+      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono">← / →</span>
+      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono">Space</span>
+      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">A (에이전트)</span>
+      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">P (발표자)</span>
+    </div>
+
+    <!-- Navigation Buttons & Counter -->
+    <div class="flex items-center gap-4">
+      <button id="prev-btn" onclick="window.prevSlide()" class="p-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all hover:scale-105 active:scale-95 shadow-md">
+        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+      </button>
+
+      <span id="slide-counter" class="font-mono font-extrabold text-base md:text-lg text-slate-200 px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 min-w-[90px] text-center shadow-inner">
+        1 / 16
+      </span>
+
+      <button id="next-btn" onclick="window.nextSlide()" class="p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- AGENT INSIGHTS RIGHT DRAWER (5-AGENT TEAM INSIGHTS) -->
+  <!-- ========================================================= -->
+  <aside id="agent-drawer" class="fixed inset-y-0 right-0 w-80 md:w-96 glass-panel border-l border-slate-700 p-5 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col justify-between overflow-y-auto">
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="p-1.5 rounded-lg bg-indigo-500 text-white"><i data-lucide="users" class="w-4 h-4"></i></div>
+          <h3 class="font-bold text-slate-100 text-sm">5인 에이전트 협업 인사이트</h3>
+        </div>
+        <button onclick="window.toggleAgentDrawer()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="agent-drawer-content" class="space-y-4">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+
+    <div class="mt-6 pt-4 border-t border-slate-700 text-center">
+      <span class="text-[11px] text-slate-400">Google Antigravity Multi-Agent Workflow Engine</span>
+    </div>
+  </aside>
+
+  <!-- ========================================================= -->
+  <!-- PRESENTER GUIDE MODAL (TEACHING TIPS & SCRIPTS) -->
+  <!-- ========================================================= -->
+  <div id="presenter-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border border-amber-500/40 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="window.togglePresenterModal()" class="absolute top-4 right-4 p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      
+      <div id="presenter-note-content">
+        <!-- Injected via app.js -->
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button onclick="window.togglePresenterModal()" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition-all">
+          확인하고 닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- OVERVIEW GRID MODAL (TABLE OF CONTENTS) -->
+  <!-- ========================================================= -->
+  <div id="overview-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-8 hidden">
+    <div class="glass-panel border border-slate-700 rounded-3xl max-w-5xl w-full max-h-[85vh] p-6 shadow-2xl flex flex-col justify-between">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-700 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-xl bg-indigo-500/20 text-indigo-400"><i data-lucide="map" class="w-5 h-5"></i></div>
+          <h3 class="font-extrabold text-lg text-slate-100">전체 강의 슬라이드 목차 (16 Slides)</h3>
+        </div>
+        <button onclick="window.toggleOverviewModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="overview-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 py-6 overflow-y-auto pr-1">
+        <!-- Injected via app.js -->
+      </div>
+
+      <div class="pt-4 border-t border-slate-700 flex justify-between items-center text-xs text-slate-400 shrink-0">
+        <span>원하는 슬라이드를 클릭하면 해당 장표로 즉시 점프합니다.</span>
+        <button onclick="window.toggleOverviewModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition-all">
+          닫기 (ESC)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./js/slides-data.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
