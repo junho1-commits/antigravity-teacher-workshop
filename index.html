@@ -63,6 +63,12 @@
 
     <!-- Right Quick Actions -->
     <div class="flex items-center gap-3">
+      <!-- PDF Export Button -->
+      <button onclick="window.exportToPDF()" data-tooltip="강의 자료 PDF로 인쇄/저장" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs md:text-sm font-bold transition-all flex items-center gap-2">
+        <i data-lucide="file-down" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">PDF 저장</span>
+      </button>
+
       <!-- Agent Insights Button -->
       <button onclick="window.toggleAgentDrawer()" data-tooltip="5인 에이전트 회의록 (단축키: A)" class="px-3.5 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 text-xs md:text-sm font-bold transition-all flex items-center gap-2">
         <i data-lucide="bot" class="w-4 h-4"></i>
@@ -99,6 +105,8 @@
     <div id="slide-viewport" class="w-full max-w-7xl h-full flex flex-col justify-center">
       <!-- Dynamic Slide Content Injected Here by app.js -->
     </div>
+    <!-- Hidden Print Container for Full PDF Generation -->
+    <div id="print-container" class="w-full"></div>
   </main>
 
   <!-- ========================================================= -->

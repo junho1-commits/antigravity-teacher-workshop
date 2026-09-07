@@ -79,3 +79,66 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.9);
 }
+
+/* ========================================================= */
+/* PDF 인쇄 및 제출용 고품질 인쇄 스타일 (@media print)       */
+/* ========================================================= */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    background-color: #0b0f19 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  header, footer, #agent-drawer, #presenter-modal, #overview-modal, .no-print {
+    display: none !important;
+  }
+
+  #slide-viewport {
+    display: none !important;
+  }
+
+  #print-container {
+    display: block !important;
+  }
+
+  .print-slide-page {
+    width: 100vw !important;
+    height: 100vh !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 2.5rem 3.5rem !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    background-color: #0b0f19 !important;
+  }
+
+  .print-slide-footer {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 3.5rem;
+    right: 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #64748b;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.75rem;
+  }
+}
+
+#print-container {
+  display: none;
+}

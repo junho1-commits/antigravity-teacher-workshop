@@ -31,7 +31,10 @@ class PresentationApp {
     // Keyboard navigation
     window.addEventListener('keydown', (e) => {
       // Don't intercept typing in inputs
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+      // Ctrl+P or Cmd+P: Trigger PDF export
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        window.exportToPDF();
         return;
       }
 
@@ -492,7 +495,7 @@ window.generateQRCode = (triggerConfetti = true) => {
   }
 };
 
-// Slide 16: Fire Confetti
+// Slide 16/17: Fire Confetti
 window.fireConfetti = () => {
   if (window.confetti) {
     window.confetti({
@@ -501,4 +504,38 @@ window.fireConfetti = () => {
       origin: { y: 0.5 }
     });
   }
+};
+
+// =============================================================
+// PDF Export Handler (전체 17개 슬라이드 일괄 인쇄/PDF 저장)
+// =============================================================
+window.exportToPDF = () => {
+  const printContainer = document.getElementById('print-container');
+  if (!printContainer) return;
+
+  const slides = window.SLIDES_DATA || [];
+  const total = slides.length;
+
+  // Render all slides into print container
+  printContainer.innerHTML = slides.map((s, idx) => `
+    <div class="print-slide-page">
+      <div class="w-full max-w-6xl h-full flex flex-col justify-center">
+        ${s.content}
+      </div>
+      <div class="print-slide-footer">
+        <span>이것만 알면 준호처럼 할 수 있다 - 안티그래비티 교사 연수 자료</span>
+        <span>Slide ${idx + 1} / ${total}</span>
+      </div>
+    </div>
+  `).join('');
+
+  // Re-render Lucide icons in print container
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
+  // Brief timeout to ensure DOM & icons render before print dialog
+  setTimeout(() => {
+    window.print();
+  }, 300);
 };
