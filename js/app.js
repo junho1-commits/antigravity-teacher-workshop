@@ -129,16 +129,15 @@ class PresentationApp {
     this.updateOverviewActiveState();
   }
 
-  handleSlideSpecificInit(slideId) {
-    if (slideId === 10) {
-      // Slide 10: Prompt builder
+  handleSlideSpecificInit() {
+    if (document.getElementById('prompt-role')) {
       setTimeout(() => {
-        window.buildPrompt();
+        if (window.buildPrompt) window.buildPrompt();
       }, 50);
-    } else if (slideId === 15) {
-      // Slide 15: QR Code
+    }
+    if (document.getElementById('deploy-url-input')) {
       setTimeout(() => {
-        window.generateQRCode(false);
+        if (window.generateQRCode) window.generateQRCode(false);
       }, 50);
     }
   }
@@ -288,6 +287,10 @@ class PresentationApp {
 
   renderOverviewGrid() {
     if (!this.overviewGrid) return;
+    const titleEl = document.getElementById('overview-modal-title');
+    if (titleEl) {
+      titleEl.textContent = `전체 강의 슬라이드 목차 (${this.slides.length} Slides)`;
+    }
     this.overviewGrid.innerHTML = this.slides.map((s, idx) => `
       <button onclick="window.goToSlide(${idx + 1})" class="overview-item glass-card p-3 rounded-xl border border-slate-700 text-left hover:border-indigo-500 transition-all flex flex-col justify-between h-28 ${idx === this.currentIndex ? 'ring-2 ring-indigo-500 bg-indigo-950/40' : ''}">
         <div class="flex items-center justify-between">

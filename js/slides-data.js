@@ -1,8 +1,8 @@
 /**
- * Antigravity Interactive Slides Data (24인치 대화면 & 단어 줄바꿈 최적화 버전)
- * - 넓은 화면 너비(max-w-6xl, w-full) 활용으로 어색한 줄바꿈 원천 차단
- * - 모든 제목 및 핵심 문장 단어 단위(keep-all) 완벽 한 줄 출력
- * - 심플, 명쾌, 고가독성 디자인
+ * Antigravity Interactive Slides Data (24인치 대화면 & Skills / MCP 확장 최적화 버전)
+ * - 17개 핵심 슬라이드 완비 (Skills & MCP 전용 장표 포함)
+ * - 24인치 대화면 너비(max-w-6xl) 및 break-keep 적용으로 줄바꿈 최적화
+ * - AI 티 없는 직관적인 교육 현장 언어 및 실전 비유
  */
 
 const SLIDES_DATA = [
@@ -32,7 +32,7 @@ const SLIDES_DATA = [
           <div class="glass-card p-6 rounded-2xl border border-slate-700">
             <div class="flex items-center gap-3 mb-3">
               <div class="p-2.5 rounded-xl bg-blue-500/20 text-blue-400"><i data-lucide="bot" class="w-6 h-6"></i></div>
-              <h3 class="text-xl font-bold text-white">1. 에이전트의 힘</h3>
+              <h3 class="text-xl font-bold text-white">1. 에이전트 혁명</h3>
             </div>
             <p class="text-base text-slate-300 font-medium break-keep">말만 하는 챗봇을 넘어, 직접 코딩하고 실행해 주는 똑똑한 조교</p>
           </div>
@@ -61,15 +61,15 @@ const SLIDES_DATA = [
       </div>
     `,
     agentInsights: {
-      pm: "화면 폭을 넉넉히 확장하여 모든 설명문이 단어 단위로 자연스럽게 배치되었습니다.",
-      content: "3대 핵심 목표가 시원하게 전달되도록 텍스트 배치를 정돈했습니다.",
-      design: "대화면 비율에 맞춰 버튼과 카드의 여백을 안정감 있게 구성했습니다.",
+      pm: "오프닝 슬라이드는 24인치 화면에서 시원하고 직관적으로 읽히도록 정돈했습니다.",
+      content: "에이전트, 도메인 지식, 무료 배포라는 3대 축을 명쾌하게 요약했습니다.",
+      design: "글래스 카드와 고대비 타이포그래피로 몰입감을 높였습니다.",
       qa: "오프닝에서 문장 꺾임이나 글자 잘림이 전혀 발생하지 않습니다.",
-      consultant: "교사들이 연수 시작부터 편안한 시각적 안정감을 느낄 수 있습니다."
+      consultant: "선생님들이 '나도 바로 써먹을 수 있겠다'는 자신감을 갖게 됩니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
-      - "선생님들, 오늘 연수는 코딩을 배우는 시간이 아닙니다! 실력 좋은 AI 조교에게 제대로 일 시키는 '지휘법'을 배우는 시간입니다. 편안한 마음으로 시작해보겠습니다."
+      - "선생님들, 오늘 연수는 코딩 문법을 배우는 시간이 아닙니다! 실력 좋은 AI 조교에게 제대로 일 시키는 '지휘법'을 배우는 시간입니다. 편안한 마음으로 시작해보겠습니다."
     `
   },
 
@@ -150,11 +150,11 @@ const SLIDES_DATA = [
       </div>
     `,
     agentInsights: {
-      pm: "벽돌공 vs 건축가 대비를 명확히 하고 한 줄 줄바꿈을 완벽히 잡았습니다.",
-      content: "선생님의 역할이 코딩 기술자가 아닌 기획자임을 깔끔히 강조합니다.",
-      design: "글자 크기와 여백의 균형을 맞춰 시각적 피로도를 없앴습니다.",
+      pm: "벽돌공 vs 건축가 대비로 선생님의 정체성을 재정의했습니다.",
+      content: "코딩 문법에 얽매이지 않고 기획에 집중해야 한다는 논리가 명확합니다.",
+      design: "빨강과 초록 카드 대비로 한눈에 차이가 느껴집니다.",
       qa: "텍스트 겹침이나 불필요한 줄바꿈이 전혀 없습니다.",
-      consultant: "비전공 교사들이 가장 공감하는 슬라이드입니다."
+      consultant: "연수 초반에 이 장표를 보면 선생님들의 표정이 눈에 띄게 편안해집니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
@@ -163,7 +163,7 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 3: DOMAIN KNOWLEDGE (FIXED SINGLE LINE TITLE)
+  // SLIDE 3: DOMAIN KNOWLEDGE
   // -------------------------------------------------------------
   {
     id: 3,
@@ -173,7 +173,6 @@ const SLIDES_DATA = [
       <div class="h-full flex flex-col justify-center w-full max-w-6xl mx-auto px-4">
         <div class="text-center mb-6">
           <span class="text-sky-400 font-bold text-base md:text-lg uppercase tracking-wider">도메인 지식이란?</span>
-          <!-- 제목 한 줄 출력 및 단어 단위 줄바꿈 보장 -->
           <h2 class="text-3xl md:text-4xl lg:text-[42px] font-extrabold text-white mt-1 leading-tight break-keep">
             "AI 지식보다 '교실 도메인 지식'이 100배 중요합니다"
           </h2>
@@ -233,11 +232,11 @@ const SLIDES_DATA = [
       </div>
     `,
     agentInsights: {
-      pm: "사용자가 지적한 '다\"' 줄바꿈 문제를 완벽히 해결하여 한 줄로 웅장하게 출력됩니다.",
-      content: "도메인 지식의 핵심 메시지가 시원한 한 줄 타이틀로 전달됩니다.",
+      pm: "제목이 완벽하게 1줄로 출력되어 시각적 안정감이 극대화되었습니다.",
+      content: "도메인 지식의 핵심 메시지가 시원하게 전달됩니다.",
       design: "글자 크기와 컨테이너 너비(max-w-6xl)를 완벽히 조율했습니다.",
       qa: "24인치 화면에서 제목이 1줄로 완벽히 출력됨을 검증했습니다.",
-      consultant: "시각적 안정감이 극대화되어 청중의 집중도가 올라갑니다."
+      consultant: "개발자보다 교사의 아이디어가 더 소중하다는 점을 명확히 각인시킵니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
@@ -304,7 +303,7 @@ const SLIDES_DATA = [
       content: "선생님이 해야 할 일과 AI가 할 일을 명쾌히 구분했습니다.",
       design: "대칭적 3단 카드 레이아웃으로 가독성을 높였습니다.",
       qa: "모든 텍스트가 단어 단위로 깔끔히 줄바꿈됩니다.",
-      consultant: "선생님들이 일상 업무의 자동화 아이디어를 떠올리게 돕습니다."
+      consultant: "선생님들이 일상에서 느끼는 불편함이 곧 훌륭한 앱 개발 주제임을 깨닫게 됩니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
@@ -377,11 +376,11 @@ const SLIDES_DATA = [
       </div>
     `,
     agentInsights: {
-      pm: "제목이 한 줄로 또렷하게 정돈되어 챗봇과 에이전트 비교가 돋보입니다.",
-      content: "시뮬레이터의 텍스트가 시원하게 출력되도록 영역을 확보했습니다.",
-      design: "좌우 대비 카드의 시인성을 높였습니다.",
-      qa: "시뮬레이터 동작 시 줄 겹침이나 잘림 없이 정상 출력됩니다.",
-      consultant: "챗봇과의 차이점을 가장 빠르고 확실하게 이해시키는 장표입니다."
+      pm: "챗봇과 안티그래비티의 차이가 시뮬레이터를 통해 직관적으로 비교됩니다.",
+      content: "코드를 던져주는 챗봇 vs 실제로 파일을 만들고 실행해 주는 에이전트를 대비했습니다.",
+      design: "터미널 텍스트 박스의 글자 크기와 줄간격을 24인치에 맞췄습니다.",
+      qa: "두 버튼 클릭 시 실제 동작 시뮬레이션이 매끄럽게 재생됩니다.",
+      consultant: "선생님들이 챗봇 쓸 때 느꼈던 답답함을 한 방에 날려주는 명쾌한 슬라이드입니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
@@ -449,11 +448,11 @@ const SLIDES_DATA = [
       </div>
     `,
     agentInsights: {
-      pm: "5개 팀의 역할 카드가 대화면에서 한눈에 조망되도록 정리했습니다.",
-      content: "협업과 피드백 루프의 가치를 직관적으로 설명합니다.",
-      design: "5열 그리드의 여백과 폰트 크기를 조율했습니다.",
-      qa: "각 카드의 설명 텍스트가 단어 단위로 깔끔히 정돈되었습니다.",
-      consultant: "멀티 에이전트 시스템을 학교 조직도에 빗대어 쉽게 전달합니다."
+      pm: "사용자가 제시한 5인 팀 모델을 5개 카드로 깔끔하게 정리했습니다.",
+      content: "학교의 부서 협업(교무부, 연구부, 학년부)과 동일한 원리임을 강조했습니다.",
+      design: "아이콘 크기와 폰트 크기를 키워 멀리서도 5개 팀의 역할이 잘 보입니다.",
+      qa: "각 팀의 역할 분담 논리가 군더더기 없이 깔끔합니다.",
+      consultant: "상단의 '에이전트 인사이트' 버튼을 누르면 이 회의록을 직접 볼 수 있다고 안내하세요."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
@@ -534,11 +533,11 @@ const SLIDES_DATA = [
       </div>
     `,
     agentInsights: {
-      pm: "3개 구역 안내 슬라이드의 제목과 카드 배치가 한눈에 쏙 들어오게 개선되었습니다.",
-      content: "초보 교사의 행동 지침(대화창만 쓰면 된다)을 명확히 전달합니다.",
-      design: "3단 카드의 폰트와 코드 박스의 가독성을 높였습니다.",
-      qa: "모든 텍스트가 줄바꿈 없이 깔끔히 출력됩니다.",
-      consultant: "화면 구조의 두려움을 없애주는 훌륭한 안내 슬라이드입니다."
+      pm: "에디터 환경을 3개 직관 구역으로 나누어 심리적 안정감을 제공합니다.",
+      content: "대화창, 계획창, 미리보기라는 3단 기능으로 명쾌하게 안내합니다.",
+      design: "글자 크기와 여백을 넓혀 시선 이동을 편안하게 유도했습니다.",
+      qa: "초보 교사가 집중해야 할 영역(1번 대화창)을 정확히 짚어줍니다.",
+      consultant: "'채팅창 하나만 쓰시면 됩니다'라는 말이 선생님들에게 최고의 안도감을 줍니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
@@ -547,10 +546,97 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 8: REALITY CHECK
+  // SLIDE 8: SKILLS & MCP (NEW!)
   // -------------------------------------------------------------
   {
     id: 8,
+    title: "Skills와 MCP",
+    badge: "🧩 비밀 무기",
+    content: `
+      <div class="h-full flex flex-col justify-center w-full max-w-6xl mx-auto px-4">
+        <div class="text-center mb-6">
+          <span class="text-amber-400 font-bold text-base md:text-lg uppercase tracking-wider">안티그래비티의 슈퍼 파워</span>
+          <h2 class="text-3xl md:text-4xl lg:text-[42px] font-extrabold text-white mt-1 leading-tight break-keep">
+            "Skills와 MCP : AI에게 날개를 달아주는 2가지 핵심 무기"
+          </h2>
+          <p class="text-lg md:text-2xl text-slate-300 mt-2 font-medium break-keep">대화만 하던 AI를 우리 학교 시스템과 연결하고 전문가로 만드는 기술</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Skills Box -->
+          <div class="glass-card p-6 rounded-3xl border border-sky-500/40 bg-sky-950/20 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2.5 rounded-2xl bg-sky-500/20 text-sky-400"><i data-lucide="book-marked" class="w-6 h-6"></i></div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white">Skills (전문 작업 매뉴얼)</h3>
+                  <span class="text-xs text-sky-300 font-bold">"업무 비법 바인더를 AI 두뇌에 장착!"</span>
+                </div>
+              </div>
+              <p class="text-sm md:text-base text-slate-300 leading-relaxed font-medium mb-4 break-keep">
+                매번 길게 설명할 필요 없이, AI에게 <strong>규칙·절차·서식(SKILL.md)</strong>을 미리 넣어두면 필요할 때 자동으로 전문가처럼 일합니다.
+              </p>
+              <div class="bg-slate-950 p-3.5 rounded-xl border border-sky-500/30 text-xs md:text-sm text-slate-300 space-y-1.5 font-mono">
+                <p class="text-sky-300 font-bold">🏫 교실 활용 예시:</p>
+                <p>• 학생 생기부 행동특성 서술어 자동 검토 스킬</p>
+                <p>• 교육청 공문 양식 맞춤 알림장 생성 스킬</p>
+                <p>• 초등 수학/사회 인터랙티브 퀴즈 출제 스킬</p>
+              </div>
+            </div>
+            <div class="mt-4 text-xs md:text-sm font-bold text-sky-300 text-center">
+              👉 AI의 전문 지식 & 노하우 (Know-How)
+            </div>
+          </div>
+
+          <!-- MCP Box -->
+          <div class="glass-card p-6 rounded-3xl border border-purple-500/40 bg-purple-950/20 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2.5 rounded-2xl bg-purple-500/20 text-purple-400"><i data-lucide="plug" class="w-6 h-6"></i></div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white">MCP (만능 도구 USB 연결잭)</h3>
+                  <span class="text-xs text-purple-300 font-bold">"AI에게 진짜 손발과 도구를 연결!"</span>
+                </div>
+              </div>
+              <p class="text-sm md:text-base text-slate-300 leading-relaxed font-medium mb-4 break-keep">
+                화면 안에 갇힌 AI를 <strong>구글 드라이브, 학교 DB, 깃허브, 카카오톡</strong>과 안전하게 연결해 실제 데이터를 직접 조작하게 합니다.
+              </p>
+              <div class="bg-slate-950 p-3.5 rounded-xl border border-purple-500/30 text-xs md:text-sm text-slate-300 space-y-1.5 font-mono">
+                <p class="text-purple-300 font-bold">🔌 교실 활용 예시:</p>
+                <p>• Google Sheets MCP: 시트 명단을 AI가 직접 읽기</p>
+                <p>• Firebase MCP: 학생 퀴즈 점수 실시간 랭킹 저장</p>
+                <p>• GitHub MCP: 버튼 하나로 웹앱 자동 배포</p>
+              </div>
+            </div>
+            <div class="mt-4 text-xs md:text-sm font-bold text-purple-300 text-center">
+              👉 AI의 외부 연결 도구 & 손발 (Tool & DB)
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-indigo-950/60 border border-indigo-500/40 text-center text-sm md:text-base text-indigo-200 font-semibold break-keep">
+          ✨ <strong>Skills(노하우) + MCP(도구)</strong>가 결합되면, 안티그래비티가 학교의 모든 복잡한 작업을 스스로 끝내는 '진짜 전속 비서'가 됩니다!
+        </div>
+      </div>
+    `,
+    agentInsights: {
+      pm: "사용자가 요청한 Skills와 MCP의 핵심 개념과 교실 활용 사례를 한눈에 들어오는 2단 카드로 구현했습니다.",
+      content: "Skills는 '업무 바인더(Know-How)', MCP는 '만능 USB 연결잭(Tool)'으로 직관적인 비유를 적용했습니다.",
+      design: "스카이블루(스킬)와 퍼플(MCP)의 테마 컬러를 적용하고 교실 활용 예시 박스를 돋보이게 배치했습니다.",
+      qa: "용어 설명과 교실 적용 사례가 완벽히 균형을 이루며, 한 줄 타이틀로 꺾임 없이 출력됩니다.",
+      consultant: "선생님들이 'AI가 구글 시트 명단도 직접 읽을 수 있구나!' 하고 가장 놀라워하는 파트입니다."
+    },
+    presenterNote: `
+      🎤 [강사용 추천 멘트]:
+      - "선생님들, 'Skills'는 신규 교사에게 주는 '학급경영 꿀팁 바인더'이고, 'MCP'는 AI 두뇌에 구글 드라이브와 데이터베이스를 꽂아주는 'USB 연결잭'입니다. 이 두 개가 있으면 AI가 단순 대화를 넘어 진짜 학교 업무를 대신 처리합니다."
+    `
+  },
+
+  // -------------------------------------------------------------
+  // SLIDE 9: REALITY CHECK
+  // -------------------------------------------------------------
+  {
+    id: 9,
     title: "현실적인 조언",
     badge: "⚠️ 현실 조언",
     content: `
@@ -624,10 +710,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 9: ERROR FIX SIMULATOR
+  // SLIDE 10: ERROR FIX SIMULATOR
   // -------------------------------------------------------------
   {
-    id: 9,
+    id: 10,
     title: "에러 해결 시뮬레이터",
     badge: "🛠️ 실전 대처",
     content: `
@@ -687,10 +773,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 10: GOLDEN PROMPT BUILDER
+  // SLIDE 11: GOLDEN PROMPT BUILDER
   // -------------------------------------------------------------
   {
-    id: 10,
+    id: 11,
     title: "골든 프롬프트 4단 공식",
     badge: "📋 프롬프트 조립",
     content: `
@@ -775,10 +861,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 11: HANDS-ON APP BUILDING
+  // SLIDE 12: HANDS-ON APP BUILDING
   // -------------------------------------------------------------
   {
-    id: 11,
+    id: 12,
     title: "실전 앱 제작 및 수정",
     badge: "⚡ 실전 실습",
     content: `
@@ -848,10 +934,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 12: WHAT IS GITHUB?
+  // SLIDE 13: WHAT IS GITHUB?
   // -------------------------------------------------------------
   {
-    id: 12,
+    id: 13,
     title: "GitHub(깃허브)란?",
     badge: "🐙 코드 금고",
     content: `
@@ -924,10 +1010,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 13: PUSH TO GITHUB WITH ANTIGRAVITY
+  // SLIDE 14: PUSH TO GITHUB WITH ANTIGRAVITY
   // -------------------------------------------------------------
   {
-    id: 13,
+    id: 14,
     title: "안티그래비티로 GitHub 올리기",
     badge: "🚀 자동 업로드",
     content: `
@@ -988,10 +1074,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 14: WHAT IS NETLIFY?
+  // SLIDE 15: WHAT IS NETLIFY?
   // -------------------------------------------------------------
   {
-    id: 14,
+    id: 15,
     title: "Netlify(넷리파이)란?",
     badge: "🌐 웹 배포",
     content: `
@@ -1061,10 +1147,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 15: DEPLOYMENT & QR CODE GENERATOR
+  // SLIDE 16: DEPLOYMENT & QR CODE GENERATOR
   // -------------------------------------------------------------
   {
-    id: 15,
+    id: 16,
     title: "1분 배포 & QR코드 공유",
     badge: "📱 배포 축제",
     content: `
@@ -1128,10 +1214,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 16: CONCLUSION & WRAP-UP
+  // SLIDE 17: CONCLUSION & WRAP-UP
   // -------------------------------------------------------------
   {
-    id: 16,
+    id: 17,
     title: "마무리 & Q&A",
     badge: "🎓 수료 & 응원",
     content: `
