@@ -1,6 +1,6 @@
 /**
  * Antigravity Interactive Slides Data (24인치 대화면 & Skills / MCP 확장 최적화 버전)
- * - 17개 핵심 슬라이드 완비 (Skills & MCP 전용 장표 포함)
+ * - 18개 핵심 슬라이드 완비 (스마트 프레젠테이션 기능 장표 및 Skills & MCP 장표 포함)
  * - 24인치 대화면 너비(max-w-6xl) 및 break-keep 적용으로 줄바꿈 최적화
  * - AI 티 없는 직관적인 교육 현장 언어 및 실전 비유
  */
@@ -12,27 +12,27 @@ const SLIDES_DATA = [
   {
     id: 1,
     title: "오프닝",
-    badge: "🚀 연수 시작",
+    badge: "🏫 2026 대저중앙초 전학공",
     content: `
       <div class="h-full flex flex-col justify-center items-center text-center px-4 w-full max-w-6xl mx-auto">
         <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-base md:text-lg font-bold mb-6">
           <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i>
-          <span>선생님을 위한 AI 에이전트 앱 개발 입문</span>
+          <span>2026학년도 대저중앙초 전문적학습공동체 AI·디지털 역량강화 연수</span>
         </div>
         
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 text-white leading-tight break-keep">
-          이것만 알면 <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400">준호처럼</span> 할 수 있다!
+          AI·디지털 기술을 활용한 <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400">수업자료 만들기</span>
         </h1>
         
         <p class="text-xl md:text-2xl lg:text-3xl text-slate-300 max-w-5xl mb-10 font-semibold leading-relaxed break-keep">
-          코딩을 몰라도, 구글 <span class="text-sky-400 font-bold underline decoration-sky-500 underline-offset-8">안티그래비티</span>와 대화하면 우리 반 웹앱이 뚝딱 완성됩니다.
+          구글 <span class="text-sky-400 font-bold underline decoration-sky-500 underline-offset-8">안티그래비티</span>와 함께 코딩 한 줄 없이 우리 반 맞춤형 수업도구를 뚝딱 만들고 배포하기
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mb-10">
           <div class="glass-card p-6 rounded-2xl border border-slate-700">
             <div class="flex items-center gap-3 mb-3">
               <div class="p-2.5 rounded-xl bg-blue-500/20 text-blue-400"><i data-lucide="bot" class="w-6 h-6"></i></div>
-              <h3 class="text-xl font-bold text-white">1. 에이전트 혁명</h3>
+              <h3 class="text-xl font-bold text-white">1. 에이전틱 수업도구</h3>
             </div>
             <p class="text-base text-slate-300 font-medium break-keep">말만 하는 챗봇을 넘어, 직접 코딩하고 실행해 주는 똑똑한 조교</p>
           </div>
@@ -42,42 +42,130 @@ const SLIDES_DATA = [
               <div class="p-2.5 rounded-xl bg-purple-500/20 text-purple-400"><i data-lucide="heart" class="w-6 h-6"></i></div>
               <h3 class="text-xl font-bold text-white">2. 교실 도메인 지식</h3>
             </div>
-            <p class="text-base text-slate-300 font-medium break-keep">기술 지식보다 선생님의 교실 문제의식과 아이디어가 100배 중요</p>
+            <p class="text-base text-slate-300 font-medium break-keep">기술 지식보다 대저중앙초 선생님들의 수업 문제의식과 아이디어가 100배 중요</p>
           </div>
 
-          <div class="glass-card p-6 rounded-2xl border border-slate-700">
+          <div class="glass-card p-6 rounded-2xl border border-emerald-500/20 text-emerald-400">
             <div class="flex items-center gap-3 mb-3">
               <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="globe" class="w-6 h-6"></i></div>
-              <h3 class="text-xl font-bold text-white">3. 인터넷 무료 배포</h3>
+              <h3 class="text-xl font-bold text-white">3. 원클릭 웹 배포</h3>
             </div>
             <p class="text-base text-slate-300 font-medium break-keep">GitHub과 Netlify로 스마트폰 링크 하나 띄워 학생들과 공유</p>
           </div>
         </div>
 
         <button onclick="window.nextSlide()" class="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-bold shadow-xl shadow-indigo-500/30 transition-all transform hover:scale-105">
-          <span>강의 시작하기</span>
+          <span>연수 시작하기</span>
           <i data-lucide="arrow-right" class="w-6 h-6"></i>
         </button>
       </div>
     `,
     agentInsights: {
-      pm: "오프닝 슬라이드는 24인치 화면에서 시원하고 직관적으로 읽히도록 정돈했습니다.",
-      content: "에이전트, 도메인 지식, 무료 배포라는 3대 축을 명쾌하게 요약했습니다.",
-      design: "글래스 카드와 고대비 타이포그래피로 몰입감을 높였습니다.",
+      pm: "2026학년도 대저중앙초 전문적학습공동체 공식 연수명과 목표를 전면에 배치했습니다.",
+      content: "AI·디지털 기술을 활용한 수업자료 제작이라는 핵심 실습 주제를 명확히 제시했습니다.",
+      design: "글래스 카드와 대화면 타이포그래피로 웅장한 오프닝을 완성했습니다.",
       qa: "오프닝에서 문장 꺾임이나 글자 잘림이 전혀 발생하지 않습니다.",
-      consultant: "선생님들이 '나도 바로 써먹을 수 있겠다'는 자신감을 갖게 됩니다."
+      consultant: "대저중앙초 선생님들의 수업 혁신 동기를 확실하게 부여합니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
-      - "선생님들, 오늘 연수는 코딩 문법을 배우는 시간이 아닙니다! 실력 좋은 AI 조교에게 제대로 일 시키는 '지휘법'을 배우는 시간입니다. 편안한 마음으로 시작해보겠습니다."
+      - "대저중앙초 선생님들, 안녕하세요! 오늘 연수는 코딩 문법을 배우는 시간이 아닙니다! 실력 좋은 AI 조교에게 제대로 일 시켜서 내일 당장 수업에 쓸 맞춤형 웹앱을 만드는 시간입니다. 편안한 마음으로 시작해보겠습니다."
     `
   },
 
   // -------------------------------------------------------------
-  // SLIDE 2: MINDSET SHIFT
+  // SLIDE 2: SMART SLIDE FEATURES (NEW)
   // -------------------------------------------------------------
   {
     id: 2,
+    title: "슬라이드 스마트 활용법",
+    badge: "🛠️ 슬라이드 기능",
+    content: `
+      <div class="h-full flex flex-col justify-center w-full max-w-6xl mx-auto px-4">
+        <div class="text-center mb-6">
+          <span class="text-indigo-400 font-bold text-base md:text-lg uppercase tracking-wider">스마트 발표 & 수업 기능</span>
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mt-1 break-keep">
+            "수업과 발표를 200% 살리는 3가지 스마트 기능"
+          </h2>
+          <p class="text-lg md:text-xl text-slate-300 mt-2 font-medium break-keep">선생님의 수업 편의와 자유로운 수정을 위한 맞춤형 도구를 활용해 보세요</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <!-- Feature 1: Edit Mode -->
+          <div class="glass-card p-6 rounded-3xl border border-indigo-500/40 bg-indigo-950/20 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-3.5 py-1 rounded-full bg-indigo-500/30 text-indigo-300 font-bold text-sm">기능 1</span>
+                <div class="p-2 rounded-xl bg-indigo-500 text-white"><i data-lucide="edit-3" class="w-5 h-5"></i></div>
+              </div>
+              <h3 class="text-2xl font-extrabold text-white mb-2">✎ 고치기 모드</h3>
+              <p class="text-sm md:text-base text-slate-300 leading-relaxed font-medium mb-4 break-keep">
+                우측 하단 <strong>[✎ 고치기]</strong>를 누르면 점선이 표시되며 화면 속 모든 글자를 즉시 수정할 수 있습니다. 상단 도구바로 서식 변경 및 지우기가 가능하며 브라우저에 자동 저장됩니다.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-indigo-500/30 text-xs font-mono text-indigo-300">
+              ✨ 점선 클릭 ➔ 글자 즉시 수정 ➔ 자동 저장
+            </div>
+          </div>
+
+          <!-- Feature 2: Fullscreen -->
+          <div class="glass-card p-6 rounded-3xl border border-sky-500/40 bg-sky-950/20 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-3.5 py-1 rounded-full bg-sky-500/30 text-sky-300 font-bold text-sm">기능 2</span>
+                <div class="p-2 rounded-xl bg-sky-500 text-white"><i data-lucide="maximize" class="w-5 h-5"></i></div>
+              </div>
+              <h3 class="text-2xl font-extrabold text-white mb-2">⛶ 전체화면 극대화</h3>
+              <p class="text-sm md:text-base text-slate-300 leading-relaxed font-medium mb-4 break-keep">
+                우측 하단 <strong>[⛶ 전체]</strong> 버튼이나 단축키 <strong>F (한글 자판 ㄹ)</strong>를 누르면 바깥 여백 0으로 24인치 모니터와 빔프로젝터에 글자가 시원하게 꽉 찹니다.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 text-xs font-mono text-sky-300">
+              ⌨️ 단축키: <kbd class="px-2 py-0.5 rounded bg-slate-800 text-white font-bold">F</kbd> 또는 <kbd class="px-2 py-0.5 rounded bg-slate-800 text-white font-bold">ㄹ</kbd>
+            </div>
+          </div>
+
+          <!-- Feature 3: Teacher Drawer -->
+          <div class="glass-card p-6 rounded-3xl border border-amber-500/40 bg-amber-950/20 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-3.5 py-1 rounded-full bg-amber-500/30 text-amber-300 font-bold text-sm">기능 3</span>
+                <div class="p-2 rounded-xl bg-amber-500 text-white"><i data-lucide="graduation-cap" class="w-5 h-5"></i></div>
+              </div>
+              <h3 class="text-2xl font-extrabold text-white mb-2">🧑‍🏫 교사용 비밀 서랍</h3>
+              <p class="text-sm md:text-base text-slate-300 leading-relaxed font-medium mb-4 break-keep">
+                우측 하단 <strong>[교사용]</strong> 버튼이나 단축키 <strong>T (한글 자판 ㅅ)</strong>를 누르면 하단에서 슬라이딩 서랍이 열리며 예상 답변, 시간 배분, 핵심 팁을 확인할 수 있습니다.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 text-xs font-mono text-amber-300">
+              ⌨️ 단축키: <kbd class="px-2 py-0.5 rounded bg-slate-800 text-white font-bold">T</kbd> / <kbd class="px-2 py-0.5 rounded bg-slate-800 text-white font-bold">ㅅ</kbd> (닫기: ESC)
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700 text-center text-sm md:text-base text-slate-200 font-semibold break-keep">
+          💡 <strong>수업 꿀팁:</strong> 연수 진행 중 언제든 화면 오른쪽 아래의 3개 버튼을 눌러 자유롭게 테스트해 보세요!
+        </div>
+      </div>
+    `,
+    agentInsights: {
+      pm: "새로 탑재된 [고치기], [전체화면], [교사용 서랍] 3대 기능을 사용자 친화적인 카드로 직관화했습니다.",
+      content: "단축키와 실제 활용 시나리오를 명확하게 설명합니다.",
+      design: "인디고, 스카이, 앰버 3색 카드로 시각적 명확성을 부여했습니다.",
+      qa: "오른쪽 하단 플로팅 버튼과 연동되어 즉시 시연 가능합니다.",
+      consultant: "수업 현장에서 교사가 직접 자료를 손쉽게 수정하고 교사용 팁을 볼 수 있어 효용성이 매우 높습니다."
+    },
+    presenterNote: `
+      🎤 [강사용 추천 멘트]:
+      - "선생님들, 슬라이드 발표 중에 글자를 직접 바꾸고 싶으실 때가 있죠? 오른쪽 아래 [✎ 고치기]를 누르면 이 화면의 어떤 글자든 마음대로 바꿀 수 있습니다. [T]를 누르면 강사용 꿀팁 서랍도 열립니다!"
+    `
+  },
+
+  // -------------------------------------------------------------
+  // SLIDE 3: MINDSET SHIFT
+  // -------------------------------------------------------------
+  {
+    id: 3,
     title: "마인드셋 전환",
     badge: "💡 패러다임 전환",
     content: `
@@ -163,10 +251,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 3: DOMAIN KNOWLEDGE
+  // SLIDE 4: DOMAIN KNOWLEDGE
   // -------------------------------------------------------------
   {
-    id: 3,
+    id: 4,
     title: "도메인 지식의 힘",
     badge: "🧠 핵심 가치",
     content: `
@@ -245,10 +333,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 4: WHAT IS ENGINEERING?
+  // SLIDE 5: WHAT IS ENGINEERING?
   // -------------------------------------------------------------
   {
-    id: 4,
+    id: 5,
     title: "엔지니어링이란?",
     badge: "⚙️ 본질 이해",
     content: `
@@ -312,10 +400,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 5: CHATBOT VS AGENT
+  // SLIDE 6: CHATBOT VS AGENT
   // -------------------------------------------------------------
   {
-    id: 5,
+    id: 6,
     title: "챗봇 vs 에이전트",
     badge: "🤖 비교 체험",
     content: `
@@ -389,10 +477,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 6: MULTI-AGENT COLLABORATION
+  // SLIDE 7: MULTI-AGENT COLLABORATION
   // -------------------------------------------------------------
   {
-    id: 6,
+    id: 7,
     title: "에이전트 협업 시스템",
     badge: "👥 멀티 에이전트",
     content: `
@@ -461,10 +549,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 7: ANTIGRAVITY TOUR
+  // SLIDE 8: ANTIGRAVITY TOUR
   // -------------------------------------------------------------
   {
-    id: 7,
+    id: 8,
     title: "안티그래비티 둘러보기",
     badge: "🔭 화면 안내",
     content: `
@@ -546,10 +634,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 8: SKILLS & MCP (NEW!)
+  // SLIDE 9: SKILLS & MCP
   // -------------------------------------------------------------
   {
-    id: 8,
+    id: 9,
     title: "Skills와 MCP",
     badge: "🧩 비밀 무기",
     content: `
@@ -633,10 +721,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 9: REALITY CHECK
+  // SLIDE 10: REALITY CHECK
   // -------------------------------------------------------------
   {
-    id: 9,
+    id: 10,
     title: "현실적인 조언",
     badge: "⚠️ 현실 조언",
     content: `
@@ -710,10 +798,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 10: ERROR FIX SIMULATOR
+  // SLIDE 11: ERROR FIX SIMULATOR
   // -------------------------------------------------------------
   {
-    id: 10,
+    id: 11,
     title: "에러 해결 시뮬레이터",
     badge: "🛠️ 실전 대처",
     content: `
@@ -773,10 +861,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 11: GOLDEN PROMPT BUILDER
+  // SLIDE 12: GOLDEN PROMPT BUILDER
   // -------------------------------------------------------------
   {
-    id: 11,
+    id: 12,
     title: "골든 프롬프트 4단 공식",
     badge: "📋 프롬프트 조립",
     content: `
@@ -861,10 +949,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 12: HANDS-ON APP BUILDING
+  // SLIDE 13: HANDS-ON APP BUILDING
   // -------------------------------------------------------------
   {
-    id: 12,
+    id: 13,
     title: "실전 앱 제작 및 수정",
     badge: "⚡ 실전 실습",
     content: `
@@ -934,10 +1022,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 13: WHAT IS GITHUB?
+  // SLIDE 14: WHAT IS GITHUB?
   // -------------------------------------------------------------
   {
-    id: 13,
+    id: 14,
     title: "GitHub(깃허브)란?",
     badge: "🐙 코드 금고",
     content: `
@@ -1010,10 +1098,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 14: PUSH TO GITHUB WITH ANTIGRAVITY
+  // SLIDE 15: PUSH TO GITHUB WITH ANTIGRAVITY
   // -------------------------------------------------------------
   {
-    id: 14,
+    id: 15,
     title: "안티그래비티로 GitHub 올리기",
     badge: "🚀 자동 업로드",
     content: `
@@ -1023,7 +1111,7 @@ const SLIDES_DATA = [
           <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mt-1 break-keep">
             "검은 화면 명령어 몰라도 됩니다. AI에게 시키세요!"
           </h2>
-          <p class="text-lg md:text-xl text-slate-300 mt-2 font-medium break-keep">` + "`git init`" + `, ` + "`git commit`" + ` 외우지 마세요. 안티그래비티 대화 한마디면 끝납니다.</p>
+          <p class="text-lg md:text-xl text-slate-300 mt-2 font-medium break-keep">git init, git commit 외우지 마세요. 안티그래비티 대화 한마디면 끝납니다.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -1074,10 +1162,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 15: WHAT IS NETLIFY?
+  // SLIDE 16: WHAT IS NETLIFY?
   // -------------------------------------------------------------
   {
-    id: 15,
+    id: 16,
     title: "Netlify(넷리파이)란?",
     badge: "🌐 웹 배포",
     content: `
@@ -1147,10 +1235,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 16: DEPLOYMENT & QR CODE GENERATOR
+  // SLIDE 17: DEPLOYMENT & QR CODE GENERATOR
   // -------------------------------------------------------------
   {
-    id: 16,
+    id: 17,
     title: "1분 배포 & QR코드 공유",
     badge: "📱 배포 축제",
     content: `
@@ -1214,10 +1302,10 @@ const SLIDES_DATA = [
   },
 
   // -------------------------------------------------------------
-  // SLIDE 17: CONCLUSION & WRAP-UP
+  // SLIDE 18: CONCLUSION & WRAP-UP
   // -------------------------------------------------------------
   {
-    id: 17,
+    id: 18,
     title: "마무리 & Q&A",
     badge: "🎓 수료 & 응원",
     content: `
@@ -1227,11 +1315,11 @@ const SLIDES_DATA = [
         </div>
 
         <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight break-keep">
-          "기술은 AI에게, 교육적 가치는 선생님에게!"
+          "기술은 AI에게, 교육적 가치는 대저중앙초 선생님에게!"
         </h2>
         
         <p class="text-lg md:text-2xl text-slate-300 max-w-4xl mb-8 leading-relaxed font-semibold break-keep">
-          오늘 배운 3가지만 기억하시면, 앞으로 교실에 필요한 어떤 앱도 두려움 없이 만들어내실 수 있습니다.
+          2026 대저중앙초 전학공 연수를 함께하신 선생님들의 에이전틱 수업 혁신을 힘차게 응원합니다!
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full text-left mb-8">
@@ -1273,10 +1361,143 @@ const SLIDES_DATA = [
   }
 ];
 
+// -------------------------------------------------------------
+// TEACHER NOTES DATA ARRAY (교사용 지도 가이드 및 팁 모음)
+// -------------------------------------------------------------
+const TEACHER_NOTES = [
+  {
+    slideId: 1,
+    time: "3분",
+    expectedAnswers: "AI로 코딩 없이 진짜 웹앱을 만들 수 있는지에 대한 놀라움과 실습에 대한 기대감 표현.",
+    confusingPoints: "'코딩을 아예 모르는 초보인데 따라갈 수 있나요?' ➔ '네, 선생님의 교실 고민과 아이디어가 가장 핵심이며 코딩은 AI가 전담합니다.'",
+    keyTerms: "안티그래비티, AI 에이전트, 교실 도메인 지식, 웹 배포"
+  },
+  {
+    slideId: 2,
+    time: "3분",
+    expectedAnswers: "슬라이드의 글자를 즉시 고칠 수 있고 교사용 메모가 나오는 기능에 큰 호응.",
+    confusingPoints: "'고친 내용이 다른 사람에게도 보이나요?' ➔ '선생님의 컴퓨터 브라우저(localStorage)에만 저장되므로 안심하고 마음껏 수정하세요.'",
+    keyTerms: "고치기 모드, 전체화면(F/ㄹ), 교사용 서랍(T/ㅅ), 로컬 저장"
+  },
+  {
+    slideId: 3,
+    time: "5분",
+    expectedAnswers: "과거 코딩 문법(C언어, 파이썬 등)을 배우다 좌절했던 경험에 깊이 공감함.",
+    confusingPoints: "'개발자가 아니어도 총괄 지휘가 가능한가요?' ➔ '집 지을 때 설계만 하고 시공팀을 부리듯, 한국어로 지시하는 총괄 디렉터 역할을 하시면 됩니다.'",
+    keyTerms: "벽돌공 vs 총괄 건축가, 패러다임 전환, 자연어 코딩"
+  },
+  {
+    slideId: 4,
+    time: "5분",
+    expectedAnswers: "퀴즈에서 '10년 차 초등 교사'를 정답으로 선택하며 교육적 맥락의 중요성을 체감함.",
+    confusingPoints: "'도메인 지식이 왜 코딩 지식보다 중요한가요?' ➔ '무엇을 만들지 모르면 아무리 코딩을 잘해도 쓸모없는 앱이 나오기 때문입니다.'",
+    keyTerms: "도메인 지식, 학생 눈높이, 수업 규칙, 현장 기획력"
+  },
+  {
+    slideId: 5,
+    time: "5분",
+    expectedAnswers: "엔지니어링이 거창한 기술이 아니라 '불편함을 시스템으로 해결하는 것'이라는 정의에 무릎을 침.",
+    confusingPoints: "'시스템을 만드는 게 어렵지 않나요?' ➔ '선생님은 문제 발견과 해결 규칙만 세우시면, 구현은 안티그래비티가 처리합니다.'",
+    keyTerms: "엔지니어링, 문제 발견, 해결 규칙(로직), 자동화 시스템"
+  },
+  {
+    slideId: 6,
+    time: "6분",
+    expectedAnswers: "일반 챗봇이 500줄 코드를 던져줄 때의 막막함과 안티그래비티의 자동 실행에 큰 차이를 느낌.",
+    confusingPoints: "'챗봇(ChatGPT, Gemini)과 에이전트는 어떻게 다른가요?' ➔ '챗봇은 말만 하는 상담사, 에이전트는 파일 생성과 실행까지 하는 실무 조교입니다.'",
+    keyTerms: "챗봇 vs 에이전트, 자율 실행, 도구 활용, 작업 자동화"
+  },
+  {
+    slideId: 7,
+    time: "5분",
+    expectedAnswers: "학교의 교무부, 연구부 협업처럼 AI도 팀으로 역할을 나누어 일한다는 점을 흥미로워함.",
+    confusingPoints: "'혼자 쓰는 AI보다 멀티 에이전트가 왜 좋은가요?' ➔ '작성자, 디자이너, 검수자(QA)가 서로 비판하고 보완하여 완성도가 10배 높아집니다.'",
+    keyTerms: "멀티 에이전트, 역할 분담, 자체 피드백 루프, 검수(QA)"
+  },
+  {
+    slideId: 8,
+    time: "5분",
+    expectedAnswers: "복잡해 보이는 IDE 환경에서 '대화창 하나만 쓰면 된다'는 설명에 안도함.",
+    confusingPoints: "'화면에 영어가 너무 많아서 무서워요.' ➔ '왼쪽 대화창에 카톡하듯 한국어로 쓰시면 오른쪽 화면은 AI 혼자 일하는 곳입니다.'",
+    keyTerms: "대화창(Chat), 계획창(Plan), 실시간 미리보기(Preview)"
+  },
+  {
+    slideId: 9,
+    time: "7분",
+    expectedAnswers: "Skills(업무 바인더)와 MCP(USB 연결 도구)의 비유로 난해한 AI 개념을 쉽게 이해함.",
+    confusingPoints: "'MCP를 쓰면 구글 드라이브나 시트 명단도 AI가 읽나요?' ➔ '네, MCP 도구를 꽂아주면 학교 DB나 시트 데이터를 AI가 직접 조회하고 수정합니다.'",
+    keyTerms: "Skills(지식/매뉴얼), MCP(도구/연결잭), 외부 연동, 전속 비서"
+  },
+  {
+    slideId: 10,
+    time: "5분",
+    expectedAnswers: "에러 메시지가 실패가 아니라 자연스러운 대화의 시작이라는 설명에 두려움 극복.",
+    confusingPoints: "'에러가 났을 때 제가 코드를 고쳐야 하나요?' ➔ '절대 아닙니다. 빨간 에러 메시지를 복사해서 AI에게 '고쳐줘'라고 던지면 됩니다.'",
+    keyTerms: "에러 마인드셋, 티키타카 대화, 지속적 개선, 피드백"
+  },
+  {
+    slideId: 11,
+    time: "6분",
+    expectedAnswers: "시뮬레이터에서 에러 복사 ➔ AI 질문 ➔ 원클릭 해결 과정을 직접 보며 자신감 획득.",
+    confusingPoints: "'F12 개발자 도구의 빨간 글씨는 어떻게 복사하나요?' ➔ '오른쪽 클릭 복사 또는 안티그래비티 터미널 화면을 그대로 복사하면 됩니다.'",
+    keyTerms: "에러 로그 복사, AI 원클릭 디버깅, 실전 대처력"
+  },
+  {
+    slideId: 12,
+    time: "7분",
+    expectedAnswers: "역할, 목적, 기능, 디자인의 4요소 프롬프트 조립기로 직접 수업도구 프롬프트를 완성함.",
+    confusingPoints: "'프롬프트를 왜 이렇게 자세히 써야 하나요?' ➔ 'AI에게 명확한 가이드라인을 주어야 엉뚱한 결과 없이 한 번에 고품질 앱이 나옵니다.'",
+    keyTerms: "골든 프롬프트, 역할(Role), 목적(Purpose), 기능(Feature), 디자인(Design)"
+  },
+  {
+    slideId: 13,
+    time: "8분",
+    expectedAnswers: "기본 앱에 교실 규칙을 더하고 아이들 감성을 입히는 3단계 고도화 실습에 적극 참여.",
+    confusingPoints: "'처음 만든 앱이 맘에 안 들면 처음부터 다시 만들어야 하나요?' ➔ '아닙니다! '버튼 색 바꿔줘', '효과음 넣어줘'라고 이어서 요청하시면 됩니다.'",
+    keyTerms: "티키타카 질문법, 점진적 개선, 교실 규칙 커스텀, 인터랙션"
+  },
+  {
+    slideId: 14,
+    time: "5분",
+    expectedAnswers: "깃허브가 단순 개발자 도구가 아닌 교사용 '클라우드 금고 & 타임머신'임을 이해함.",
+    confusingPoints: "'깃허브를 꼭 써야 하나요?' ➔ '코드를 안전하게 영구 보관하고, 뒤에서 배울 Netlify 웹 배포의 필수 기반이 됩니다.'",
+    keyTerms: "GitHub(깃허브), 클라우드 백업, 버전 관리(타임머신), 포트폴리오"
+  },
+  {
+    slideId: 15,
+    time: "6분",
+    expectedAnswers: "검은색 터미널 명령어(git add, commit 등) 없이 자연어로 깃허브에 올리는 편의성에 감탄.",
+    confusingPoints: "'깃허브 인증이나 로그인은 어떻게 하나요?' ➔ '안티그래비티가 백그라운드에서 GitHub CLI 또는 토큰으로 자동 처리합니다.'",
+    keyTerms: "자연어 Git 연동, 자동 커밋/푸시, 터미널 자동화"
+  },
+  {
+    slideId: 16,
+    time: "5분",
+    expectedAnswers: "평생 무료로 나만의 웹사이트 주소(.netlify.app)가 생긴다는 사실에 큰 성취감 느낌.",
+    confusingPoints: "'서버 비용이나 월 사용료가 나오지 않나요?' ➔ '초등 학급 수준의 트래픽은 Netlify 무료 플랜으로 평생 비용 없이 사용 가능합니다.'",
+    keyTerms: "Netlify(넷리파이), 웹 호스팅, 1초 배포, 자동 실시간 갱신"
+  },
+  {
+    slideId: 17,
+    time: "7분",
+    expectedAnswers: "스마트폰 카메라로 생성된 QR코드를 비춰 자신의 앱이 폰에서 열릴 때 환호함.",
+    confusingPoints: "'학생들에게 앱을 공유할 때 어떻게 하나요?' ➔ '이 QR코드를 빔프로젝터에 띄우거나 URL 링크를 알림장/클래스팅에 올려주시면 됩니다.'",
+    keyTerms: "QR 코드 생성기, 모바일 접속, 교실 공유, 실시간 축하"
+  },
+  {
+    slideId: 18,
+    time: "5분",
+    expectedAnswers: "오늘 연수를 통해 '나도 수업용 디지털 도구를 만들 수 있다'는 자신감을 얻고 박수침.",
+    confusingPoints: "'학교로 돌아가서 막힐 때는 어떻게 하나요?' ➔ '안티그래비티와 매일 10분씩 대화하며 작은 타이머부터 차근차근 만들어보세요.'",
+    keyTerms: "에이전틱 교실 혁신, 교사 전문성, 디지털 포용, 질의응답(Q&A)"
+  }
+];
+
 if (typeof window !== 'undefined') {
   window.SLIDES_DATA = SLIDES_DATA;
+  window.TEACHER_NOTES = TEACHER_NOTES;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { SLIDES_DATA };
+  module.exports = { SLIDES_DATA, TEACHER_NOTES };
 }

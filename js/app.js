@@ -1,10 +1,16 @@
 class PresentationApp {
   constructor() {
     this.slides = window.SLIDES_DATA || [];
+    this.teacherNotes = window.TEACHER_NOTES || [];
     this.currentIndex = 0;
+    
+    // UI state
+    this.isEditModeActive = false;
+    this.isTeacherDrawerOpen = false;
     this.isAgentDrawerOpen = false;
     this.isPresenterModalOpen = false;
     this.isOverviewModalOpen = false;
+    this.isFullScreen = false;
 
     this.initElements();
     this.initEvents();
@@ -25,19 +31,48 @@ class PresentationApp {
     this.presenterModal = document.getElementById('presenter-modal');
     this.overviewModal = document.getElementById('overview-modal');
     this.overviewGrid = document.getElementById('overview-grid');
+
+    // 3 New Feature Elements
+    this.editorToolbar = document.getElementById('editor-toolbar');
+    this.teacherDrawer = document.getElementById('teacher-drawer');
+    this.teacherDrawerTitle = document.getElementById('teacher-drawer-title');
+    this.teacherDrawerContent = document.getElementById('teacher-drawer-content');
+    
+    // Floating Action Buttons
+    this.btnToggleEdit = document.getElementById('btn-toggle-edit');
+    this.btnToggleFullscreen = document.getElementById('btn-toggle-fullscreen');
+    this.btnToggleTeacher = document.getElementById('btn-toggle-teacher');
+  }
+
+  getStorageKey(slideIndex) {
+    const pageName = decodeURIComponent(window.location.pathname.split('/').pop() || 'index.html');
+    const idx = slideIndex !== undefined ? slideIndex + 1 : this.currentIndex + 1;
+    return `slide_custom_${pageName}_slide_${idx}`;
   }
 
   initEvents() {
-    // Keyboard navigation
+    // Keyboard navigation and shortcuts
     window.addEventListener('keydown', (e) => {
-      // Don't intercept typing in inputs
-      // Ctrl+P or Cmd+P: Trigger PDF export
+      // Don't intercept typing if focus is in an editable element or input
+      const target = e.target;
+      const isEditing = target && (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT');
+
+      // Ctrl+P or Cmd+P: Trigger PDF export (always allowed)
       if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
         e.preventDefault();
         window.exportToPDF();
         return;
       }
 
+      // If user is actively typing inside an editable field, allow typing
+      if (isEditing) {
+        if (e.key === 'Escape') {
+          target.blur();
+        }
+        return;
+      }
+
+      // Global Navigation & Shortcuts
       switch (e.key) {
         case 'ArrowRight':
         case 'PageDown':
@@ -58,9 +93,19 @@ class PresentationApp {
           e.preventDefault();
           this.goToSlide(this.slides.length);
           break;
+        // Fullscreen shortcuts: F, f, or Korean ㄹ
         case 'f':
         case 'F':
+        case 'ㄹ':
+          e.preventDefault();
           this.toggleFullScreen();
+          break;
+        // Teacher note drawer shortcuts: T, t, or Korean ㅅ
+        case 't':
+        case 'T':
+        case 'ㅅ':
+          e.preventDefault();
+          this.toggleTeacherDrawer();
           break;
         case 'a':
         case 'A':
@@ -72,14 +117,17 @@ class PresentationApp {
           break;
         case 'm':
         case 'M':
+          this.toggleOverviewModal();
+          break;
         case 'Escape':
-          if (this.isOverviewModalOpen || this.isPresenterModalOpen || this.isAgentDrawerOpen) {
-            this.closeAllModals();
-          } else if (e.key === 'm' || e.key === 'M') {
-            this.toggleOverviewModal();
-          }
+          this.closeAllModals();
           break;
       }
+    });
+
+    // Sync fullscreen state if user presses Esc or browser UI changes fullscreen
+    document.addEventListener('fullscreenchange', () => {
+      this.syncFullscreenState();
     });
 
     // Touch swipe support for mobile/tablets
@@ -98,6 +146,9 @@ class PresentationApp {
     }, false);
   }
 
+  // -------------------------------------------------------------
+  // SLIDE RENDERING & LOCAL STORAGE SYNC
+  // -------------------------------------------------------------
   renderSlide() {
     const currentSlide = this.slides[this.currentIndex];
     if (!currentSlide) return;
@@ -105,30 +156,40 @@ class PresentationApp {
     // Update Counter & Progress
     const total = this.slides.length;
     const current = this.currentIndex + 1;
-    this.slideCounter.textContent = `${current} / ${total}`;
-    this.progressBar.style.width = `${(current / total) * 100}%`;
+    if (this.slideCounter) this.slideCounter.textContent = `${current} / ${total}`;
+    if (this.progressBar) this.progressBar.style.width = `${(current / total) * 100}%`;
 
     // Update Badge & Title
-    this.slideBadge.innerHTML = currentSlide.badge;
+    if (this.slideBadge) this.slideBadge.innerHTML = currentSlide.badge;
+
+    // Check if there is saved customized content in localStorage
+    const savedContent = localStorage.getItem(this.getStorageKey());
+    const contentToRender = savedContent ? savedContent : currentSlide.content;
 
     // Render Slide Main Content
     this.slideViewport.innerHTML = `
       <div class="slide-content w-full h-full flex flex-col justify-center">
-        ${currentSlide.content}
+        ${contentToRender}
       </div>
     `;
+
+    // If Edit Mode is currently active, apply contenteditable and event listeners
+    if (this.isEditModeActive) {
+      this.applyContentEditable(true);
+    }
 
     // Update Lucide Icons
     if (window.lucide) {
       window.lucide.createIcons();
     }
 
-    // Post-render handlers for specific slides
+    // Post-render handlers for specific interactive widgets
     this.handleSlideSpecificInit(currentSlide.id);
 
-    // Update Agent Insights & Presenter content
+    // Update Modals & Teacher Drawer
     this.updateAgentDrawerContent(currentSlide);
     this.updatePresenterContent(currentSlide);
+    this.renderTeacherDrawerContent(currentSlide);
     this.updateOverviewActiveState();
   }
 
@@ -147,6 +208,7 @@ class PresentationApp {
 
   nextSlide() {
     if (this.currentIndex < this.slides.length - 1) {
+      if (this.isEditModeActive) this.saveSlideContent();
       this.currentIndex++;
       this.renderSlide();
     }
@@ -154,6 +216,7 @@ class PresentationApp {
 
   prevSlide() {
     if (this.currentIndex > 0) {
+      if (this.isEditModeActive) this.saveSlideContent();
       this.currentIndex--;
       this.renderSlide();
     }
@@ -162,24 +225,318 @@ class PresentationApp {
   goToSlide(slideNumber) {
     const index = slideNumber - 1;
     if (index >= 0 && index < this.slides.length) {
+      if (this.isEditModeActive) this.saveSlideContent();
       this.currentIndex = index;
       this.renderSlide();
       this.closeAllModals();
     }
   }
 
-  toggleFullScreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+  // -------------------------------------------------------------
+  // [1] 고치기 모드 (LIVE IN-PLACE EDIT ENGINE)
+  // -------------------------------------------------------------
+  toggleEditMode() {
+    this.isEditModeActive = !this.isEditModeActive;
+
+    if (this.isEditModeActive) {
+      document.body.classList.add('edit-mode-active');
+      if (this.editorToolbar) this.editorToolbar.classList.remove('hidden');
+      if (this.btnToggleEdit) {
+        this.btnToggleEdit.classList.add('active');
+        this.btnToggleEdit.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>완료</span>`;
+      }
+      this.applyContentEditable(true);
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
+      this.saveSlideContent();
+      document.body.classList.remove('edit-mode-active');
+      if (this.editorToolbar) this.editorToolbar.classList.add('hidden');
+      if (this.btnToggleEdit) {
+        this.btnToggleEdit.classList.remove('active');
+        this.btnToggleEdit.innerHTML = `<i data-lucide="edit-3" class="w-4 h-4"></i><span>✎ 고치기</span>`;
+      }
+      this.applyContentEditable(false);
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  applyContentEditable(enable) {
+    const slideContent = this.slideViewport.querySelector('.slide-content');
+    if (!slideContent) return;
+
+    // Target elements: headings, paragraphs, spans, list items, badges, blockquotes, code
+    const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li', 'span', 'strong', 'em', 'code', 'blockquote'];
+    const elements = slideContent.querySelectorAll(editableTags.join(','));
+
+    elements.forEach((el) => {
+      if (enable) {
+        el.setAttribute('contenteditable', 'true');
+        el.setAttribute('spellcheck', 'false');
+        // Auto-save on input or blur
+        el.oninput = () => this.saveSlideContent();
+        el.onblur = () => this.saveSlideContent();
+      } else {
+        el.removeAttribute('contenteditable');
+        el.removeAttribute('spellcheck');
+        el.oninput = null;
+        el.onblur = null;
+      }
+    });
+  }
+
+  saveSlideContent() {
+    const slideContent = this.slideViewport.querySelector('.slide-content');
+    if (!slideContent) return;
+    
+    const htmlToSave = slideContent.innerHTML;
+    try {
+      localStorage.setItem(this.getStorageKey(), htmlToSave);
+    } catch (e) {
+      console.warn('LocalStorage save error:', e);
+    }
+  }
+
+  editorExec(command, value = null) {
+    document.execCommand(command, false, value);
+    this.saveSlideContent();
+  }
+
+  editorChangeFontSize(delta) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    
+    const node = selection.anchorNode;
+    const targetElement = node && node.nodeType === 3 ? node.parentElement : node;
+    if (targetElement && this.slideViewport.contains(targetElement)) {
+      const currentSize = parseFloat(window.getComputedStyle(targetElement).fontSize) || 16;
+      const newSize = Math.max(12, Math.min(80, currentSize + delta));
+      targetElement.style.fontSize = `${newSize}px`;
+      this.saveSlideContent();
+    }
+  }
+
+  editorInsertImage() {
+    const choice = confirm("이미지 파일을 직접 올리시겠습니까?\n[확인]: 파일 선택 / [취소]: 이미지 웹 URL 입력");
+    if (choice) {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const imgHtml = `<img src="${event.target.result}" alt="수업 이미지" class="max-h-72 rounded-2xl mx-auto my-3 shadow-lg object-contain border border-slate-700" />`;
+            document.execCommand('insertHTML', false, imgHtml);
+            this.saveSlideContent();
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      fileInput.click();
+    } else {
+      const url = prompt("삽입할 이미지의 웹 주소(URL)를 입력하세요:", "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800");
+      if (url && url.trim()) {
+        const imgHtml = `<img src="${url.trim()}" alt="수업 이미지" class="max-h-72 rounded-2xl mx-auto my-3 shadow-lg object-contain border border-slate-700" />`;
+        document.execCommand('insertHTML', false, imgHtml);
+        this.saveSlideContent();
       }
     }
   }
 
+  editorHideElement() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    let node = selection.anchorNode;
+    let target = node && node.nodeType === 3 ? node.parentElement : node;
+
+    while (target && target !== this.slideViewport && target.parentElement && target.parentElement !== this.slideViewport) {
+      if (target.classList.contains('glass-card') || target.tagName === 'P' || target.tagName === 'LI' || target.tagName.startsWith('H') || target.tagName === 'DIV') {
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    if (target && target !== this.slideViewport && this.slideViewport.contains(target)) {
+      target.style.display = 'none';
+      this.saveSlideContent();
+    }
+  }
+
+  editorHideSlide() {
+    if (confirm("현재 슬라이드 전체를 감추시겠습니까?\n(언제든 [전체 되돌리기] 버튼으로 원상복구할 수 있습니다)")) {
+      const slideContent = this.slideViewport.querySelector('.slide-content');
+      if (slideContent) {
+        slideContent.innerHTML = `
+          <div class="p-12 text-center glass-panel rounded-3xl border border-dashed border-slate-700 my-auto">
+            <i data-lucide="eye-off" class="w-12 h-12 text-slate-500 mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-slate-400 mb-2">이 슬라이드는 현재 감춰져 있습니다.</h3>
+            <p class="text-sm text-slate-500 mb-6">수업 시 지나치거나 건너뛸 때 유용합니다.</p>
+            <button onclick="window.editorResetSlide()" class="px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm">
+              슬라이드 원본으로 되살리기
+            </button>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        this.saveSlideContent();
+      }
+    }
+  }
+
+  editorResetSlide() {
+    if (confirm("이 슬라이드의 모든 수정 내용을 취소하고 최초 원본으로 되돌리시겠습니까?")) {
+      localStorage.removeItem(this.getStorageKey());
+      this.renderSlide();
+    }
+  }
+
   // -------------------------------------------------------------
-  // Modals & Drawers
+  // [2] 전체화면 모드 (FULLSCREEN TOGGLE & MARGIN 0)
+  // -------------------------------------------------------------
+  toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        this.syncFullscreenState();
+      }).catch(() => {
+        this.syncFullscreenState();
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          this.syncFullscreenState();
+        }).catch(() => {
+          this.syncFullscreenState();
+        });
+      }
+    }
+  }
+
+  syncFullscreenState() {
+    const isFull = !!document.fullscreenElement;
+    this.isFullScreen = isFull;
+
+    if (isFull) {
+      document.body.classList.add('is-fullscreen');
+      if (this.btnToggleFullscreen) {
+        this.btnToggleFullscreen.classList.add('active');
+        this.btnToggleFullscreen.innerHTML = `<i data-lucide="minimize" class="w-4 h-4"></i><span>⛶ 해제</span>`;
+      }
+    } else {
+      document.body.classList.remove('is-fullscreen');
+      if (this.btnToggleFullscreen) {
+        this.btnToggleFullscreen.classList.remove('active');
+        this.btnToggleFullscreen.innerHTML = `<i data-lucide="maximize" class="w-4 h-4"></i><span>⛶ 전체</span>`;
+      }
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // -------------------------------------------------------------
+  // [3] 교사용 비밀 서랍 (TEACHER DRAWER TOGGLE)
+  // -------------------------------------------------------------
+  toggleTeacherDrawer() {
+    this.isTeacherDrawerOpen = !this.isTeacherDrawerOpen;
+
+    if (this.isTeacherDrawerOpen) {
+      if (this.teacherDrawer) {
+        this.teacherDrawer.classList.add('open');
+      }
+      if (this.btnToggleTeacher) {
+        this.btnToggleTeacher.classList.add('active');
+      }
+      const currentSlide = this.slides[this.currentIndex];
+      if (currentSlide) {
+        this.renderTeacherDrawerContent(currentSlide);
+      }
+    } else {
+      if (this.teacherDrawer) {
+        this.teacherDrawer.classList.remove('open');
+      }
+      if (this.btnToggleTeacher) {
+        this.btnToggleTeacher.classList.remove('active');
+      }
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  renderTeacherDrawerContent(slide) {
+    if (!this.teacherDrawerContent || !slide) return;
+
+    if (this.teacherDrawerTitle) {
+      this.teacherDrawerTitle.textContent = `Slide ${slide.id}: ${slide.title}`;
+    }
+
+    // Find corresponding note from TEACHER_NOTES array or fallback
+    const note = (window.TEACHER_NOTES || []).find(n => n.slideId === slide.id) || {
+      time: "5분",
+      expectedAnswers: "실습과 발표에 적극적으로 참여하고 호응함.",
+      confusingPoints: "'어려운 부분이 있나요?' ➔ '궁금한 점은 언제든 질문해 주세요.'",
+      keyTerms: "AI 수업자료, 안티그래비티"
+    };
+
+    const keyTermBadges = note.keyTerms.split(',').map(term => `
+      <span class="inline-block px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold text-xs mr-1 mb-1">
+        ${term.trim()}
+      </span>
+    `).join('');
+
+    this.teacherDrawerContent.innerHTML = `
+      <!-- Card 1: Time -->
+      <div class="glass-card p-4 rounded-2xl border border-amber-500/30 bg-slate-900/80 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm mb-2">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+            <span>권장 시간 배분</span>
+          </div>
+          <p class="text-2xl font-extrabold text-white">${note.time}</p>
+        </div>
+        <span class="text-[11px] text-slate-400 mt-2">질의응답 및 실습 시간 포함</span>
+      </div>
+
+      <!-- Card 2: Expected Answers -->
+      <div class="glass-card p-4 rounded-2xl border border-blue-500/30 bg-slate-900/80 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-blue-400 font-bold text-sm mb-2">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            <span>예상 반응 & 답변</span>
+          </div>
+          <p class="text-xs md:text-sm text-slate-200 leading-relaxed font-medium break-keep">${note.expectedAnswers}</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Confusing Points & Coaching -->
+      <div class="glass-card p-4 rounded-2xl border border-purple-500/30 bg-slate-900/80 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-purple-400 font-bold text-sm mb-2">
+            <i data-lucide="help-circle" class="w-4 h-4"></i>
+            <span>헷갈릴 지점 & 되받아 줄 말</span>
+          </div>
+          <p class="text-xs md:text-sm text-slate-200 leading-relaxed font-medium break-keep">${note.confusingPoints}</p>
+        </div>
+      </div>
+
+      <!-- Card 4: Key Terms -->
+      <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 bg-slate-900/80 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm mb-2">
+            <i data-lucide="key" class="w-4 h-4"></i>
+            <span>짚어 줄 핵심 낱말</span>
+          </div>
+          <div class="flex flex-wrap mt-1">
+            ${keyTermBadges}
+          </div>
+        </div>
+      </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // -------------------------------------------------------------
+  // Modals & Drawers Management
   // -------------------------------------------------------------
   toggleAgentDrawer() {
     this.isAgentDrawerOpen = !this.isAgentDrawerOpen;
@@ -214,13 +571,17 @@ class PresentationApp {
 
   closeAllModals() {
     this.isAgentDrawerOpen = false;
-    this.agentDrawer.classList.add('translate-x-full');
+    if (this.agentDrawer) this.agentDrawer.classList.add('translate-x-full');
 
     this.isPresenterModalOpen = false;
-    this.presenterModal.classList.add('hidden');
+    if (this.presenterModal) this.presenterModal.classList.add('hidden');
 
     this.isOverviewModalOpen = false;
-    this.overviewModal.classList.add('hidden');
+    if (this.overviewModal) this.overviewModal.classList.add('hidden');
+
+    this.isTeacherDrawerOpen = false;
+    if (this.teacherDrawer) this.teacherDrawer.classList.remove('open');
+    if (this.btnToggleTeacher) this.btnToggleTeacher.classList.remove('active');
   }
 
   updateAgentDrawerContent(slide) {
@@ -329,13 +690,21 @@ window.toggleAgentDrawer = () => window.app.toggleAgentDrawer();
 window.togglePresenterModal = () => window.app.togglePresenterModal();
 window.toggleOverviewModal = () => window.app.toggleOverviewModal();
 window.toggleFullScreen = () => window.app.toggleFullScreen();
+window.toggleTeacherDrawer = () => window.app.toggleTeacherDrawer();
+window.toggleEditMode = () => window.app.toggleEditMode();
+window.editorExec = (cmd, val) => window.app.editorExec(cmd, val);
+window.editorChangeFontSize = (delta) => window.app.editorChangeFontSize(delta);
+window.editorInsertImage = () => window.app.editorInsertImage();
+window.editorHideElement = () => window.app.editorHideElement();
+window.editorHideSlide = () => window.app.editorHideSlide();
+window.editorResetSlide = () => window.app.editorResetSlide();
 window.closeAllModals = () => window.app.closeAllModals();
 
 // -------------------------------------------------------------
 // Interactive Widgets Handlers
 // -------------------------------------------------------------
 
-// Slide 3: Quiz Checker
+// Slide 4: Quiz Checker
 window.checkQuiz = (btn, isCorrect) => {
   const feedback = document.getElementById('quiz-feedback');
   if (!feedback) return;
@@ -353,7 +722,7 @@ window.checkQuiz = (btn, isCorrect) => {
   }
 };
 
-// Slide 5: Chatbot Sim
+// Slide 6: Chatbot Sim
 window.runChatbotSim = () => {
   const out = document.getElementById('chatbot-output');
   if (!out) return;
@@ -367,7 +736,7 @@ window.runChatbotSim = () => {
   `;
 };
 
-// Slide 5: Agent Sim
+// Slide 6: Agent Sim
 window.runAgentSim = () => {
   const out = document.getElementById('agent-output');
   if (!out) return;
@@ -384,7 +753,7 @@ window.runAgentSim = () => {
   }
 };
 
-// Slide 9: Error Fix Sim
+// Slide 11: Error Fix Sim
 window.simCopyError = () => {
   const badge = document.getElementById('sim-status-badge');
   const btnCopy = document.getElementById('btn-copy-error');
@@ -422,7 +791,7 @@ window.simAskAI = () => {
   }
 };
 
-// Slide 10: Golden Prompt Builder
+// Slide 12: Golden Prompt Builder
 window.buildPrompt = () => {
   const role = document.getElementById('prompt-role')?.value || '';
   const purpose = document.getElementById('prompt-purpose')?.value || '';
@@ -464,7 +833,7 @@ window.copyPrompt = () => {
   });
 };
 
-// Slide 15: QR Code Generator
+// Slide 17: QR Code Generator
 window.generateQRCode = (triggerConfetti = true) => {
   const urlInput = document.getElementById('deploy-url-input');
   const qrContainer = document.getElementById('qrcode-container');
@@ -495,7 +864,7 @@ window.generateQRCode = (triggerConfetti = true) => {
   }
 };
 
-// Slide 16/17: Fire Confetti
+// Slide 17/18: Fire Confetti
 window.fireConfetti = () => {
   if (window.confetti) {
     window.confetti({
@@ -507,7 +876,7 @@ window.fireConfetti = () => {
 };
 
 // =============================================================
-// PDF Export Handler (전체 17개 슬라이드 일괄 인쇄/PDF 저장)
+// PDF Export Handler (전체 18개 슬라이드 일괄 인쇄/PDF 저장)
 // =============================================================
 window.exportToPDF = () => {
   const printContainer = document.getElementById('print-container');
@@ -523,7 +892,7 @@ window.exportToPDF = () => {
         ${s.content}
       </div>
       <div class="print-slide-footer">
-        <span>이것만 알면 준호처럼 할 수 있다 - 안티그래비티 교사 연수 자료</span>
+        <span>2026 대저중앙초 전문적학습공동체 - AI·디지털 기술을 활용한 수업자료 만들기</span>
         <span>Slide ${idx + 1} / ${total}</span>
       </div>
     </div>

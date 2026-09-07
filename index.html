@@ -51,7 +51,7 @@
       <div>
         <h1 class="font-extrabold text-base md:text-lg text-slate-100 tracking-tight flex items-center gap-2">
           <span>이것만 알면 준호처럼 할 수 있다</span>
-          <span class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">안티그래비티 연수</span>
+          <span class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-sky-300 font-bold border border-sky-500/30">안티그래비티 연수</span>
         </h1>
       </div>
     </div>
@@ -87,7 +87,7 @@
       </button>
 
       <!-- Fullscreen Button -->
-      <button onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+      <button onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
         <i data-lucide="maximize" class="w-5 h-5"></i>
       </button>
     </div>
@@ -95,7 +95,32 @@
 
   <!-- Progress Bar (Thin Top Line) -->
   <div class="w-full bg-slate-900 h-1 z-30 shrink-0">
-    <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-300 ease-out" style="width: 6.25%;"></div>
+    <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-300 ease-out" style="width: 5.5%;"></div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- FLOATING EDITOR TOOLBAR (고치기 모드 상단 툴바)              -->
+  <!-- ========================================================= -->
+  <div id="editor-toolbar" class="editor-toolbar no-print hidden">
+    <button onclick="window.editorExec('undo')" title="한 걸음 되돌리기 (Undo)" class="editor-btn"><i data-lucide="undo" class="w-4 h-4"></i></button>
+    <button onclick="window.editorExec('redo')" title="다시 (Redo)" class="editor-btn"><i data-lucide="redo" class="w-4 h-4"></i></button>
+    <div class="editor-separator"></div>
+    <button onclick="window.editorChangeFontSize(2)" title="글자 크게" class="editor-btn font-bold">A+</button>
+    <button onclick="window.editorChangeFontSize(-2)" title="글자 작게" class="editor-btn font-bold">A-</button>
+    <button onclick="window.editorExec('bold')" title="굵게 (Bold)" class="editor-btn font-extrabold">B</button>
+    <button onclick="window.editorExec('hiliteColor', '#fef08a')" title="형광펜 (노랑)" class="editor-btn text-amber-300">🖍️</button>
+    <div class="editor-separator"></div>
+    <button onclick="window.editorExec('foreColor', '#f8fafc')" title="글자색: 기본/흰색" class="editor-btn"><span class="w-3.5 h-3.5 rounded-full bg-slate-100 border border-slate-400 inline-block"></span></button>
+    <button onclick="window.editorExec('foreColor', '#f43f5e')" title="글자색: 빨강" class="editor-btn"><span class="w-3.5 h-3.5 rounded-full bg-rose-500 inline-block"></span></button>
+    <button onclick="window.editorExec('foreColor', '#38bdf8')" title="글자색: 파랑" class="editor-btn"><span class="w-3.5 h-3.5 rounded-full bg-sky-400 inline-block"></span></button>
+    <button onclick="window.editorExec('foreColor', '#34d399')" title="글자색: 초록" class="editor-btn"><span class="w-3.5 h-3.5 rounded-full bg-emerald-400 inline-block"></span></button>
+    <div class="editor-separator"></div>
+    <button onclick="window.editorExec('justifyCenter')" title="가운데 정렬" class="editor-btn"><i data-lucide="align-center" class="w-4 h-4"></i></button>
+    <button onclick="window.editorInsertImage()" title="사진 넣기" class="editor-btn"><i data-lucide="image" class="w-4 h-4"></i></button>
+    <div class="editor-separator"></div>
+    <button onclick="window.editorHideElement()" title="선택한 부분 지우기 (감추기)" class="editor-btn text-rose-300"><i data-lucide="eye-off" class="w-4 h-4 mr-1"></i>부분 지우기</button>
+    <button onclick="window.editorHideSlide()" title="이 장 지우기 (감추기)" class="editor-btn text-rose-400"><i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>이 장 지우기</button>
+    <button onclick="window.editorResetSlide()" title="전체 되돌리기 (원본 복원)" class="editor-btn text-amber-300 bg-amber-500/20"><i data-lucide="rotate-ccw" class="w-4 h-4 mr-1"></i>전체 되돌리기</button>
   </div>
 
   <!-- ========================================================= -->
@@ -120,8 +145,8 @@
       </button>
       <span class="text-xs md:text-sm font-mono text-slate-400 hidden sm:inline">단축키:</span>
       <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">← / →</span>
-      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">Space</span>
-      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">Ctrl+P (PDF)</span>
+      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">F(전체)</span>
+      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">T(교사용)</span>
     </div>
 
     <!-- Navigation Buttons & Counter -->
@@ -131,7 +156,7 @@
       </button>
 
       <span id="slide-counter" class="font-mono font-extrabold text-base md:text-lg text-slate-200 px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 min-w-[90px] text-center shadow-inner">
-        1 / 16
+        1 / 18
       </span>
 
       <button id="next-btn" onclick="window.nextSlide()" class="p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
@@ -139,6 +164,50 @@
       </button>
     </div>
   </footer>
+
+  <!-- ========================================================= -->
+  <!-- FLOATING ACTION BUTTONS (BOTTOM RIGHT)                   -->
+  <!-- ========================================================= -->
+  <div class="floating-bottom-actions no-print">
+    <button id="btn-toggle-edit" onclick="window.toggleEditMode()" data-tooltip="슬라이드 글자 수정 (✎ 고치기)" class="floating-action-btn">
+      <i data-lucide="edit-3" class="w-4 h-4"></i>
+      <span>✎ 고치기</span>
+    </button>
+    <button id="btn-toggle-fullscreen" onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="floating-action-btn">
+      <i data-lucide="maximize" class="w-4 h-4"></i>
+      <span>⛶ 전체</span>
+    </button>
+    <button id="btn-toggle-teacher" onclick="window.toggleTeacherDrawer()" data-tooltip="교사용 지도 팁 (단축키: T / ㅅ)" class="floating-action-btn">
+      <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+      <span>교사용</span>
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- TEACHER NOTES SLIDING DRAWER (교사용 하단 슬라이딩 서랍)    -->
+  <!-- ========================================================= -->
+  <div id="teacher-drawer" class="teacher-drawer no-print">
+    <div class="max-w-6xl mx-auto p-6">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-700/80 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">교사용 지도 가이드 (단축키: T / ㅅ, 닫기: ESC)</span>
+            <h3 id="teacher-drawer-title" class="text-lg md:text-xl font-extrabold text-white">Slide 1: 오프닝</h3>
+          </div>
+        </div>
+        <button onclick="window.toggleTeacherDrawer()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div id="teacher-drawer-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
 
   <!-- ========================================================= -->
   <!-- AGENT INSIGHTS RIGHT DRAWER (5-AGENT TEAM INSIGHTS) -->
