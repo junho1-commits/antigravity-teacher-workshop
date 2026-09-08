@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <radialGradient id="skyBg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="60%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+    <radialGradient id="bronzeBowl" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="25%" stop-color="#d97706" />
+      <stop offset="65%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#451a03" />
+    </radialGradient>
+    <radialGradient id="innerBowl" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="40%" stop-color="#b45309" />
+      <stop offset="85%" stop-color="#3c1d08" />
+      <stop offset="100%" stop-color="#1c0e04" />
+    </radialGradient>
+    <linearGradient id="legBronze" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b45309" />
+      <stop offset="50%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#3c1d08" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="400" rx="16" fill="url(#skyBg)" stroke="#334155" stroke-width="4"/>
+  
+  <!-- Celestial Stars & Constellations in Background -->
+  <g opacity="0.4">
+    <circle cx="80" cy="60" r="2" fill="#38bdf8" />
+    <circle cx="120" cy="80" r="2.5" fill="#facc15" />
+    <circle cx="150" cy="50" r="1.5" fill="#ffffff" />
+    <line x1="80" y1="60" x2="120" y2="80" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2,2"/>
+    <line x1="120" y1="80" x2="150" y2="50" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2,2"/>
+    
+    <circle cx="480" cy="70" r="2.5" fill="#facc15" />
+    <circle cx="520" cy="95" r="2" fill="#38bdf8" />
+    <circle cx="550" cy="60" r="3" fill="#f8fafc" />
+    <line x1="480" y1="70" x2="520" y2="95" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2,2"/>
+    <line x1="520" y1="95" x2="550" y2="60" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2,2"/>
+  </g>
+
+  <!-- Title Badge -->
+  <g transform="translate(30, 30)">
+    <rect width="250" height="36" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="125" y="24" font-family="'Pretendard', sans-serif" font-size="15" font-weight="800" fill="#c7d2fe" text-anchor="middle">조선 세종·장영실: 앙부일구(仰釜日晷)</text>
+  </g>
+
+  <!-- Sun Rays Shining Down -->
+  <g transform="translate(480, 50)" opacity="0.6">
+    <circle cx="0" cy="0" r="24" fill="#fbbf24" filter="url(#glow)"/>
+    <line x1="-30" y1="30" x2="-140" y2="140" stroke="#fef08a" stroke-width="2" stroke-dasharray="4,4" opacity="0.7"/>
+    <line x1="-15" y1="35" x2="-120" y2="160" stroke="#fef08a" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Stone Pedestal (대리석 받침돌) -->
+  <g transform="translate(300, 310)">
+    <polygon points="-160,50 160,50 130,20 -130,20" fill="#475569" stroke="#64748b" stroke-width="2"/>
+    <rect x="-160" y="50" width="320" height="20" rx="3" fill="#334155" stroke="#475569" stroke-width="2"/>
+    <text x="0" y="65" font-family="'Pretendard', sans-serif" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">仰釜日晷 (보물 제845호 - 오목 해시계)</text>
+  </g>
+
+  <!-- Bronze Support Legs (4 Dragon Legs / 용머리 다리) -->
+  <g transform="translate(300, 260)">
+    <!-- Back Legs -->
+    <path d="M-85,-20 Q-110,40 -105,70" fill="none" stroke="url(#legBronze)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M85,-20 Q110,40 105,70" fill="none" stroke="url(#legBronze)" stroke-width="14" stroke-linecap="round"/>
+    <!-- Front Legs -->
+    <path d="M-50,0 Q-70,55 -60,70" fill="none" stroke="url(#legBronze)" stroke-width="16" stroke-linecap="round"/>
+    <path d="M50,0 Q70,55 60,70" fill="none" stroke="url(#legBronze)" stroke-width="16" stroke-linecap="round"/>
+    <!-- Crossbar -->
+    <rect x="-70" y="30" width="140" height="8" rx="3" fill="#78350f" stroke="#b45309" stroke-width="1.5"/>
+    <circle cx="0" cy="34" r="7" fill="#fbbf24" stroke="#78350f" stroke-width="2"/>
+  </g>
+
+  <!-- Main Hemispherical Cauldron (오목 솥 모양 반구) -->
+  <g transform="translate(300, 185)">
+    <!-- Outer Bronze Rim & Hemisphere -->
+    <path d="M-130,-15 C-130,85 130,85 130,-15 C130,-30 -130,-30 -130,-15 Z" fill="url(#bronzeBowl)" stroke="#f59e0b" stroke-width="3"/>
+    
+    <!-- Top Circular Rim Plane -->
+    <ellipse cx="0" cy="-15" rx="128" ry="32" fill="#78350f" stroke="#fde047" stroke-width="2.5"/>
+    
+    <!-- Inner Concave Hemisphere Surface (오목한 시반) -->
+    <ellipse cx="0" cy="-12" rx="114" ry="26" fill="url(#innerBowl)" stroke="#d97706" stroke-width="1.5"/>
+
+    <!-- 13 Solar Terms Horizontal Lines (13개 절기선) -->
+    <ellipse cx="0" cy="-8" rx="100" ry="20" fill="none" stroke="#fde68a" stroke-width="1" opacity="0.65"/>
+    <ellipse cx="0" cy="-3" rx="85" ry="16" fill="none" stroke="#fde68a" stroke-width="1" opacity="0.65"/>
+    <ellipse cx="0" cy="2" rx="70" ry="12" fill="none" stroke="#fde68a" stroke-width="1" opacity="0.65"/>
+    <ellipse cx="0" cy="7" rx="50" ry="8" fill="none" stroke="#fde68a" stroke-width="1" opacity="0.5"/>
+
+    <!-- Vertical Hour Lines & 12 Zodiac Symbols (시각선 & 12지신) -->
+    <line x1="-80" y1="-20" x2="-50" y2="10" stroke="#fde68a" stroke-width="1.2" opacity="0.75"/>
+    <line x1="-40" y1="-22" x2="-25" y2="14" stroke="#fde68a" stroke-width="1.2" opacity="0.75"/>
+    <line x1="0" y1="-23" x2="0" y2="16" stroke="#fde68a" stroke-width="1.5" opacity="0.9"/>
+    <line x1="40" y1="-22" x2="25" y2="14" stroke="#fde68a" stroke-width="1.2" opacity="0.75"/>
+    <line x1="80" y1="-20" x2="50" y2="10" stroke="#fde68a" stroke-width="1.2" opacity="0.75"/>
+
+    <!-- Gnomon Pin (북극을 향한 영침 影針) -->
+    <!-- Pin Base -->
+    <circle cx="70" cy="-24" r="4" fill="#fde047" stroke="#451a03" stroke-width="1.5"/>
+    <!-- Pin Needle pointing to Center -->
+    <path d="M70,-24 L-15,6" fill="none" stroke="#fef08a" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+    <!-- Shadow Cast by Sun (햇빛 그림자) -->
+    <path d="M-15,6 L-38,12" fill="none" stroke="#000000" stroke-width="3.5" stroke-linecap="round" opacity="0.75"/>
+
+    <!-- Visual Markers -->
+    <text x="-95" y="-18" font-family="'Pretendard', sans-serif" font-size="10" font-weight="900" fill="#fde047">卯(묘)</text>
+    <text x="-48" y="-22" font-family="'Pretendard', sans-serif" font-size="10" font-weight="900" fill="#fde047">辰(진)</text>
+    <text x="-6" y="-24" font-family="'Pretendard', sans-serif" font-size="11" font-weight="900" fill="#ffffff">午(정오)</text>
+    <text x="36" y="-22" font-family="'Pretendard', sans-serif" font-size="10" font-weight="900" fill="#fde047">未(미)</text>
+    <text x="80" y="-18" font-family="'Pretendard', sans-serif" font-size="10" font-weight="900" fill="#fde047">申(신)</text>
+  </g>
+
+  <!-- Explanatory Callout Box -->
+  <g transform="translate(30, 345)">
+    <rect width="210" height="34" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+    <text x="105" y="22" font-family="'Pretendard', sans-serif" font-size="13" font-weight="700" fill="#e0f2fe" text-anchor="middle">
+      ☀️ <tspan fill="#38bdf8" font-weight="800">영침(그림자침)</tspan> + 12지신 시각선
+    </text>
+  </g>
+</svg>

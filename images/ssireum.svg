@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <radialGradient id="hanjiBg" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#fdfbf7" />
+      <stop offset="70%" stop-color="#f4eedb" />
+      <stop offset="100%" stop-color="#e3d6b8" />
+    </radialGradient>
+    <linearGradient id="inkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d2926" />
+      <stop offset="100%" stop-color="#141210" />
+    </linearGradient>
+    <linearGradient id="redSatba" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#dc2626" />
+      <stop offset="100%" stop-color="#991b1b" />
+    </linearGradient>
+    <linearGradient id="blueSatba" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+    <filter id="inkShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Hanji Background -->
+  <rect width="600" height="400" rx="16" fill="url(#hanjiBg)" stroke="#8c7355" stroke-width="4"/>
+  <rect x="12" y="12" width="576" height="376" rx="10" fill="none" stroke="#a48c6d" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- Antique Seal Stamp (Top Right) -->
+  <rect x="520" y="24" width="48" height="58" rx="6" fill="#b91c1c" fill-opacity="0.85" />
+  <text x="544" y="48" font-family="'Pretendard', sans-serif" font-size="14" font-weight="900" fill="#fef2f2" text-anchor="middle">檀園</text>
+  <text x="544" y="68" font-family="'Pretendard', sans-serif" font-size="13" font-weight="900" fill="#fef2f2" text-anchor="middle">弘道</text>
+
+  <!-- Title Badge -->
+  <g transform="translate(30, 32)">
+    <rect width="210" height="36" rx="8" fill="#451a03" fill-opacity="0.9" />
+    <text x="105" y="24" font-family="'Pretendard', sans-serif" font-size="15" font-weight="800" fill="#fef3c7" text-anchor="middle">조선 후기 풍속화: 씨름(씨름도)</text>
+  </g>
+
+  <!-- Spectators Circular Atmosphere (Top Spectators) -->
+  <g opacity="0.75" transform="translate(300, 105)">
+    <!-- Gat & Hanbok Spectators Top -->
+    <ellipse cx="-120" cy="-10" rx="18" ry="6" fill="#332a24"/>
+    <circle cx="-120" cy="-22" r="9" fill="#1c1917"/>
+    <ellipse cx="-70" cy="-15" rx="20" ry="6" fill="#332a24"/>
+    <circle cx="-70" cy="-28" r="10" fill="#1c1917"/>
+    <ellipse cx="-20" cy="-18" rx="19" ry="6" fill="#332a24"/>
+    <circle cx="-20" cy="-30" r="9" fill="#1c1917"/>
+    <ellipse cx="40" cy="-15" rx="21" ry="6" fill="#332a24"/>
+    <circle cx="40" cy="-27" r="10" fill="#1c1917"/>
+    <ellipse cx="90" cy="-10" rx="18" ry="6" fill="#332a24"/>
+    <circle cx="90" cy="-22" r="9" fill="#1c1917"/>
+    <!-- Yeot Seller (Bottom Right) -->
+    <ellipse cx="180" cy="180" rx="24" ry="7" fill="#332a24"/>
+    <circle cx="180" cy="166" r="11" fill="#1c1917"/>
+    <rect x="155" y="195" width="50" height="14" rx="3" fill="#a16207" />
+    <text x="180" y="206" font-family="'Pretendard', sans-serif" font-size="9" font-weight="700" fill="#fef3c7" text-anchor="middle">엿판</text>
+  </g>
+
+  <!-- Central Wrestlers Arena (씨름꾼 2인 대치) -->
+  <g transform="translate(300, 220)" filter="url(#inkShadow)">
+    <!-- Sand Ground Marking -->
+    <ellipse cx="0" cy="85" rx="190" ry="40" fill="#d8c59f" opacity="0.6" stroke="#bfa378" stroke-dasharray="5,5"/>
+
+    <!-- Left Wrestler (Blue Satba - 들배지기 시도 공격수) -->
+    <!-- Legs & Body -->
+    <path d="M-60,70 Q-40,30 -20,10 Q0,0 20,-20 Q0,-40 -30,-45 Q-65,-30 -60,70 Z" fill="#d97706" opacity="0.2"/>
+    <!-- Wrestler 1 (Attacker) Torso -->
+    <path d="M-45,35 C-60,10 -55,-20 -25,-35 C5,-30 15,-10 5,25 C-10,45 -30,45 -45,35 Z" fill="#d4a373" stroke="#2d2926" stroke-width="3.5" stroke-linejoin="round"/>
+    <!-- Blue Satba (청샅바) -->
+    <path d="M-40,15 C-25,10 -5,12 10,20 C5,35 -20,38 -40,30 Z" fill="url(#blueSatba)" stroke="#172554" stroke-width="2.5"/>
+    <circle cx="-35" cy="-48" r="16" fill="#d4a373" stroke="#2d2926" stroke-width="3"/>
+    <!-- Topknot (상투) -->
+    <rect x="-38" y="-70" width="8" height="9" rx="3" fill="#1c1917" stroke="#000" stroke-width="1.5"/>
+
+    <!-- Right Wrestler (Red Satba - 넘어가는 수비수) -->
+    <!-- Inverted Torso & Dynamic Tilt -->
+    <path d="M20,20 C50,5 55,-25 35,-50 C10,-45 -5,-20 5,10 C15,25 25,25 20,20 Z" fill="#c99564" stroke="#2d2926" stroke-width="3.5" stroke-linejoin="round" transform="rotate(25, 25, -20)"/>
+    <!-- Red Satba (홍샅바) -->
+    <path d="M15,-5 C35,-15 50,-5 55,10 C35,20 15,10 15,-5 Z" fill="url(#redSatba)" stroke="#7f1d1d" stroke-width="2.5"/>
+    <circle cx="50" cy="-60" r="16" fill="#c99564" stroke="#2d2926" stroke-width="3"/>
+    <rect x="52" y="-82" width="8" height="9" rx="3" fill="#1c1917" stroke="#000" stroke-width="1.5"/>
+
+    <!-- Grip Arms (샅바 잡은 팔의 긴장감 표현) -->
+    <path d="M-30,-15 Q0,-10 20,-5" fill="none" stroke="#2d2926" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M30,-25 Q5,-15 -20,15" fill="none" stroke="#2d2926" stroke-width="4.5" stroke-linecap="round"/>
+
+    <!-- Dynamic Action Lines -->
+    <path d="M-75,10 Q-60,-20 -40,-40" fill="none" stroke="#a48c6d" stroke-width="2" stroke-dasharray="3,3"/>
+    <path d="M60,-40 Q80,-10 75,30" fill="none" stroke="#a48c6d" stroke-width="2" stroke-dasharray="3,3"/>
+  </g>
+
+  <!-- Bottom Info Label Box -->
+  <g transform="translate(140, 345)">
+    <rect width="320" height="34" rx="8" fill="#1e293b" fill-opacity="0.9" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="160" y="22" font-family="'Pretendard', sans-serif" font-size="14" font-weight="700" fill="#f8fafc" text-anchor="middle">
+      국립중앙박물관 소장 <tspan fill="#38bdf8" font-weight="800">단원풍속도첩(檀園風俗圖帖)</tspan>
+    </text>
+  </g>
+</svg>

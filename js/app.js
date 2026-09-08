@@ -1050,17 +1050,24 @@ window.demoResetTimer = () => {
 window.demoQuizQuestions = [
   {
     q: "Q. 다음 그림을 그린 조선 후기 대표 풍속화가는 누구일까요?",
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Ssireum_by_Kim_Hong-do.jpg/500px-Ssireum_by_Kim_Hong-do.jpg",
+    img: "images/ssireum.svg",
     choices: ["① 신사임당", "② 김홍도", "③ 정선", "④ 김정호"],
     answerIndex: 1,
     desc: "🎉 정답입니다! 조선 후기 서민들의 일상을 해학적으로 그린 단원 김홍도의 대표작 <씨름>입니다."
   },
   {
     q: "Q. 세종대왕 때 장영실 등이 만든 조선의 오목 해시계는 무엇일까요?",
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Angbuilgu_%28Sundial%29.JPG/500px-Angbuilgu_%28Sundial%29.JPG",
+    img: "images/angbuilgu.svg",
     choices: ["① 자격루", "② 혼천의", "③ 앙부일구", "④ 측우기"],
     answerIndex: 2,
     desc: "🎉 정답입니다! 솥 모양의 오목한 구면으로 글을 모르는 백성도 시간을 알 수 있게 동물 그림을 새긴 <앙부일구>입니다."
+  },
+  {
+    q: "Q. 세종대왕이 백성을 가르치기 위해 창제한 28자의 글자는 무엇일까요?",
+    img: "images/hunmin.svg",
+    choices: ["① 이두", "② 훈민정음", "③ 향찰", "④ 구결"],
+    answerIndex: 1,
+    desc: "🎉 정답입니다! '나랏말싸미 듕귁에 달아...' 1446년 반포된 유네스코 세계기록유산 <훈민정음>입니다."
   }
 ];
 
