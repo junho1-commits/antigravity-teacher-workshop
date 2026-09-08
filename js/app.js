@@ -1,7 +1,7 @@
 class PresentationApp {
   constructor() {
-    this.slides = window.SLIDES_DATA || [];
-    this.teacherNotes = window.TEACHER_NOTES || [];
+    this.slides = (typeof window !== 'undefined' && window.SLIDES_DATA) || (typeof SLIDES_DATA !== 'undefined' ? SLIDES_DATA : []);
+    this.teacherNotes = (typeof window !== 'undefined' && window.TEACHER_NOTES) || (typeof TEACHER_NOTES !== 'undefined' ? TEACHER_NOTES : []);
     this.currentIndex = 0;
     
     // UI state
@@ -680,7 +680,19 @@ class PresentationApp {
 }
 
 // Global Application Instance
-window.app = new PresentationApp();
+// Safe Application Initialization
+function initPresentationApp() {
+  if (!window.app) {
+    window.app = new PresentationApp();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPresentationApp);
+} else {
+  initPresentationApp();
+}
+
 
 // Global Window Helpers
 window.nextSlide = () => window.app.nextSlide();

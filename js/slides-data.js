@@ -1,11 +1,8 @@
 /**
- * Antigravity Interactive Slides Data (24인치 대화면 & Skills / MCP 확장 최적화 버전)
- * - 18개 핵심 슬라이드 완비 (스마트 프레젠테이션 기능 장표 및 Skills & MCP 장표 포함)
- * - 24인치 대화면 너비(max-w-6xl) 및 break-keep 적용으로 줄바꿈 최적화
- * - AI 티 없는 직관적인 교육 현장 언어 및 실전 비유
+ * Antigravity Interactive Slides Data
  */
 
-const SLIDES_DATA = [
+var SLIDES_DATA = [
   {
     "id": 1,
     "title": "오프닝",
@@ -259,11 +256,7 @@ const SLIDES_DATA = [
     "presenterNote": "\n      🎤 [강사용 추천 멘트]:\n      - \"선생님들, 슬라이드 발표 중에 글자를 직접 바꾸고 싶으실 때가 있죠? 하단 [✎ 고치기]를 누르면 이 화면의 어떤 글자든 마음대로 바꿀 수 있습니다. [T]를 누르면 강사용 꿀팁 서랍도 열립니다!\"\n    "
   }
 ];
-
-// -------------------------------------------------------------
-// TEACHER NOTES DATA ARRAY
-// -------------------------------------------------------------
-const TEACHER_NOTES = [
+var TEACHER_NOTES = [
   {
     "slideId": 1,
     "time": "3분",
@@ -391,6 +384,11 @@ const TEACHER_NOTES = [
     "keyTerms": "고치기 모드 (contenteditable), 전체화면 (단축키 F), 교사용 서랍 (단축키 T)"
   }
 ];
+
+if (typeof window !== 'undefined') {
+  window.SLIDES_DATA = SLIDES_DATA;
+  window.TEACHER_NOTES = TEACHER_NOTES;
+}
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { SLIDES_DATA, TEACHER_NOTES };
