@@ -190,8 +190,8 @@ class PresentationApp {
   handleSlideSpecificInit(slideId) {
     if (document.getElementById('demo-seat-grid')) {
       setTimeout(() => {
-        if (window.demoRenderSeatGrid && window.demoStudentNames) {
-          window.demoRenderSeatGrid(window.demoStudentNames);
+        if (window.demoRenderSeatGrid) {
+          window.demoRenderSeatGrid(window.demoCurrentSeats || window.demoStudentRoster);
         }
       }, 50);
     }
@@ -1121,46 +1121,164 @@ window.demoNextQuiz = () => {
   }
 };
 
+
 // -------------------------------------------------------------
-// [Slide 15] Live Seat Shuffler Demo Handler
+// [Slide 15] Smart Classroom Seating Randomizer Mini-App Engine
 // -------------------------------------------------------------
-window.demoStudentNames = [
-  "김민준", "이서연", "박도윤", "최지우",
-  "정예준", "강하은", "조은우", "윤서아",
-  "장지호", "임수아", "한시우", "오지유"
+window.demoStudentRoster = [
+  { name: "김민준", gender: "M", fixed: true, tag: "👓 시력" },
+  { name: "이서연", gender: "F", fixed: true, tag: "🩹 건강" },
+  { name: "박도윤", gender: "M", fixed: false, tag: "" },
+  { name: "최지우", gender: "F", fixed: false, tag: "" },
+  { name: "정예준", gender: "M", fixed: false, tag: "" },
+  { name: "강하은", gender: "F", fixed: false, tag: "" },
+  { name: "조은우", gender: "M", fixed: false, tag: "" },
+  { name: "윤서아", gender: "F", fixed: false, tag: "" },
+  { name: "장지호", gender: "M", fixed: false, tag: "" },
+  { name: "임수아", gender: "F", fixed: false, tag: "" },
+  { name: "한시우", gender: "M", fixed: false, tag: "" },
+  { name: "오지유", gender: "F", fixed: false, tag: "" }
 ];
+
+window.demoCurrentSeats = [...window.demoStudentRoster];
+window.demoIsShuffling = false;
+window.demoShuffleInterval = null;
 
 window.demoRenderSeatGrid = (students) => {
   const container = document.getElementById('demo-seat-grid');
   if (!container) return;
-  container.innerHTML = students.map((name, idx) => {
-    const isSpecial = idx === 0 || idx === 1; // Sight priority seats
+  const list = students || window.demoCurrentSeats;
+
+  container.innerHTML = list.map((st, idx) => {
+    const isSpecial = st.fixed;
+    const isBoy = st.gender === 'M';
+    
     return `
-      <div class="p-3 rounded-xl ${isSpecial ? 'bg-indigo-950/80 border border-indigo-500/50 ring-1 ring-indigo-400' : 'bg-slate-900/90 border border-slate-700'} text-center shadow-md">
-        <span class="text-[10px] font-bold text-slate-400 block mb-0.5">${idx + 1}번 ${isSpecial ? '(시력배려)' : ''}</span>
-        <span class="text-sm md:text-base font-black ${isSpecial ? 'text-indigo-300' : 'text-slate-100'}">${name}</span>
+      <div class="p-2 md:p-2.5 rounded-xl ${isSpecial ? 'bg-amber-950/70 border-2 border-amber-500/70 ring-1 ring-amber-400/40' : 'bg-slate-900/90 border border-slate-700 hover:border-slate-500'} text-center shadow-md transition-all">
+        <div class="flex justify-between items-center text-[10px] font-extrabold mb-0.5 ${isSpecial ? 'text-amber-300' : 'text-slate-400'}">
+          <span>${idx + 1}번</span>
+          <span>${st.tag || (isBoy ? '<span class="text-sky-400">👨 남</span>' : '<span class="text-pink-400">👩 여</span>')}</span>
+        </div>
+        <span class="text-sm md:text-base font-black ${isSpecial ? 'text-amber-200' : isBoy ? 'text-sky-100' : 'text-pink-100'}">${st.name}</span>
       </div>
     `;
   }).join('');
 };
 
 window.demoShuffleSeats = () => {
-  window.playTone(600, 100);
-  let count = 0;
-  const interval = setInterval(() => {
-    count++;
-    const shuffled = [...window.demoStudentNames].sort(() => Math.random() - 0.5);
-    window.demoRenderSeatGrid(shuffled);
-    window.playTone(400 + count * 40, 50);
+  if (window.demoIsShuffling) return; // Prevent double trigger
+  window.demoIsShuffling = true;
 
-    if (count > 8) {
-      clearInterval(interval);
-      window.playTone(800, 200);
+  const btn = document.getElementById('btn-shuffle-seats');
+  const statusEl = document.getElementById('demo-seat-status');
+  const optFixed = document.getElementById('demo-opt-fixed')?.checked ?? true;
+  const optGender = document.getElementById('demo-opt-gender')?.checked ?? true;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('opacity-75', 'cursor-not-allowed');
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 md:w-6 md:h-6 animate-spin"></i> <span>자리 배치 중...</span>';
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  if (statusEl) {
+    statusEl.innerHTML = '🎲 <strong>실시간 교실 로직 계산 중...</strong> (앞자리 고정석 & 남녀 짝꿍 규칙 매칭)';
+    statusEl.className = 'mt-2 text-center text-xs md:text-sm font-bold text-amber-300 py-1 bg-amber-950/50 rounded-lg border border-amber-500/30 animate-pulse';
+  }
+
+  let step = 0;
+  if (window.demoShuffleInterval) clearInterval(window.demoShuffleInterval);
+
+  window.demoShuffleInterval = setInterval(() => {
+    step++;
+    // Flashing random shuffle animation
+    const randomShuffled = [...window.demoStudentRoster].sort(() => Math.random() - 0.5);
+    window.demoRenderSeatGrid(randomShuffled);
+    window.playTone(350 + step * 35, 45);
+
+    if (step >= 12) {
+      clearInterval(window.demoShuffleInterval);
+      window.demoShuffleInterval = null;
+
+      // Final logical placement calculation
+      let finalArrangement = [];
+      const fixedList = window.demoStudentRoster.filter(s => s.fixed);
+      const boys = window.demoStudentRoster.filter(s => !s.fixed && s.gender === 'M').sort(() => Math.random() - 0.5);
+      const girls = window.demoStudentRoster.filter(s => !s.fixed && s.gender === 'F').sort(() => Math.random() - 0.5);
+
+      if (optFixed && optGender) {
+        // Seat 1 & 2: Fixed students
+        finalArrangement.push(fixedList[0]); // 민준 (시력)
+        finalArrangement.push(fixedList[1]); // 서연 (건강)
+        
+        // Seats 3~12: Boy-Girl pairs in desks (3&4, 5&6, 7&8, 9&10, 11&12)
+        for (let i = 0; i < 5; i++) {
+          finalArrangement.push(boys[i]);
+          finalArrangement.push(girls[i]);
+        }
+      } else if (optFixed && !optGender) {
+        // Fixed 1&2, remaining fully randomized
+        finalArrangement.push(fixedList[0]);
+        finalArrangement.push(fixedList[1]);
+        const others = window.demoStudentRoster.filter(s => !s.fixed).sort(() => Math.random() - 0.5);
+        finalArrangement = finalArrangement.concat(others);
+      } else if (!optFixed && optGender) {
+        // All students paired Boy-Girl
+        const allBoys = window.demoStudentRoster.filter(s => s.gender === 'M').sort(() => Math.random() - 0.5);
+        const allGirls = window.demoStudentRoster.filter(s => s.gender === 'F').sort(() => Math.random() - 0.5);
+        for (let i = 0; i < 6; i++) {
+          finalArrangement.push(allBoys[i]);
+          finalArrangement.push(allGirls[i]);
+        }
+      } else {
+        // Fully random
+        finalArrangement = [...window.demoStudentRoster].sort(() => Math.random() - 0.5);
+      }
+
+      window.demoCurrentSeats = finalArrangement;
+      window.demoRenderSeatGrid(finalArrangement);
+
+      // Play victory chime and fire confetti
+      window.playTone(880, 250);
       if (window.fireConfetti) window.fireConfetti();
+
+      if (statusEl) {
+        statusEl.innerHTML = `🎉 <strong>배치 완료!</strong> (규칙: ${optFixed ? '👓 앞줄 고정석 ' : ''}${optGender ? '👫 남녀 짝꿍' : '자유 배치'})`;
+        statusEl.className = 'mt-2 text-center text-xs md:text-sm font-bold text-emerald-300 py-1 bg-emerald-950/60 rounded-lg border border-emerald-500/40';
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        btn.innerHTML = '<i data-lucide="shuffle" class="w-5 h-5 md:w-6 md:h-6"></i> <span>자리 섞기 (체험)</span>';
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      window.demoIsShuffling = false;
     }
   }, 100);
 };
 
 window.demoResetSeats = () => {
-  window.demoRenderSeatGrid(window.demoStudentNames);
+  if (window.demoShuffleInterval) {
+    clearInterval(window.demoShuffleInterval);
+    window.demoShuffleInterval = null;
+  }
+  window.demoIsShuffling = false;
+  window.demoCurrentSeats = [...window.demoStudentRoster];
+  window.demoRenderSeatGrid(window.demoCurrentSeats);
+
+  const statusEl = document.getElementById('demo-seat-status');
+  if (statusEl) {
+    statusEl.innerHTML = '✨ 현재 배치: 12명 (시력·건강 배려 2명 1·2번 앞줄 고정)';
+    statusEl.className = 'mt-2 text-center text-xs md:text-sm font-bold text-pink-300 py-1 bg-pink-950/30 rounded-lg border border-pink-500/20';
+  }
+
+  const btn = document.getElementById('btn-shuffle-seats');
+  if (btn) {
+    btn.disabled = false;
+    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+    btn.innerHTML = '<i data-lucide="shuffle" class="w-5 h-5 md:w-6 md:h-6"></i> <span>자리 섞기 (체험)</span>';
+    if (window.lucide) window.lucide.createIcons();
+  }
 };
