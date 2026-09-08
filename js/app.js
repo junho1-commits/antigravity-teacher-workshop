@@ -185,15 +185,16 @@ class PresentationApp {
 
     // Post-render handlers for specific interactive widgets
     this.handleSlideSpecificInit(currentSlide.id);
-
-    // Update Modals & Teacher Drawer
-    this.updateAgentDrawerContent(currentSlide);
-    this.updatePresenterContent(currentSlide);
-    this.renderTeacherDrawerContent(currentSlide);
-    this.updateOverviewActiveState();
   }
 
-  handleSlideSpecificInit() {
+  handleSlideSpecificInit(slideId) {
+    if (document.getElementById('demo-seat-grid')) {
+      setTimeout(() => {
+        if (window.demoRenderSeatGrid && window.demoStudentNames) {
+          window.demoRenderSeatGrid(window.demoStudentNames);
+        }
+      }, 50);
+    }
     if (document.getElementById('prompt-role')) {
       setTimeout(() => {
         if (window.buildPrompt) window.buildPrompt();
@@ -919,4 +920,240 @@ window.exportToPDF = () => {
   setTimeout(() => {
     window.print();
   }, 300);
+};
+
+
+// =============================================================
+// INTERACTIVE MINI-APP DEMO HANDLERS (실습 1, 2, 3 라이브 예제)
+// =============================================================
+
+// Web Audio Beep Synthesizer
+window.playTone = (freq = 800, duration = 150) => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration / 1000);
+    osc.start();
+    osc.stop(ctx.currentTime + duration / 1000);
+  } catch (e) {}
+};
+
+// -------------------------------------------------------------
+// [Slide 13] Live Timer Demo Handler
+// -------------------------------------------------------------
+window.demoTimerState = {
+  totalSeconds: 180,
+  remainingSeconds: 180,
+  intervalId: null,
+  isRunning: false
+};
+
+window.demoSetTimer = (secs) => {
+  window.demoPauseTimer();
+  window.demoTimerState.totalSeconds = secs;
+  window.demoTimerState.remainingSeconds = secs;
+  window.demoUpdateTimerDisplay();
+  const badge = document.getElementById('demo-timer-status');
+  if (badge) {
+    badge.textContent = secs + '초 설정됨';
+    badge.className = 'px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold font-mono';
+  }
+};
+
+window.demoUpdateTimerDisplay = () => {
+  const el = document.getElementById('demo-timer-display');
+  const msg = document.getElementById('demo-timer-message');
+  if (!el) return;
+  const rem = window.demoTimerState.remainingSeconds;
+  const m = Math.floor(rem / 60).toString().padStart(2, '0');
+  const s = (rem % 60).toString().padStart(2, '0');
+  el.textContent = `${m}:${s}`;
+
+  if (rem <= 10 && rem > 0) {
+    el.className = 'text-6xl md:text-8xl font-black font-mono text-rose-400 tracking-wider my-2 drop-shadow-[0_0_35px_rgba(244,63,94,0.6)] animate-pulse';
+    if (msg) msg.textContent = '⚠️ 마감 10초 전입니다! 마무리를 준비하세요!';
+  } else if (rem === 0) {
+    el.className = 'text-6xl md:text-8xl font-black font-mono text-emerald-400 tracking-wider my-2 drop-shadow-[0_0_35px_rgba(52,211,153,0.6)]';
+    if (msg) msg.textContent = '🎉 시간이 종료되었습니다! 모두 박수!';
+  } else {
+    el.className = 'text-6xl md:text-8xl font-black font-mono text-amber-300 tracking-wider my-2 drop-shadow-[0_0_25px_rgba(251,191,36,0.35)]';
+    if (msg) msg.textContent = '모둠 토의 집중 시간입니다!';
+  }
+};
+
+window.demoStartTimer = () => {
+  if (window.demoTimerState.isRunning) return;
+  if (window.demoTimerState.remainingSeconds <= 0) {
+    window.demoTimerState.remainingSeconds = window.demoTimerState.totalSeconds;
+  }
+  window.demoTimerState.isRunning = true;
+  const badge = document.getElementById('demo-timer-status');
+  if (badge) {
+    badge.textContent = '째깍째깍 진행 중...';
+    badge.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono animate-pulse';
+  }
+
+  window.demoTimerState.intervalId = setInterval(() => {
+    if (window.demoTimerState.remainingSeconds > 0) {
+      window.demoTimerState.remainingSeconds--;
+      window.demoUpdateTimerDisplay();
+
+      if (window.demoTimerState.remainingSeconds <= 10 && window.demoTimerState.remainingSeconds > 0) {
+        window.playTone(900, 100);
+      } else if (window.demoTimerState.remainingSeconds === 0) {
+        window.demoPauseTimer();
+        window.playTone(523, 200);
+        setTimeout(() => window.playTone(659, 200), 200);
+        setTimeout(() => window.playTone(783, 400), 400);
+        if (window.fireConfetti) window.fireConfetti();
+        if (badge) {
+          badge.textContent = '활동 완료 🎉';
+          badge.className = 'px-3 py-1 rounded-full bg-emerald-500/30 text-emerald-300 text-xs font-bold font-mono';
+        }
+      }
+    }
+  }, 1000);
+};
+
+window.demoPauseTimer = () => {
+  if (window.demoTimerState.intervalId) {
+    clearInterval(window.demoTimerState.intervalId);
+    window.demoTimerState.intervalId = null;
+  }
+  window.demoTimerState.isRunning = false;
+  const badge = document.getElementById('demo-timer-status');
+  if (badge && window.demoTimerState.remainingSeconds > 0) {
+    badge.textContent = '일시 정지됨';
+    badge.className = 'px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold font-mono';
+  }
+};
+
+window.demoResetTimer = () => {
+  window.demoPauseTimer();
+  window.demoTimerState.remainingSeconds = window.demoTimerState.totalSeconds;
+  window.demoUpdateTimerDisplay();
+  const badge = document.getElementById('demo-timer-status');
+  if (badge) {
+    badge.textContent = '준비 완료';
+    badge.className = 'px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold font-mono';
+  }
+};
+
+// -------------------------------------------------------------
+// [Slide 14] Live Photo Quiz Demo Handler
+// -------------------------------------------------------------
+window.demoQuizQuestions = [
+  {
+    q: "Q. 다음 그림을 그린 조선 후기 대표 풍속화가는 누구일까요?",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Ssireum_by_Kim_Hong-do.jpg/500px-Ssireum_by_Kim_Hong-do.jpg",
+    choices: ["① 신사임당", "② 김홍도", "③ 정선", "④ 김정호"],
+    answerIndex: 1,
+    desc: "🎉 정답입니다! 조선 후기 서민들의 일상을 해학적으로 그린 단원 김홍도의 대표작 <씨름>입니다."
+  },
+  {
+    q: "Q. 세종대왕 때 장영실 등이 만든 조선의 오목 해시계는 무엇일까요?",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Angbuilgu_%28Sundial%29.JPG/500px-Angbuilgu_%28Sundial%29.JPG",
+    choices: ["① 자격루", "② 혼천의", "③ 앙부일구", "④ 측우기"],
+    answerIndex: 2,
+    desc: "🎉 정답입니다! 솥 모양의 오목한 구면으로 글을 모르는 백성도 시간을 알 수 있게 동물 그림을 새긴 <앙부일구>입니다."
+  }
+];
+
+window.demoQuizCurrentIndex = 0;
+window.demoQuizScore = 0;
+
+window.demoAnswerQuiz = (choiceIdx) => {
+  const qObj = window.demoQuizQuestions[window.demoQuizCurrentIndex];
+  const fb = document.getElementById('demo-quiz-feedback');
+  const scoreEl = document.getElementById('demo-quiz-score');
+  const choiceBtns = document.querySelectorAll('#demo-quiz-choices button');
+
+  if (!qObj || !fb) return;
+  fb.classList.remove('hidden');
+
+  if (choiceIdx === qObj.answerIndex) {
+    window.playTone(880, 200);
+    window.demoQuizScore += 50;
+    if (scoreEl) scoreEl.textContent = '점수: ' + window.demoQuizScore + '점';
+    fb.innerHTML = qObj.desc;
+    fb.className = 'mt-3 text-sm md:text-base font-bold text-emerald-300 bg-emerald-950/60 p-3 rounded-xl border border-emerald-500/40';
+    if (choiceBtns[choiceIdx]) {
+      choiceBtns[choiceIdx].className = 'py-3 px-4 rounded-xl bg-emerald-600 text-white text-sm md:text-base font-bold transition-all text-left ring-2 ring-emerald-300';
+    }
+    if (window.fireConfetti) window.fireConfetti();
+  } else {
+    window.playTone(300, 250);
+    fb.innerHTML = '🤔 <strong>오답입니다!</strong> 다시 생각해보세요. (힌트: 2번 보기)';
+    fb.className = 'mt-3 text-sm md:text-base font-bold text-rose-300 bg-rose-950/60 p-3 rounded-xl border border-rose-500/40';
+    if (choiceBtns[choiceIdx]) {
+      choiceBtns[choiceIdx].className = 'py-3 px-4 rounded-xl bg-rose-900/60 text-rose-200 text-sm md:text-base font-bold transition-all text-left line-through';
+    }
+  }
+};
+
+window.demoNextQuiz = () => {
+  window.demoQuizCurrentIndex = (window.demoQuizCurrentIndex + 1) % window.demoQuizQuestions.length;
+  const qObj = window.demoQuizQuestions[window.demoQuizCurrentIndex];
+  const qEl = document.getElementById('demo-quiz-question');
+  const imgEl = document.getElementById('demo-quiz-image');
+  const fb = document.getElementById('demo-quiz-feedback');
+  const choicesEl = document.getElementById('demo-quiz-choices');
+
+  if (qEl) qEl.textContent = qObj.q;
+  if (imgEl) imgEl.src = qObj.img;
+  if (fb) fb.classList.add('hidden');
+  if (choicesEl) {
+    choicesEl.innerHTML = qObj.choices.map((c, i) => `
+      <button onclick="window.demoAnswerQuiz(${i})" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 text-sm md:text-base font-bold transition-all text-left">${c}</button>
+    `).join('');
+  }
+};
+
+// -------------------------------------------------------------
+// [Slide 15] Live Seat Shuffler Demo Handler
+// -------------------------------------------------------------
+window.demoStudentNames = [
+  "김민준", "이서연", "박도윤", "최지우",
+  "정예준", "강하은", "조은우", "윤서아",
+  "장지호", "임수아", "한시우", "오지유"
+];
+
+window.demoRenderSeatGrid = (students) => {
+  const container = document.getElementById('demo-seat-grid');
+  if (!container) return;
+  container.innerHTML = students.map((name, idx) => {
+    const isSpecial = idx === 0 || idx === 1; // Sight priority seats
+    return `
+      <div class="p-3 rounded-xl ${isSpecial ? 'bg-indigo-950/80 border border-indigo-500/50 ring-1 ring-indigo-400' : 'bg-slate-900/90 border border-slate-700'} text-center shadow-md">
+        <span class="text-[10px] font-bold text-slate-400 block mb-0.5">${idx + 1}번 ${isSpecial ? '(시력배려)' : ''}</span>
+        <span class="text-sm md:text-base font-black ${isSpecial ? 'text-indigo-300' : 'text-slate-100'}">${name}</span>
+      </div>
+    `;
+  }).join('');
+};
+
+window.demoShuffleSeats = () => {
+  window.playTone(600, 100);
+  let count = 0;
+  const interval = setInterval(() => {
+    count++;
+    const shuffled = [...window.demoStudentNames].sort(() => Math.random() - 0.5);
+    window.demoRenderSeatGrid(shuffled);
+    window.playTone(400 + count * 40, 50);
+
+    if (count > 8) {
+      clearInterval(interval);
+      window.playTone(800, 200);
+      if (window.fireConfetti) window.fireConfetti();
+    }
+  }, 100);
+};
+
+window.demoResetSeats = () => {
+  window.demoRenderSeatGrid(window.demoStudentNames);
 };
