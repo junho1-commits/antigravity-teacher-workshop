@@ -892,7 +892,7 @@ window.exportToPDF = () => {
         ${s.content}
       </div>
       <div class="print-slide-footer">
-        <span>2026 대저중앙초 전문적학습공동체 - AI·디지털 기술을 활용한 수업자료 만들기</span>
+        <span>이것만 알면 준호처럼 할 수 있다 - 안티그래비티 교사 연수</span>
         <span>Slide ${idx + 1} / ${total}</span>
       </div>
     </div>

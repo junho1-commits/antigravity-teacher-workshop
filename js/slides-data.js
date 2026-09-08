@@ -12,27 +12,27 @@ const SLIDES_DATA = [
   {
     id: 1,
     title: "오프닝",
-    badge: "🏫 2026 대저중앙초 전학공",
+    badge: "🚀 연수 시작",
     content: `
       <div class="h-full flex flex-col justify-center items-center text-center px-4 w-full max-w-6xl mx-auto">
         <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-base md:text-lg font-bold mb-6">
           <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i>
-          <span>2026학년도 대저중앙초 전문적학습공동체 AI·디지털 역량강화 연수</span>
+          <span>선생님을 위한 AI 에이전트 앱 개발 입문</span>
         </div>
         
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 text-white leading-tight break-keep">
-          AI·디지털 기술을 활용한 <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400">수업자료 만들기</span>
+          이것만 알면 <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400">준호처럼</span> 할 수 있다!
         </h1>
         
         <p class="text-xl md:text-2xl lg:text-3xl text-slate-300 max-w-5xl mb-10 font-semibold leading-relaxed break-keep">
-          구글 <span class="text-sky-400 font-bold underline decoration-sky-500 underline-offset-8">안티그래비티</span>와 함께 코딩 한 줄 없이 우리 반 맞춤형 수업도구를 뚝딱 만들고 배포하기
+          코딩을 몰라도, 구글 <span class="text-sky-400 font-bold underline decoration-sky-500 underline-offset-8">안티그래비티</span>와 대화하면 우리 반 웹앱이 뚝딱 완성됩니다.
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mb-10">
           <div class="glass-card p-6 rounded-2xl border border-slate-700">
             <div class="flex items-center gap-3 mb-3">
               <div class="p-2.5 rounded-xl bg-blue-500/20 text-blue-400"><i data-lucide="bot" class="w-6 h-6"></i></div>
-              <h3 class="text-xl font-bold text-white">1. 에이전틱 수업도구</h3>
+              <h3 class="text-xl font-bold text-white">1. 에이전트 혁명</h3>
             </div>
             <p class="text-base text-slate-300 font-medium break-keep">말만 하는 챗봇을 넘어, 직접 코딩하고 실행해 주는 똑똑한 조교</p>
           </div>
@@ -42,34 +42,34 @@ const SLIDES_DATA = [
               <div class="p-2.5 rounded-xl bg-purple-500/20 text-purple-400"><i data-lucide="heart" class="w-6 h-6"></i></div>
               <h3 class="text-xl font-bold text-white">2. 교실 도메인 지식</h3>
             </div>
-            <p class="text-base text-slate-300 font-medium break-keep">기술 지식보다 대저중앙초 선생님들의 수업 문제의식과 아이디어가 100배 중요</p>
+            <p class="text-base text-slate-300 font-medium break-keep">기술 지식보다 선생님의 교실 문제의식과 아이디어가 100배 중요</p>
           </div>
 
-          <div class="glass-card p-6 rounded-2xl border border-emerald-500/20 text-emerald-400">
+          <div class="glass-card p-6 rounded-2xl border border-slate-700">
             <div class="flex items-center gap-3 mb-3">
               <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400"><i data-lucide="globe" class="w-6 h-6"></i></div>
-              <h3 class="text-xl font-bold text-white">3. 원클릭 웹 배포</h3>
+              <h3 class="text-xl font-bold text-white">3. 인터넷 무료 배포</h3>
             </div>
             <p class="text-base text-slate-300 font-medium break-keep">GitHub과 Netlify로 스마트폰 링크 하나 띄워 학생들과 공유</p>
           </div>
         </div>
 
         <button onclick="window.nextSlide()" class="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-bold shadow-xl shadow-indigo-500/30 transition-all transform hover:scale-105">
-          <span>연수 시작하기</span>
+          <span>강의 시작하기</span>
           <i data-lucide="arrow-right" class="w-6 h-6"></i>
         </button>
       </div>
     `,
     agentInsights: {
-      pm: "2026학년도 대저중앙초 전문적학습공동체 공식 연수명과 목표를 전면에 배치했습니다.",
-      content: "AI·디지털 기술을 활용한 수업자료 제작이라는 핵심 실습 주제를 명확히 제시했습니다.",
-      design: "글래스 카드와 대화면 타이포그래피로 웅장한 오프닝을 완성했습니다.",
+      pm: "오프닝 슬라이드가 24인치 화면에서 시원하고 직관적으로 읽히도록 정돈했습니다.",
+      content: "에이전트, 도메인 지식, 무료 배포라는 3대 축을 명쾌하게 요약했습니다.",
+      design: "글래스 카드와 고급형 타이포그래피로 몰입감을 극대화합니다.",
       qa: "오프닝에서 문장 꺾임이나 글자 잘림이 전혀 발생하지 않습니다.",
-      consultant: "대저중앙초 선생님들의 수업 혁신 동기를 확실하게 부여합니다."
+      consultant: "선생님들이 '나도 바로 써먹을 수 있겠구나' 자신감을 갖게 합니다."
     },
     presenterNote: `
       🎤 [강사용 추천 멘트]:
-      - "대저중앙초 선생님들, 안녕하세요! 오늘 연수는 코딩 문법을 배우는 시간이 아닙니다! 실력 좋은 AI 조교에게 제대로 일 시켜서 내일 당장 수업에 쓸 맞춤형 웹앱을 만드는 시간입니다. 편안한 마음으로 시작해보겠습니다."
+      - "선생님들, 오늘 연수는 코딩 문법을 배우는 시간이 아닙니다! 실력 좋은 AI 조교에게 제대로 일 시키는 '지시법'을 배우는 시간입니다. 편안한 마음으로 시작해보겠습니다."
     `
   },
 
@@ -1315,11 +1315,11 @@ const SLIDES_DATA = [
         </div>
 
         <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight break-keep">
-          "기술은 AI에게, 교육적 가치는 대저중앙초 선생님에게!"
+          "기술은 AI에게, 교육적 가치는 선생님에게!"
         </h2>
         
         <p class="text-lg md:text-2xl text-slate-300 max-w-4xl mb-8 leading-relaxed font-semibold break-keep">
-          2026 대저중앙초 전학공 연수를 함께하신 선생님들의 에이전틱 수업 혁신을 힘차게 응원합니다!
+          오늘 배운 3가지만 기억하시면, 앞으로 교실에 필요한 어떤 앱도 두려움 없이 만들어내실 수 있습니다.
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full text-left mb-8">
@@ -1362,7 +1362,7 @@ const SLIDES_DATA = [
 ];
 
 // -------------------------------------------------------------
-// TEACHER NOTES DATA ARRAY (교사용 지도 가이드 및 팁 모음)
+// TEACHER NOTES DATA ARRAY
 // -------------------------------------------------------------
 const TEACHER_NOTES = [
   {
