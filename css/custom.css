@@ -189,7 +189,37 @@ body.is-fullscreen .glass-card {
 }
 
 /* ========================================================= */
-/* 우측 하단 반투명 플로팅 액션 버튼 그룹                     */
+/* 하단 바 스마트 액션 버튼 그룹 (고치기 / 전체 / 교사용)       */
+/* ========================================================= */
+.smart-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.75rem;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  font-size: 0.825rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.smart-tool-btn:hover {
+  background: rgba(51, 65, 85, 0.95);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.smart-tool-btn.active {
+  background: rgba(99, 102, 241, 0.9) !important;
+  border-color: #a5b4fc !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+
 /* ========================================================= */
 .floating-bottom-actions {
   position: fixed;

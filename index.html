@@ -134,54 +134,59 @@
     <div id="print-container" class="w-full"></div>
   </main>
 
-  <!-- ========================================================= -->
-  <!-- BOTTOM CONTROLLER BAR -->
+    <!-- ========================================================= -->
+  <!-- BOTTOM CONTROLLER BAR                                     -->
   <!-- ========================================================= -->
   <footer class="h-18 py-3 border-t border-slate-800/80 px-4 md:px-8 flex items-center justify-between glass-panel z-30 shrink-0">
-    <div class="flex items-center gap-3">
-      <button onclick="window.exportToPDF()" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
-        <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+    <!-- Left: PDF Export & Smart Tool Buttons (고치기 / 전체 / 교사용) -->
+    <div class="flex items-center gap-2 md:gap-3">
+      <button onclick="window.exportToPDF()" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs md:text-sm font-bold transition-all flex items-center gap-1.5 shadow-sm">
+        <i data-lucide="file-down" class="w-4 h-4"></i>
         <span>PDF 자료 출력</span>
       </button>
-      <span class="text-xs md:text-sm font-mono text-slate-400 hidden sm:inline">단축키:</span>
-      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">← / →</span>
-      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">F(전체)</span>
-      <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono hidden sm:inline">T(교사용)</span>
+
+      <div class="h-6 w-[1px] bg-slate-700/80 mx-1 hidden sm:block"></div>
+
+      <!-- Smart Presentation Buttons (Never overlapping with nav buttons) -->
+      <button id="btn-toggle-edit" onclick="window.toggleEditMode()" data-tooltip="슬라이드 글자 수정 (✎ 고치기)" class="smart-tool-btn">
+        <i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i>
+        <span>✎ 고치기</span>
+      </button>
+      <button id="btn-toggle-fullscreen" onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="smart-tool-btn">
+        <i data-lucide="maximize" class="w-4 h-4 text-sky-400"></i>
+        <span>⛶ 전체</span>
+      </button>
+      <button id="btn-toggle-teacher" onclick="window.toggleTeacherDrawer()" data-tooltip="교사용 지도 팁 (단축키: T / ㅅ)" class="smart-tool-btn">
+        <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-400"></i>
+        <span>교사용</span>
+      </button>
     </div>
 
-    <!-- Navigation Buttons & Counter -->
-    <div class="flex items-center gap-4">
-      <button id="prev-btn" onclick="window.prevSlide()" class="p-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all hover:scale-105 active:scale-95 shadow-md">
-        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+    <!-- Center: Shortcuts Guide (Desktop) -->
+    <div class="hidden xl:flex items-center gap-2 text-xs font-mono text-slate-400">
+      <span class="text-slate-500">단축키:</span>
+      <span class="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700/60 text-slate-300">← / →</span>
+      <span class="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700/60 text-slate-300">F(전체)</span>
+      <span class="px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700/60 text-slate-300">T(교사용)</span>
+    </div>
+
+    <!-- Right: Navigation Buttons (이전 / 슬라이드 번호 / 다음) -->
+    <div class="flex items-center gap-2 md:gap-3">
+      <button id="prev-btn" onclick="window.prevSlide()" class="p-2 md:p-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5">
+        <i data-lucide="chevron-left" class="w-5 h-5 md:w-6 md:h-6"></i>
+        <span class="text-xs md:text-sm font-bold pr-1 hidden sm:inline">이전</span>
       </button>
 
-      <span id="slide-counter" class="font-mono font-extrabold text-base md:text-lg text-slate-200 px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 min-w-[90px] text-center shadow-inner">
+      <span id="slide-counter" class="font-mono font-extrabold text-sm md:text-base text-slate-200 px-3 md:px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 min-w-[80px] md:min-w-[90px] text-center shadow-inner">
         1 / 18
       </span>
 
-      <button id="next-btn" onclick="window.nextSlide()" class="p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+      <button id="next-btn" onclick="window.nextSlide()" class="p-2 md:p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
+        <span class="text-xs md:text-sm font-bold pl-1 hidden sm:inline">다음</span>
+        <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6"></i>
       </button>
     </div>
   </footer>
-
-  <!-- ========================================================= -->
-  <!-- FLOATING ACTION BUTTONS (BOTTOM RIGHT)                   -->
-  <!-- ========================================================= -->
-  <div class="floating-bottom-actions no-print">
-    <button id="btn-toggle-edit" onclick="window.toggleEditMode()" data-tooltip="슬라이드 글자 수정 (✎ 고치기)" class="floating-action-btn">
-      <i data-lucide="edit-3" class="w-4 h-4"></i>
-      <span>✎ 고치기</span>
-    </button>
-    <button id="btn-toggle-fullscreen" onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="floating-action-btn">
-      <i data-lucide="maximize" class="w-4 h-4"></i>
-      <span>⛶ 전체</span>
-    </button>
-    <button id="btn-toggle-teacher" onclick="window.toggleTeacherDrawer()" data-tooltip="교사용 지도 팁 (단축키: T / ㅅ)" class="floating-action-btn">
-      <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-      <span>교사용</span>
-    </button>
-  </div>
 
   <!-- ========================================================= -->
   <!-- TEACHER NOTES SLIDING DRAWER (교사용 하단 슬라이딩 서랍)    -->
