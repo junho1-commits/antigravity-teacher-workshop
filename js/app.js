@@ -200,6 +200,11 @@ class PresentationApp {
         if (window.buildPrompt) window.buildPrompt();
       }, 50);
     }
+    if (document.getElementById('demo-rank-leaderboard')) {
+      setTimeout(() => {
+        if (window.demoInitRankingWidget) window.demoInitRankingWidget();
+      }, 50);
+    }
     if (document.getElementById('deploy-url-input')) {
       setTimeout(() => {
         if (window.generateQRCode) window.generateQRCode(false);
@@ -889,7 +894,7 @@ window.fireConfetti = () => {
 };
 
 // =============================================================
-// PDF Export Handler (전체 18개 슬라이드 일괄 인쇄/PDF 저장)
+// PDF Export Handler (전체 19개 슬라이드 일괄 인쇄/PDF 저장)
 // =============================================================
 window.exportToPDF = () => {
   const printContainer = document.getElementById('print-container');
@@ -1281,4 +1286,298 @@ window.demoResetSeats = () => {
     btn.innerHTML = '<i data-lucide="shuffle" class="w-5 h-5 md:w-6 md:h-6"></i> <span>자리 섞기 (체험)</span>';
     if (window.lucide) window.lucide.createIcons();
   }
+};
+
+// =============================================================
+// [Slide 16] Live Google Sheets Ranking Battle Demo Handler
+// =============================================================
+
+window.demoRankingState = {
+  isPlaying: false,
+  timeLeft: 10,
+  timerInterval: null,
+  score: 0,
+  combo: 0,
+  currentAns: null,
+  initialLeaderboard: [
+    { rank: 1, name: '김민준 (5-1)', score: 140, time: '09:41:12', badge: '🥇' },
+    { rank: 2, name: '이서연 (5-1)', score: 120, time: '09:41:45', badge: '🥈' },
+    { rank: 3, name: '박도윤 (5-2)', score: 100, time: '09:42:03', badge: '🥉' },
+    { rank: 4, name: '최지우 (5-1)', score: 80, time: '09:42:25', badge: '4위' },
+    { rank: 5, name: '정예준 (5-2)', score: 60, time: '09:42:50', badge: '5위' }
+  ],
+  currentLeaderboard: null,
+  initialSheetRows: [
+    { id: 5, time: '09:42:50', name: '정예준 (5-2)', score: 60 },
+    { id: 4, time: '09:42:25', name: '최지우 (5-1)', score: 80 },
+    { id: 3, time: '09:42:03', name: '박도윤 (5-2)', score: 100 },
+    { id: 2, time: '09:41:45', name: '이서연 (5-1)', score: 120 },
+    { id: 1, time: '09:41:12', name: '김민준 (5-1)', score: 140 }
+  ],
+  currentSheetRows: null
+};
+
+window.demoInitRankingWidget = () => {
+  if (!window.demoRankingState.currentLeaderboard) {
+    window.demoRankingState.currentLeaderboard = JSON.parse(JSON.stringify(window.demoRankingState.initialLeaderboard));
+  }
+  if (!window.demoRankingState.currentSheetRows) {
+    window.demoRankingState.currentSheetRows = JSON.parse(JSON.stringify(window.demoRankingState.initialSheetRows));
+  }
+  window.demoRenderLeaderboard();
+  window.demoRenderSheetRows();
+
+  if (!window.demoRankingState.isPlaying) {
+    const introView = document.getElementById('demo-rank-intro-view');
+    const playView = document.getElementById('demo-rank-play-view');
+    const endView = document.getElementById('demo-rank-end-view');
+    if (introView) introView.classList.remove('hidden');
+    if (playView) playView.classList.add('hidden');
+    if (endView) endView.classList.add('hidden');
+  }
+};
+
+window.demoStartRankingGame = () => {
+  const state = window.demoRankingState;
+  if (state.isPlaying) return;
+
+  state.isPlaying = true;
+  state.timeLeft = 10;
+  state.score = 0;
+  state.combo = 0;
+
+  const introView = document.getElementById('demo-rank-intro-view');
+  const playView = document.getElementById('demo-rank-play-view');
+  const endView = document.getElementById('demo-rank-end-view');
+  const timerBadge = document.getElementById('demo-rank-timer-badge');
+  const scoreBadge = document.getElementById('demo-rank-score-badge');
+  const comboBadge = document.getElementById('demo-rank-combo-badge');
+
+  if (introView) introView.classList.add('hidden');
+  if (endView) endView.classList.add('hidden');
+  if (playView) playView.classList.remove('hidden');
+
+  if (timerBadge) timerBadge.textContent = '⏱️ 10초';
+  if (scoreBadge) scoreBadge.textContent = '점수: 0점';
+  if (comboBadge) comboBadge.textContent = '콤보 0연속!';
+
+  if (window.playTone) window.playTone(587, 150);
+
+  window.demoNextMathProblem();
+
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    if (timerBadge) {
+      timerBadge.textContent = `⏱️ ${state.timeLeft}초`;
+      if (state.timeLeft <= 3) {
+        timerBadge.className = 'px-2.5 py-1 rounded-lg bg-rose-500/30 text-rose-300 font-mono font-bold animate-pulse';
+        if (window.playTone) window.playTone(800, 60);
+      } else {
+        timerBadge.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-amber-300 font-mono font-bold';
+      }
+    }
+
+    if (state.timeLeft <= 0) {
+      window.demoEndRankingGame();
+    }
+  }, 1000);
+};
+
+window.demoNextMathProblem = () => {
+  const state = window.demoRankingState;
+  const qEl = document.getElementById('demo-rank-question');
+  const optContainer = document.getElementById('demo-rank-options');
+  if (!qEl || !optContainer) return;
+
+  const a = Math.floor(Math.random() * 8) + 2;
+  const b = Math.floor(Math.random() * 8) + 2;
+  const correct = a * b;
+  state.currentAns = correct;
+
+  qEl.textContent = `${a} × ${b} = ?`;
+
+  const choices = new Set([correct]);
+  while (choices.size < 4) {
+    const delta = (Math.floor(Math.random() * 5) + 1) * (Math.random() < 0.5 ? 1 : -1);
+    const wrong = Math.max(4, correct + delta);
+    choices.add(wrong);
+  }
+
+  const shuffled = Array.from(choices).sort(() => Math.random() - 0.5);
+  optContainer.innerHTML = '';
+
+  shuffled.forEach(num => {
+    const btn = document.createElement('button');
+    btn.className = 'py-3 rounded-xl bg-slate-800 hover:bg-amber-600 hover:text-white text-slate-100 font-mono font-black text-lg md:text-xl transition-all shadow-md transform active:scale-95 border border-slate-700';
+    btn.textContent = num;
+    btn.onclick = () => window.demoAnswerMath(num, btn);
+    optContainer.appendChild(btn);
+  });
+};
+
+window.demoAnswerMath = (selectedNum, btnElement) => {
+  const state = window.demoRankingState;
+  if (!state.isPlaying) return;
+
+  const scoreBadge = document.getElementById('demo-rank-score-badge');
+  const comboBadge = document.getElementById('demo-rank-combo-badge');
+
+  if (selectedNum === state.currentAns) {
+    state.combo++;
+    const gain = 10 + (state.combo * 5);
+    state.score += gain;
+
+    if (window.playTone) window.playTone(880, 100);
+    if (btnElement) {
+      btnElement.classList.add('bg-emerald-600', 'text-white');
+    }
+  } else {
+    state.combo = 0;
+    if (window.playTone) window.playTone(280, 150);
+    if (btnElement) {
+      btnElement.classList.add('bg-rose-600', 'text-white');
+    }
+  }
+
+  if (scoreBadge) scoreBadge.textContent = `점수: ${state.score}점`;
+  if (comboBadge) {
+    comboBadge.textContent = state.combo > 1 ? `🔥 ${state.combo}연속 콤보!` : `콤보 ${state.combo}연속!`;
+    comboBadge.className = state.combo > 1 
+      ? 'text-xs px-2.5 py-0.5 rounded-full bg-orange-500/30 text-orange-300 font-extrabold animate-bounce'
+      : 'text-xs px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-bold';
+  }
+
+  setTimeout(() => {
+    if (state.isPlaying) window.demoNextMathProblem();
+  }, 120);
+};
+
+window.demoEndRankingGame = () => {
+  const state = window.demoRankingState;
+  if (state.timerInterval) {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+  }
+  state.isPlaying = false;
+
+  const playView = document.getElementById('demo-rank-play-view');
+  const endView = document.getElementById('demo-rank-end-view');
+  const finalScoreEl = document.getElementById('demo-rank-final-score');
+
+  if (playView) playView.classList.add('hidden');
+  if (endView) endView.classList.remove('hidden');
+  if (finalScoreEl) finalScoreEl.textContent = state.score;
+
+  if (window.playTone) {
+    window.playTone(523, 150);
+    setTimeout(() => window.playTone(659, 150), 150);
+    setTimeout(() => window.playTone(783, 300), 300);
+  }
+  if (window.fireConfetti) window.fireConfetti();
+};
+
+window.demoSubmitRankingRecord = () => {
+  const state = window.demoRankingState;
+  const nameInput = document.getElementById('demo-rank-player-name');
+  const playerName = (nameInput && nameInput.value.trim()) || '김별하 (5-1)';
+  const score = state.score;
+
+  const now = new Date();
+  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+  const newRowId = (state.currentSheetRows && state.currentSheetRows.length ? Math.max(...state.currentSheetRows.map(r => r.id)) : 0) + 1;
+  const newRow = {
+    id: newRowId,
+    time: timeStr,
+    name: playerName,
+    score: score,
+    isNew: true
+  };
+  state.currentSheetRows.unshift(newRow);
+
+  state.currentLeaderboard.push({
+    name: playerName,
+    score: score,
+    time: timeStr,
+    isNew: true
+  });
+  state.currentLeaderboard.sort((a, b) => b.score - a.score);
+  state.currentLeaderboard = state.currentLeaderboard.slice(0, 5);
+
+  const badges = ['🥇', '🥈', '🥉', '4위', '5위'];
+  state.currentLeaderboard.forEach((item, idx) => {
+    item.rank = idx + 1;
+    item.badge = badges[idx] || `${idx + 1}위`;
+  });
+
+  window.demoRenderLeaderboard();
+  window.demoRenderSheetRows();
+
+  if (window.playTone) window.playTone(900, 200);
+  const syncStatus = document.getElementById('demo-sheet-sync-status');
+  if (syncStatus) {
+    syncStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🚀 구글 시트 행 추가 성공 (+1건)';
+    syncStatus.className = 'px-3 py-1 rounded-full bg-emerald-500/40 text-emerald-200 text-xs font-bold font-mono flex items-center gap-1.5 border border-emerald-400/60 animate-bounce';
+    setTimeout(() => {
+      syncStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 실시간 DB 동기화 활성';
+      syncStatus.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono flex items-center gap-1.5';
+    }, 3000);
+  }
+
+  setTimeout(() => {
+    const endView = document.getElementById('demo-rank-end-view');
+    const introView = document.getElementById('demo-rank-intro-view');
+    if (endView) endView.classList.add('hidden');
+    if (introView) introView.classList.remove('hidden');
+  }, 2500);
+};
+
+window.demoRenderLeaderboard = () => {
+  const container = document.getElementById('demo-rank-leaderboard');
+  if (!container) return;
+  const list = window.demoRankingState.currentLeaderboard || window.demoRankingState.initialLeaderboard;
+
+  container.innerHTML = list.map((item, idx) => {
+    const highlight = item.isNew ? 'bg-amber-500/30 border border-amber-400/60 animate-pulse' : 'bg-slate-950/70 border border-slate-800';
+    const textColor = idx === 0 ? 'text-amber-300 font-extrabold' : idx === 1 ? 'text-slate-200 font-bold' : idx === 2 ? 'text-amber-500 font-bold' : 'text-slate-400';
+    return `
+      <div class="flex items-center justify-between p-2 rounded-xl ${highlight} transition-all">
+        <div class="flex items-center gap-2">
+          <span class="w-6 text-center text-sm">${item.badge}</span>
+          <span class="font-bold text-slate-200 truncate max-w-[90px] md:max-w-[110px]">${item.name}</span>
+        </div>
+        <div class="text-right">
+          <span class="${textColor} text-xs md:text-sm font-black">${item.score}점</span>
+          <span class="text-[10px] text-slate-500 ml-1">(${item.time})</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+window.demoRenderSheetRows = () => {
+  const container = document.getElementById('demo-sheet-rows');
+  if (!container) return;
+  const rows = window.demoRankingState.currentSheetRows || window.demoRankingState.initialSheetRows;
+
+  container.innerHTML = rows.slice(0, 7).map((row, idx) => {
+    const isLatest = row.isNew && idx === 0;
+    const rowClass = isLatest ? 'bg-emerald-950/70 text-emerald-200 font-bold animate-pulse' : 'text-slate-300 hover:bg-slate-900/50';
+    return `
+      <div class="grid grid-cols-4 py-1 px-1.5 transition-colors ${rowClass}">
+        <span>#${row.id}</span>
+        <span>${row.time}</span>
+        <span class="truncate">${row.name}</span>
+        <span class="text-right font-black text-amber-300">${row.score}점</span>
+      </div>
+    `;
+  }).join('');
+};
+
+window.demoResetRankingData = () => {
+  window.demoRankingState.currentLeaderboard = JSON.parse(JSON.stringify(window.demoRankingState.initialLeaderboard));
+  window.demoRankingState.currentSheetRows = JSON.parse(JSON.stringify(window.demoRankingState.initialSheetRows));
+  window.demoRenderLeaderboard();
+  window.demoRenderSheetRows();
 };
