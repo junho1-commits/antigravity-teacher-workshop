@@ -204,6 +204,8 @@ class PresentationApp {
       setTimeout(() => {
         if (window.demoInitRankingWidget) window.demoInitRankingWidget();
       }, 50);
+    } else {
+      if (window.stopRankingPolling) window.stopRankingPolling();
     }
     if (document.getElementById('deploy-url-input')) {
       setTimeout(() => {
@@ -1289,9 +1291,273 @@ window.demoResetSeats = () => {
 };
 
 // =============================================================
-// [Slide 16] Live Google Sheets Ranking Battle Demo Handler
+// [Slide 16] Live Google Sheets Real-time Ranking Cloud Sync Engine
 // =============================================================
 
+// Google Apps Script 백엔드 완성 템플릿 코드
+window.APPS_SCRIPT_CODE_TEMPLATE = `/**
+ * 구글 스프레드시트 실시간 랭킹전 Web App 백엔드 스크립트
+ * [배포 방법]: [배포] > [새 배포] > 유형: [웹 앱] > 액세스 권한: [모든 사용자 (Anyone)]
+ */
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  if (sheet.getLastRow() === 0) initSheetHeaders(sheet);
+
+  // GET 방식 점수 등록 지원 (?name=홍길동&score=100)
+  if (e && e.parameter && e.parameter.name && e.parameter.score !== undefined) {
+    appendRecord(sheet, String(e.parameter.name || '익명').trim(), Number(e.parameter.score || 0));
+  }
+
+  var lastRow = sheet.getLastRow();
+  var rows = [];
+  if (lastRow > 1) {
+    var values = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+    for (var i = 0; i < values.length; i++) {
+      var rowTime = values[i][0];
+      var timeStr = (rowTime instanceof Date) ? Utilities.formatDate(rowTime, "Asia/Seoul", "HH:mm:ss") : String(rowTime || "");
+      var rowName = String(values[i][1] || "익명");
+      var rowScore = Number(values[i][2] || 0);
+      if (rowName !== "" || rowScore > 0) {
+        rows.push({ id: i + 1, time: timeStr, name: rowName, score: rowScore });
+      }
+    }
+  }
+
+  var sorted = rows.slice().sort(function(a, b) { return b.score - a.score; });
+  var badges = ['🥇', '🥈', '🥉', '4위', '5위'];
+  var leaderboard = sorted.slice(0, 10).map(function(item, idx) {
+    return { rank: idx + 1, badge: badges[idx] || (idx + 1 + '위'), name: item.name, score: item.score, time: item.time };
+  });
+
+  var recentRows = rows.slice(-10).reverse();
+  var res = { status: "success", totalCount: rows.length, leaderboard: leaderboard, recentRows: recentRows };
+  return ContentService.createTextOutput(JSON.stringify(res)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  if (sheet.getLastRow() === 0) initSheetHeaders(sheet);
+
+  var name = "익명";
+  var score = 0;
+  try {
+    if (e && e.postData && e.postData.contents) {
+      var payload = JSON.parse(e.postData.contents);
+      name = payload.name || name;
+      score = Number(payload.score || 0);
+    } else if (e && e.parameter) {
+      name = e.parameter.name || name;
+      score = Number(e.parameter.score || 0);
+    }
+  } catch (err) {
+    if (e && e.parameter) {
+      name = e.parameter.name || name;
+      score = Number(e.parameter.score || 0);
+    }
+  }
+
+  var added = appendRecord(sheet, String(name).trim() || "익명", Number(score) || 0);
+  return ContentService.createTextOutput(JSON.stringify({ status: "success", record: added })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function appendRecord(sheet, name, score) {
+  var now = new Date();
+  var timeStr = Utilities.formatDate(now, "Asia/Seoul", "HH:mm:ss");
+  var fullTimeStr = Utilities.formatDate(now, "Asia/Seoul", "yyyy-MM-dd HH:mm:ss");
+  sheet.appendRow([fullTimeStr, name, score]);
+  var lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow, 1).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 2).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 3).setHorizontalAlignment("right").setNumberFormat("#,##0");
+  return { time: timeStr, name: name, score: score };
+}
+
+function initSheetHeaders(sheet) {
+  sheet.setName("학급랭킹DB");
+  sheet.getRange(1, 1, 1, 3).setValues([["등록시간", "참가자 이름", "점수"]]);
+  var h = sheet.getRange(1, 1, 1, 3);
+  h.setBackground("#1e293b");
+  h.setFontColor("#f8fafc");
+  h.setFontWeight("bold");
+  h.setHorizontalAlignment("center");
+  sheet.setColumnWidth(1, 180);
+  sheet.setColumnWidth(2, 140);
+  sheet.setColumnWidth(3, 100);
+}`;
+
+// 구글 시트 Web App URL 관리
+window.GAS_DEFAULT_URL = ""; // 기본 배포 URL (설정 시 자동 연결)
+
+window.getGasUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  const paramUrl = params.get('gas') || params.get('sheet_api');
+  if (paramUrl) return decodeURIComponent(paramUrl).trim();
+  const saved = localStorage.getItem('antigravity_gas_url');
+  if (saved && saved.trim()) return saved.trim();
+  return window.GAS_DEFAULT_URL || "";
+};
+
+window.setGasUrl = (url) => {
+  if (url && url.trim()) {
+    localStorage.setItem('antigravity_gas_url', url.trim());
+  } else {
+    localStorage.removeItem('antigravity_gas_url');
+  }
+};
+
+// Apps Script 백엔드 코드 클립보드 복사
+window.copyAppsScriptCode = () => {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(window.APPS_SCRIPT_CODE_TEMPLATE).then(() => {
+      alert("✅ Apps Script 백엔드 코드가 클립보드에 복사되었습니다!\n\n[구글 스프레드시트 > 확장 프로그램 > Apps Script]에 붙여넣고 [배포]를 진행해 주세요.");
+    }).catch(() => {
+      window.fallbackCopyCode();
+    });
+  } else {
+    window.fallbackCopyCode();
+  }
+};
+
+window.fallbackCopyCode = () => {
+  const ta = document.createElement('textarea');
+  ta.value = window.APPS_SCRIPT_CODE_TEMPLATE;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  alert("✅ Apps Script 백엔드 코드가 복사되었습니다!\n[Apps Script]에 붙여넣어 배포하세요.");
+};
+
+// 구글 시트 URL 설정 모달
+window.openGoogleSheetSettingsModal = () => {
+  const currentUrl = window.getGasUrl();
+  let modal = document.getElementById('gas-settings-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'gas-settings-modal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn';
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="glass-card max-w-xl w-full p-6 md:p-8 rounded-3xl border border-amber-500/50 bg-slate-900 shadow-2xl relative">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-2xl bg-amber-500/20 text-amber-400">
+            <i data-lucide="settings" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-xl md:text-2xl font-black text-white">구글 시트 실시간 연동 설정</h3>
+            <p class="text-xs md:text-sm text-slate-400">모든 교사의 스마트폰/노트북 점수를 하나의 시트로 실시간 집계</p>
+          </div>
+        </div>
+        <button onclick="window.closeGoogleSheetSettingsModal()" class="text-slate-400 hover:text-white p-2 text-2xl font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-4 text-sm text-slate-300">
+        <div>
+          <label class="block text-xs font-bold text-amber-300 uppercase mb-1">구글 Apps Script 웹 앱 URL (Web App URL)</label>
+          <input type="text" id="modal-gas-url-input" value="${currentUrl}" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 font-mono text-xs md:text-sm outline-none focus:border-amber-400" />
+          <p class="text-[11px] text-slate-400 mt-1">💡 URL을 입력하면 실시간 다중 기기 모드로 작동하며, 비워두면 안전한 로컬 시뮬레이션으로 동작합니다.</p>
+        </div>
+
+        <div id="modal-test-result" class="hidden p-3 rounded-xl text-xs font-mono font-bold"></div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs space-y-1.5">
+          <div class="font-bold text-slate-200">📌 빠른 연결 순서:</div>
+          <div>1. <button onclick="window.copyAppsScriptCode()" class="text-sky-400 underline font-bold hover:text-sky-300">[Apps Script 코드 복사]</button> 클릭</div>
+          <div>2. 새 구글 시트에서 [확장 프로그램 > Apps Script]에 붙여넣기</div>
+          <div>3. [배포 > 새 배포] (유형: 웹 앱, 액세스: <strong>모든 사용자</strong>) 후 생성된 URL을 위 입력창에 붙여넣기!</div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap gap-2.5 justify-between">
+        <button onclick="window.testGasConnection()" id="btn-test-gas" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs md:text-sm font-bold transition-all flex items-center gap-1.5">
+          <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i>
+          <span>연결 테스트</span>
+        </button>
+
+        <div class="flex gap-2">
+          <button onclick="window.resetGasUrlToDemo()" class="px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 text-xs font-bold transition-all">
+            시뮬레이션 모드로 전환
+          </button>
+          <button onclick="window.saveGasUrlFromModal()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs md:text-sm shadow-lg shadow-amber-500/30 transition-all">
+            연결 및 저장
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.remove('hidden');
+  if (window.lucide) window.lucide.createIcons();
+};
+
+window.closeGoogleSheetSettingsModal = () => {
+  const modal = document.getElementById('gas-settings-modal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.testGasConnection = async () => {
+  const input = document.getElementById('modal-gas-url-input');
+  const resultEl = document.getElementById('modal-test-result');
+  const btn = document.getElementById('btn-test-gas');
+  const url = input ? input.value.trim() : '';
+
+  if (!url) {
+    if (resultEl) {
+      resultEl.className = 'p-3 rounded-xl text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 block';
+      resultEl.textContent = '❌ URL이 비어 있습니다. 웹 앱 URL을 입력해 주세요.';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="animate-spin">⏳</span> 테스트 중...';
+  }
+
+  try {
+    const fetchUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+    const res = await fetch(fetchUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data && data.status === 'success') {
+      resultEl.className = 'p-3 rounded-xl text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 block';
+      resultEl.innerHTML = `✅ 연결 성공! 시트에서 현재 등록된 데이터 <strong>${data.totalCount}건</strong>을 정상 수신했습니다.`;
+    } else {
+      throw new Error('데이터 응답 형식이 일치하지 않습니다.');
+    }
+  } catch (err) {
+    resultEl.className = 'p-3 rounded-xl text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 block';
+    resultEl.innerHTML = `❌ 연결 실패: ${err.message}<br><span class="text-[11px] font-normal">웹 앱 배포 시 [액세스 권한: 모든 사용자]로 설정되었는지 확인해 주세요.</span>`;
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="activity" class="w-4 h-4 text-sky-400"></i> <span>연결 테스트</span>';
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+};
+
+window.saveGasUrlFromModal = () => {
+  const input = document.getElementById('modal-gas-url-input');
+  const url = input ? input.value.trim() : '';
+  window.setGasUrl(url);
+  window.closeGoogleSheetSettingsModal();
+  window.demoInitRankingWidget();
+  alert(url ? "🎉 구글 시트 실시간 연동이 활성화되었습니다!\n이제 여러 기기에서 제출된 점수가 실시간으로 반영됩니다." : "🟡 로컬 시뮬레이션 모드로 전환되었습니다.");
+};
+
+window.resetGasUrlToDemo = () => {
+  window.setGasUrl("");
+  window.closeGoogleSheetSettingsModal();
+  window.demoInitRankingWidget();
+  alert("🟡 로컬 시뮬레이션 모드로 전환되었습니다.");
+};
+
+// 랭킹전 상태 관리
 window.demoRankingState = {
   isPlaying: false,
   timeLeft: 10,
@@ -1299,6 +1565,9 @@ window.demoRankingState = {
   score: 0,
   combo: 0,
   currentAns: null,
+  isLiveConnected: false,
+  pollingInterval: null,
+  lastFetchedCount: 0,
   initialLeaderboard: [
     { rank: 1, name: '김민준 (5-1)', score: 140, time: '09:41:12', badge: '🥇' },
     { rank: 2, name: '이서연 (5-1)', score: 120, time: '09:41:45', badge: '🥈' },
@@ -1324,6 +1593,19 @@ window.demoInitRankingWidget = () => {
   if (!window.demoRankingState.currentSheetRows) {
     window.demoRankingState.currentSheetRows = JSON.parse(JSON.stringify(window.demoRankingState.initialSheetRows));
   }
+
+  const gasUrl = window.getGasUrl();
+  const statusBadge = document.getElementById('demo-sheet-sync-status');
+  if (statusBadge) {
+    if (gasUrl) {
+      statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🟢 구글 시트 연결 중...';
+      statusBadge.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono flex items-center gap-1.5';
+    } else {
+      statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400"></span> 🟡 로컬 시뮬레이션';
+      statusBadge.className = 'px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold font-mono flex items-center gap-1.5';
+    }
+  }
+
   window.demoRenderLeaderboard();
   window.demoRenderSheetRows();
 
@@ -1335,6 +1617,88 @@ window.demoInitRankingWidget = () => {
     if (playView) playView.classList.add('hidden');
     if (endView) endView.classList.add('hidden');
   }
+
+  // 실시간 클라우드 폴링 시작
+  window.startRankingPolling();
+};
+
+window.startRankingPolling = () => {
+  window.stopRankingPolling();
+  window.fetchRealRankingData();
+  const gasUrl = window.getGasUrl();
+  if (gasUrl) {
+    window.demoRankingState.pollingInterval = setInterval(() => {
+      window.fetchRealRankingData();
+    }, 3500);
+  }
+};
+
+window.stopRankingPolling = () => {
+  if (window.demoRankingState && window.demoRankingState.pollingInterval) {
+    clearInterval(window.demoRankingState.pollingInterval);
+    window.demoRankingState.pollingInterval = null;
+  }
+};
+
+// 실시간 구글 시트 데이터 조회 (GET)
+window.fetchRealRankingData = async () => {
+  const gasUrl = window.getGasUrl();
+  const statusBadge = document.getElementById('demo-sheet-sync-status');
+  if (!gasUrl) {
+    window.demoRankingState.isLiveConnected = false;
+    return false;
+  }
+
+  try {
+    const fetchUrl = gasUrl + (gasUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+    const res = await fetch(fetchUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data && data.status === 'success') {
+      const state = window.demoRankingState;
+      const prevCount = state.lastFetchedCount || 0;
+      state.isLiveConnected = true;
+
+      if (Array.isArray(data.leaderboard)) {
+        state.currentLeaderboard = data.leaderboard;
+      }
+      if (Array.isArray(data.recentRows)) {
+        state.currentSheetRows = data.recentRows;
+      }
+
+      // 다른 기기에서 새로운 점수가 등록된 경우
+      if (prevCount > 0 && data.totalCount > prevCount) {
+        if (window.playTone) window.playTone(880, 200);
+        if (statusBadge) {
+          statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🚀 새 참가자 실시간 등록 (+${data.totalCount - prevCount}건)`;
+          statusBadge.className = 'px-3 py-1 rounded-full bg-emerald-500/40 text-emerald-200 text-xs font-bold font-mono flex items-center gap-1.5 border border-emerald-400 animate-bounce';
+          setTimeout(() => {
+            if (statusBadge) {
+              statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🟢 라이브 구글 시트 연결됨 (${data.totalCount}건)`;
+              statusBadge.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono flex items-center gap-1.5';
+            }
+          }, 3000);
+        }
+      } else {
+        if (statusBadge && !statusBadge.classList.contains('animate-bounce')) {
+          statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🟢 라이브 구글 시트 연결됨 (${data.totalCount}건)`;
+          statusBadge.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono flex items-center gap-1.5';
+        }
+      }
+
+      state.lastFetchedCount = data.totalCount;
+      window.demoRenderLeaderboard();
+      window.demoRenderSheetRows();
+      return true;
+    }
+  } catch (err) {
+    if (statusBadge) {
+      statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span> 🔴 시트 연결 지연';
+      statusBadge.className = 'px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold font-mono flex items-center gap-1.5';
+    }
+  }
+  return false;
 };
 
 window.demoStartRankingGame = () => {
@@ -1477,31 +1841,81 @@ window.demoEndRankingGame = () => {
   if (window.fireConfetti) window.fireConfetti();
 };
 
-window.demoSubmitRankingRecord = () => {
+// 점수 등록 (실제 클라우드 전송 + 시뮬레이션 지원)
+window.demoSubmitRankingRecord = async () => {
   const state = window.demoRankingState;
   const nameInput = document.getElementById('demo-rank-player-name');
-  const playerName = (nameInput && nameInput.value.trim()) || '김별하 (5-1)';
+  const submitBtn = document.getElementById('demo-rank-submit-btn');
+  const playerName = (nameInput && nameInput.value.trim()) || '참가 교사';
   const score = state.score;
+  const gasUrl = window.getGasUrl();
 
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>전송 중...</span> ⏳';
+    submitBtn.classList.add('opacity-75', 'cursor-wait');
+  }
+
+  if (gasUrl) {
+    // 실제 구글 스프레드시트로 전송 (CORS 프리패스 지원)
+    try {
+      await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ name: playerName, score: score }),
+        mode: 'no-cors'
+      });
+    } catch (postErr) {
+      try {
+        await fetch(`${gasUrl}${gasUrl.includes('?') ? '&' : '?'}name=${encodeURIComponent(playerName)}&score=${score}`, { mode: 'no-cors' });
+      } catch (getErr) {
+        console.warn('Fallback submit error:', getErr);
+      }
+    }
+
+    if (window.playTone) window.playTone(900, 200);
+    if (window.fireConfetti) window.fireConfetti();
+
+    // 600ms 후 최신 집계 데이터 폴링
+    setTimeout(() => {
+      window.fetchRealRankingData();
+    }, 600);
+
+  } else {
+    // 로컬 가상 시뮬레이션 처리
+    window.demoSubmitLocalRankingRecord(playerName, score);
+  }
+
+  const syncStatus = document.getElementById('demo-sheet-sync-status');
+  if (syncStatus) {
+    syncStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🚀 구글 시트 등록 완료!';
+    syncStatus.className = 'px-3 py-1 rounded-full bg-emerald-500/40 text-emerald-200 text-xs font-bold font-mono flex items-center gap-1.5 border border-emerald-400/60 animate-bounce';
+  }
+
+  setTimeout(() => {
+    const endView = document.getElementById('demo-rank-end-view');
+    const introView = document.getElementById('demo-rank-intro-view');
+    if (endView) endView.classList.add('hidden');
+    if (introView) introView.classList.remove('hidden');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<span>시트 전송</span> 🚀';
+      submitBtn.classList.remove('opacity-75', 'cursor-wait');
+    }
+  }, 2000);
+};
+
+// 로컬 시뮬레이션 제출 처리
+window.demoSubmitLocalRankingRecord = (playerName, score) => {
+  const state = window.demoRankingState;
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
   const newRowId = (state.currentSheetRows && state.currentSheetRows.length ? Math.max(...state.currentSheetRows.map(r => r.id)) : 0) + 1;
-  const newRow = {
-    id: newRowId,
-    time: timeStr,
-    name: playerName,
-    score: score,
-    isNew: true
-  };
+  const newRow = { id: newRowId, time: timeStr, name: playerName, score: score, isNew: true };
   state.currentSheetRows.unshift(newRow);
 
-  state.currentLeaderboard.push({
-    name: playerName,
-    score: score,
-    time: timeStr,
-    isNew: true
-  });
+  state.currentLeaderboard.push({ name: playerName, score: score, time: timeStr, isNew: true });
   state.currentLeaderboard.sort((a, b) => b.score - a.score);
   state.currentLeaderboard = state.currentLeaderboard.slice(0, 5);
 
@@ -1513,24 +1927,7 @@ window.demoSubmitRankingRecord = () => {
 
   window.demoRenderLeaderboard();
   window.demoRenderSheetRows();
-
   if (window.playTone) window.playTone(900, 200);
-  const syncStatus = document.getElementById('demo-sheet-sync-status');
-  if (syncStatus) {
-    syncStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 🚀 구글 시트 행 추가 성공 (+1건)';
-    syncStatus.className = 'px-3 py-1 rounded-full bg-emerald-500/40 text-emerald-200 text-xs font-bold font-mono flex items-center gap-1.5 border border-emerald-400/60 animate-bounce';
-    setTimeout(() => {
-      syncStatus.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> 실시간 DB 동기화 활성';
-      syncStatus.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold font-mono flex items-center gap-1.5';
-    }, 3000);
-  }
-
-  setTimeout(() => {
-    const endView = document.getElementById('demo-rank-end-view');
-    const introView = document.getElementById('demo-rank-intro-view');
-    if (endView) endView.classList.add('hidden');
-    if (introView) introView.classList.remove('hidden');
-  }, 2500);
 };
 
 window.demoRenderLeaderboard = () => {
@@ -1544,7 +1941,7 @@ window.demoRenderLeaderboard = () => {
     return `
       <div class="flex items-center justify-between p-2 rounded-xl ${highlight} transition-all">
         <div class="flex items-center gap-2">
-          <span class="w-6 text-center text-sm">${item.badge}</span>
+          <span class="w-6 text-center text-sm">${item.badge || (idx + 1 + '위')}</span>
           <span class="font-bold text-slate-200 truncate max-w-[90px] md:max-w-[110px]">${item.name}</span>
         </div>
         <div class="text-right">
@@ -1576,8 +1973,14 @@ window.demoRenderSheetRows = () => {
 };
 
 window.demoResetRankingData = () => {
-  window.demoRankingState.currentLeaderboard = JSON.parse(JSON.stringify(window.demoRankingState.initialLeaderboard));
-  window.demoRankingState.currentSheetRows = JSON.parse(JSON.stringify(window.demoRankingState.initialSheetRows));
-  window.demoRenderLeaderboard();
-  window.demoRenderSheetRows();
+  const gasUrl = window.getGasUrl();
+  if (gasUrl) {
+    window.fetchRealRankingData();
+  } else {
+    window.demoRankingState.currentLeaderboard = JSON.parse(JSON.stringify(window.demoRankingState.initialLeaderboard));
+    window.demoRankingState.currentSheetRows = JSON.parse(JSON.stringify(window.demoRankingState.initialSheetRows));
+    window.demoRenderLeaderboard();
+    window.demoRenderSheetRows();
+  }
 };
+
