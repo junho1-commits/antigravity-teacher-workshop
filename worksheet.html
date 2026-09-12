@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초등 6학년 사회 탐구 학습지 - 산지 지형과 에베레스트의 빛과 그림자</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      box-sizing: border-box;
+      word-break: keep-all;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      color: #1e293b;
+    }
+
+    /* A4 Paper Simulation */
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 18mm 18mm;
+      margin: 15px auto;
+      background: white;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      position: relative;
+    }
+
+    /* Print Styles */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
+      }
+
+      body {
+        background: white !important;
+        padding: 0 !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .a4-page {
+        width: 100% !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .a4-page:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      input, textarea {
+        border-color: #cbd5e1 !important;
+        background: transparent !important;
+      }
+    }
+
+    .answer-sample {
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body class="py-8">
+
+  <!-- Top Floating Action Toolbar (No-Print) -->
+  <div class="no-print fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900/90 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-4 border border-slate-700">
+    <div class="flex items-center gap-2 font-bold text-sm">
+      <i data-lucide="file-text" class="w-5 h-5 text-sky-400"></i>
+      <span>6학년 사회 A4 스마트 학습지</span>
+    </div>
+    <div class="h-4 w-px bg-slate-700"></div>
+    <button onclick="window.print()" class="px-4 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-500 font-bold text-xs flex items-center gap-1.5 shadow-lg transition-all transform hover:scale-105">
+      <i data-lucide="printer" class="w-4 h-4"></i> A4 인쇄 / PDF 저장
+    </button>
+    <button onclick="toggleSampleAnswers()" id="btn-sample" class="px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 font-bold text-xs text-amber-300 border border-amber-500/40 flex items-center gap-1.5 transition-all">
+      <i data-lucide="lightbulb" class="w-4 h-4"></i> <span>예시 답안 보기</span>
+    </button>
+    <button onclick="resetWorksheet()" class="px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 font-bold text-xs text-rose-300 border border-rose-500/40 flex items-center gap-1.5 transition-all">
+      <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 새로 쓰기
+    </button>
+  </div>
+
+  <div class="max-w-[210mm] mx-auto mb-3 text-right no-print text-xs text-slate-500 font-medium">
+    💡 작성한 내용은 브라우저에 자동 저장되며, 상단 [A4 인쇄 / PDF 저장]을 누르면 PDF로 즉시 다운로드됩니다.
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- A4 PAGE 1 : 산지 지형과 사람들의 생활 모습 (교과서 15~16쪽) -->
+  <!-- ========================================================= -->
+  <div class="a4-page flex flex-col justify-between" id="page-1">
+    <div>
+      <!-- Header -->
+      <div class="border-b-2 border-slate-900 pb-3 mb-4">
+        <div class="flex justify-between items-end">
+          <div>
+            <span class="text-xs font-extrabold text-indigo-600 tracking-wider bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">초등 6학년 2학기 사회 1단원</span>
+            <h1 class="text-xl md:text-2xl font-black text-slate-900 mt-1">세계의 산지 지형과 사람들의 생활 모습</h1>
+            <p class="text-xs text-slate-500 mt-0.5 font-medium">교과서 15~18쪽 연계 탐구 학습지</p>
+          </div>
+          <!-- Student Info Form -->
+          <div class="flex items-center gap-2 text-sm border border-slate-300 bg-slate-50/80 px-3 py-2 rounded-lg font-bold">
+            <span>6학년</span>
+            <input type="text" id="stu-class" placeholder="  " class="w-8 text-center border-b border-slate-400 bg-transparent outline-none focus:border-indigo-600 font-black">
+            <span>반</span>
+            <input type="text" id="stu-num" placeholder="  " class="w-8 text-center border-b border-slate-400 bg-transparent outline-none focus:border-indigo-600 font-black">
+            <span>번</span>
+            <span class="ml-1">이름:</span>
+            <input type="text" id="stu-name" placeholder="홍길동" class="w-20 text-center border-b border-slate-400 bg-transparent outline-none focus:border-indigo-600 font-black text-indigo-700">
+          </div>
+        </div>
+      </div>
+
+      <!-- [활동 1] 산지 지형의 특징 이해하기 -->
+      <div class="mb-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">1</span>
+          <h2 class="text-sm md:text-base font-extrabold text-slate-900">산지 지형의 특징 정리하기 (교과서 15쪽)</h2>
+        </div>
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs leading-relaxed">
+          산지 지형은 <span class="font-bold text-indigo-700 underline underline-offset-2">해발 고도</span>가 높고 대체로 경사가 <input type="text" id="ans-1-1" placeholder="(         )" class="w-24 text-center border-b border-slate-400 bg-white px-1 font-bold text-indigo-600">합니다. 하지만 고원과 같이 비교적 넓고 <input type="text" id="ans-1-2" placeholder="(         )" class="w-24 text-center border-b border-slate-400 bg-white px-1 font-bold text-indigo-600">한 곳도 있으며, 산 정상이 움푹 파이거나 물이 고여 있는 모습을 볼 수 있는 <input type="text" id="ans-1-3" placeholder="(         )" class="w-24 text-center border-b border-slate-400 bg-white px-1 font-bold text-indigo-600">도 있습니다.
+        </div>
+      </div>
+
+      <!-- [활동 2] 사진으로 만나는 산지 지형과 생활 모습 매칭 -->
+      <div class="mb-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">2</span>
+          <h2 class="text-sm md:text-base font-extrabold text-slate-900">세계 유명 산지 지형과 이용 모습 연결하기 (교과서 15~16쪽)</h2>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-3 mb-3 text-xs">
+          <!-- Card 1: 바나우에 -->
+          <div class="p-2.5 border border-slate-200 rounded-lg bg-white shadow-sm flex flex-col justify-between">
+            <div class="font-bold text-indigo-900 flex items-center gap-1 mb-1">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-black text-[10px]">필리핀</span>
+              <span>바나우에</span>
+            </div>
+            <p class="text-[11px] text-slate-600 mb-2">가파른 산비탈을 깎아 만든 거대한 논두렁</p>
+            <div class="bg-indigo-50/70 p-1.5 rounded border border-indigo-100">
+              <span class="font-bold text-[10px] text-indigo-700 block">이용 모습:</span>
+              <input type="text" id="ans-card-1" placeholder="예: 계단식 논농사" class="w-full bg-white border border-slate-300 rounded px-1.5 py-0.5 text-xs font-bold text-slate-800 mt-0.5">
+            </div>
+          </div>
+
+          <!-- Card 2: 파미르고원 -->
+          <div class="p-2.5 border border-slate-200 rounded-lg bg-white shadow-sm flex flex-col justify-between">
+            <div class="font-bold text-indigo-900 flex items-center gap-1 mb-1">
+              <span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-black text-[10px]">타지키스탄</span>
+              <span>파미르고원</span>
+            </div>
+            <p class="text-[11px] text-slate-600 mb-2">해발 고도가 높지만 넓고 평탄한 풀밭</p>
+            <div class="bg-indigo-50/70 p-1.5 rounded border border-indigo-100">
+              <span class="font-bold text-[10px] text-indigo-700 block">이용 모습:</span>
+              <input type="text" id="ans-card-2" placeholder="예: 가축(양) 목축/방목" class="w-full bg-white border border-slate-300 rounded px-1.5 py-0.5 text-xs font-bold text-slate-800 mt-0.5">
+            </div>
+          </div>
+
+          <!-- Card 3: 알프스산맥 -->
+          <div class="p-2.5 border border-slate-200 rounded-lg bg-white shadow-sm flex flex-col justify-between">
+            <div class="font-bold text-indigo-900 flex items-center gap-1 mb-1">
+              <span class="px-1.5 py-0.5 bg-sky-100 text-sky-800 rounded font-black text-[10px]">스위스</span>
+              <span>알프스산맥</span>
+            </div>
+            <p class="text-[11px] text-slate-600 mb-2">웅장한 설산 경관과 맑은 산림</p>
+            <div class="bg-indigo-50/70 p-1.5 rounded border border-indigo-100">
+              <span class="font-bold text-[10px] text-indigo-700 block">이용 모습:</span>
+              <input type="text" id="ans-card-3" placeholder="예: 스키장·휴양림 관광지" class="w-full bg-white border border-slate-300 rounded px-1.5 py-0.5 text-xs font-bold text-slate-800 mt-0.5">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- [활동 3] 탐구 서술: 지형을 이렇게 이용하는 까닭 -->
+      <div class="mb-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">3</span>
+          <h2 class="text-sm md:text-base font-extrabold text-slate-900">생각해 보기: 사람들이 지형을 이렇게 이용하는 까닭은 무엇일까요?</h2>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="font-bold text-slate-700 block mb-0.5">Q1. 필리핀 바나우에 사람들이 가파른 산비탈을 깎아 계단식 논을 만든 까닭:</label>
+            <textarea id="ans-reason-1" rows="2" placeholder="산지의 경사가 급하여 농사지을 평평한 땅이 부족하기 때문에..." class="w-full p-2 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none leading-relaxed"></textarea>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-0.5">Q2. 스위스 알프스산맥에 스키장과 휴양림 등 관광지가 발달한 까닭:</label>
+            <textarea id="ans-reason-2" rows="2" placeholder="해발 고도가 높고 눈이 많이 내리며, 빼어난 자연경관을 보기 위해 전 세계 관광객이 찾아오기 때문에..." class="w-full p-2 border border-slate-300 rounded-lg bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none leading-relaxed"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 1 Footer -->
+    <div class="pt-3 border-t border-slate-200 text-center text-xs text-slate-400 font-bold flex justify-between items-center">
+      <span>[초등 6-2 사회 1단원] 산지 지형 탐구 학습지</span>
+      <span class="px-2 py-0.5 bg-slate-100 rounded text-slate-600">- 1 / 2 -</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- A4 PAGE 2 : 지하자원/화산 조사 & 에베레스트 토론 (교과서 17~18쪽) -->
+  <!-- ========================================================= -->
+  <div class="a4-page flex flex-col justify-between" id="page-2">
+    <div>
+      <!-- Header -->
+      <div class="border-b-2 border-slate-900 pb-2 mb-4 flex justify-between items-center">
+        <h1 class="text-lg font-black text-slate-900">지하자원·화산 지형의 활용 & 에베레스트산의 빛과 그림자</h1>
+        <span class="text-xs font-bold text-slate-500">교과서 17~18쪽</span>
+      </div>
+
+      <!-- [활동 4] 지하자원과 화산 지형 묻고 답하기 조사표 -->
+      <div class="mb-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">4</span>
+          <h2 class="text-sm md:text-base font-extrabold text-slate-900">산지 지형 조사 및 묻고 답하기 (교과서 17쪽)</h2>
+        </div>
+        <table class="w-full text-xs border-collapse border border-slate-300 mb-3 text-center">
+          <thead>
+            <tr class="bg-slate-100 text-slate-800 font-bold">
+              <th class="border border-slate-300 p-1.5 w-20">지역 / 지형</th>
+              <th class="border border-slate-300 p-1.5 w-28">자연환경 특징</th>
+              <th class="border border-slate-300 p-1.5">사람들의 생활 모습 및 산업</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border border-slate-300 p-2 font-bold bg-slate-50">칠레 추키카마타</td>
+              <td class="border border-slate-300 p-2 text-slate-600">지하자원(구리) 풍부</td>
+              <td class="border border-slate-300 p-2 text-left">
+                <input type="text" id="ans-table-1" placeholder="예: 구리를 캐내는 대규모 광업 발달" class="w-full border-b border-slate-300 px-1 py-0.5 bg-transparent font-medium">
+              </td>
+            </tr>
+            <tr>
+              <td class="border border-slate-300 p-2 font-bold bg-slate-50">아이슬란드 / 칠레 파리나코타</td>
+              <td class="border border-slate-300 p-2 text-slate-600">화산 및 온천 지형</td>
+              <td class="border border-slate-300 p-2 text-left">
+                <input type="text" id="ans-table-2" placeholder="예: 온천 및 화산 분출 경관을 활용한 관광 산업 발달" class="w-full border-b border-slate-300 px-1 py-0.5 bg-transparent font-medium">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 꼭 기억해요 퀴즈 -->
+        <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs space-y-1.5">
+          <span class="font-extrabold text-amber-900 block flex items-center gap-1">
+            <i data-lucide="check-square" class="w-3.5 h-3.5 text-amber-600"></i> 꼭 기억해요! 핵심 단어 퀴즈
+          </span>
+          <div class="flex items-center justify-between">
+            <span>Q1. <input type="text" id="ans-quiz-1" placeholder="ㅅ ㅈ" class="w-16 text-center border-b border-amber-400 bg-white font-black text-amber-700"> 지형은 해발 고도가 높고 대체로 경사가 급합니다.</span>
+            <span>Q2. 지하자원이 풍부한 산지에서는 광업이 발달합니다. ( <button onclick="setOx('ans-ox', 'O')" class="px-2 py-0.5 rounded border border-amber-300 bg-white font-bold hover:bg-amber-100">O</button> / <button onclick="setOx('ans-ox', 'X')" class="px-2 py-0.5 rounded border border-amber-300 bg-white font-bold hover:bg-amber-100">X</button> ) <span id="ans-ox" class="font-black text-indigo-700 ml-1">O</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- [활동 5] 사회 속으로: 에베레스트산의 빛과 그림자 토론 탐구 (18쪽) -->
+      <div class="mb-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">5</span>
+          <h2 class="text-sm md:text-base font-extrabold text-slate-900">[사회 속으로] 에베레스트산의 빛과 그림자 (교과서 18쪽)</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-xs mb-3">
+          <!-- Light: 긍정적 영향 -->
+          <div class="p-2.5 bg-sky-50 border border-sky-200 rounded-lg">
+            <div class="font-bold text-sky-900 flex items-center gap-1 mb-1">
+              <span>☀️ 빛 (관광 개발의 긍정적 측면)</span>
+            </div>
+            <textarea id="ans-everest-light" rows="3" placeholder="• 셰르파로 활동하며 짐을 나르고 등반길 안내&#10;• 숙소 및 음식 제공을 통해 경제적 수입 창출" class="w-full p-1.5 border border-sky-300 rounded bg-white text-slate-700 leading-relaxed"></textarea>
+          </div>
+
+          <!-- Shadow: 부정적 영향 -->
+          <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-lg">
+            <div class="font-bold text-rose-900 flex items-center gap-1 mb-1">
+              <span>🌧️ 그림자 (관광으로 인한 환경 문제)</span>
+            </div>
+            <textarea id="ans-everest-shadow" rows="3" placeholder="• 관광객들이 버린 쓰레기로 인한 산림 몸살&#10;• 네팔 정부의 입산료 징수 및 쓰레기 되가져오기 정책" class="w-full p-1.5 border border-rose-300 rounded bg-white text-slate-700 leading-relaxed"></textarea>
+          </div>
+        </div>
+
+        <!-- 실천 다짐 서술 -->
+        <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs">
+          <label class="font-bold text-emerald-900 block mb-1">
+            🌱 지속 가능한 지구 환경을 위해 우리가 실천할 수 있는 노력 한 가지를 써 봅시다:
+          </label>
+          <textarea id="ans-action" rows="2" placeholder="자연 관광지에 방문했을 때 내 쓰레기는 반드시 되가져오고, 일회용품 사용을 줄이며 환경 보호 수칙을 철저히 지킨다." class="w-full p-2 border border-emerald-300 rounded bg-white text-slate-700 leading-relaxed"></textarea>
+        </div>
+      </div>
+
+      <!-- 배움 성찰 (Self-Check) -->
+      <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between text-xs">
+        <span class="font-bold text-slate-700">오늘의 배움 스스로 평가:</span>
+        <div class="flex gap-4">
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="checkbox" checked class="accent-indigo-600"> 산지 지형 특징 알기
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="checkbox" checked class="accent-indigo-600"> 지형과 생활 모습 연결
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="checkbox" checked class="accent-indigo-600"> 환경 보호 실천 의지
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 2 Footer -->
+    <div class="pt-3 border-t border-slate-200 text-center text-xs text-slate-400 font-bold flex justify-between items-center">
+      <span>[초등 6-2 사회 1단원] 산지 지형 탐구 학습지</span>
+      <span class="px-2 py-0.5 bg-slate-100 rounded text-slate-600">- 2 / 2 -</span>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'society_6-2-1_worksheet_data';
+
+    // List of input IDs
+    const fieldIds = [
+      'stu-class', 'stu-num', 'stu-name',
+      'ans-1-1', 'ans-1-2', 'ans-1-3',
+      'ans-card-1', 'ans-card-2', 'ans-card-3',
+      'ans-reason-1', 'ans-reason-2',
+      'ans-table-1', 'ans-table-2',
+      'ans-quiz-1', 'ans-everest-light', 'ans-everest-shadow', 'ans-action'
+    ];
+
+    // Load saved data on init
+    function loadSavedData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      try {
+        const data = JSON.parse(saved);
+        fieldIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && data[id] !== undefined) {
+            el.value = data[id];
+          }
+        });
+        if (data['ans-ox']) {
+          document.getElementById('ans-ox').textContent = data['ans-ox'];
+        }
+      } catch (e) {
+        console.error('Failed to load saved worksheet data', e);
+      }
+    }
+
+    // Auto-save on any change
+    function setupAutoSave() {
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', () => {
+            saveCurrentData();
+          });
+        }
+      });
+    }
+
+    function saveCurrentData() {
+      const data = {};
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      });
+      data['ans-ox'] = document.getElementById('ans-ox')?.textContent || 'O';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function setOx(id, val) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = val;
+        saveCurrentData();
+      }
+    }
+
+    // Toggle Sample Answers
+    let isSampleOn = false;
+    const sampleAnswers = {
+      'stu-class': '1',
+      'stu-num': '7',
+      'stu-name': '김민준',
+      'ans-1-1': '급',
+      'ans-1-2': '평평',
+      'ans-1-3': '화산',
+      'ans-card-1': '계단식 논농사',
+      'ans-card-2': '가축(양) 목축 및 방목',
+      'ans-card-3': '스키장·휴양림 등 관광지',
+      'ans-reason-1': '산지의 경사가 가파르고 평지가 부족하여, 산비탈을 깎아 평평한 계단 모양의 논을 만들어 벼농사를 짓습니다.',
+      'ans-reason-2': '해발 고도가 높아 만년설과 웅장한 자연경관이 펼쳐져 있어 전 세계 관광객이 스키와 휴양을 즐기러 오기 때문입니다.',
+      'ans-table-1': '지하자원인 구리 매장량이 풍부하여 대규모 광업이 발달함',
+      'ans-table-2': '독특한 화산 분출 경관과 온천을 활용하여 세계적인 관광 산업이 발달함',
+      'ans-quiz-1': '산지',
+      'ans-everest-light': '• 등반객의 짐을 나르고 길을 안내하는 셰르파로 활동함\n• 숙소, 음식점 등 관광 산업을 통해 주민들의 경제적 소득을 창출함',
+      'ans-everest-shadow': '• 등반객들이 버리고 간 쓰레기와 폐기물로 자연환경이 심각하게 훼손됨\n• 네팔 정부의 쓰레기 되가져오기 수칙 및 입산료 징수 필요',
+      'ans-action': '자연경관을 관광할 때 쓰레기를 절대 버리지 않고 되가져오며, 지정된 등산로만 이용하고 일회용품 사용을 최소화한다.'
+    };
+
+    function toggleSampleAnswers() {
+      isSampleOn = !isSampleOn;
+      const btn = document.getElementById('btn-sample');
+      if (isSampleOn) {
+        fieldIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && sampleAnswers[id]) el.value = sampleAnswers[id];
+        });
+        if (btn) {
+          btn.classList.add('bg-amber-500', 'text-slate-950');
+          btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> <span>예시 답안 채워짐</span>';
+        }
+      } else {
+        loadSavedData();
+        if (btn) {
+          btn.classList.remove('bg-amber-500', 'text-slate-950');
+          btn.innerHTML = '<i data-lucide="lightbulb" class="w-4 h-4"></i> <span>예시 답안 보기</span>';
+        }
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function resetWorksheet() {
+      if (confirm('작성한 내용을 모두 지우고 새로 작성하시겠습니까?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        fieldIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        document.getElementById('ans-ox').textContent = 'O';
+        isSampleOn = false;
+        const btn = document.getElementById('btn-sample');
+        if (btn) {
+          btn.classList.remove('bg-amber-500', 'text-slate-950');
+          btn.innerHTML = '<i data-lucide="lightbulb" class="w-4 h-4"></i> <span>예시 답안 보기</span>';
+        }
+      }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedData();
+      setupAutoSave();
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

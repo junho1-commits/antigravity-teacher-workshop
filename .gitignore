@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+*.log
+# Exclude original 96MB heavy textbook PDF (keep extracted 15-18p PDF)
+자료/society_6-2-1.pdf
