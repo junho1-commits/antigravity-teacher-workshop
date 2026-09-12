@@ -1387,8 +1387,8 @@ function initSheetHeaders(sheet) {
   sheet.setColumnWidth(3, 100);
 }`;
 
-// 구글 시트 Web App URL 관리
-window.GAS_DEFAULT_URL = ""; // 기본 배포 URL (설정 시 자동 연결)
+// 구글 시트 Web App URL 관리 (실시간 클라우드 랭킹전 기본 연결)
+window.GAS_DEFAULT_URL = "https://script.google.com/macros/s/AKfycby66cmbniNamfjaHZcdpve5bcPrcg7AKJR3k4b0-wMmbc4rvCOMB6NZygGkqsnjrlc/exec";
 
 window.getGasUrl = () => {
   const params = new URLSearchParams(window.location.search);
