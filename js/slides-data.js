@@ -117,103 +117,132 @@ var SLIDES_DATA = [
   },
   {
     "id": 9,
-    "title": "Skills와 MCP",
-    "badge": "🧩 비밀 무기",
+    "title": "Skills, MCP, 그리고 API",
+    "badge": "🧩 3대 핵심 무기",
     "content": `
       <div class="h-full flex flex-col justify-center w-full max-w-[96vw] 2xl:max-w-[1780px] mx-auto px-4">
         <div class="text-center mb-5">
-          <span class="text-amber-400 font-black text-lg md:text-xl uppercase tracking-wider">안티그래비티의 슈퍼 파워</span>
+          <span class="text-amber-400 font-black text-lg md:text-xl uppercase tracking-wider">안티그래비티의 슈퍼 파워 3총사</span>
           <h2 class="text-3xl md:text-5xl lg:text-6xl font-black text-white mt-1 leading-tight break-keep">
-            "Skills와 MCP : AI에게 날개를 달아주는 2가지 핵심 무기"
+            "Skills, MCP, API : AI에게 날개를 달아주는 3대 무기"
           </h2>
-          <p class="text-lg md:text-2xl text-slate-300 mt-2 font-bold break-keep">대화만 하던 AI를 우리 학교 도구·시스템과 직접 연결하는 비결</p>
+          <p class="text-lg md:text-2xl text-slate-300 mt-2 font-bold break-keep">노하우(Skill)와 도구(MCP), 그리고 실시간 데이터(API)의 환상적 조합</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
-          <!-- Skills Box -->
-          <div class="glass-card p-6 md:p-8 rounded-3xl border border-sky-500/40 bg-sky-950/20 flex flex-col justify-between">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+          <!-- 1. Skills Box -->
+          <div class="glass-card p-6 rounded-3xl border border-sky-500/40 bg-sky-950/20 flex flex-col justify-between">
             <div>
-              <div class="flex items-center gap-4 mb-4">
-                <div class="p-3.5 rounded-2xl bg-sky-500/20 text-sky-400"><i data-lucide="book-marked" class="w-8 h-8"></i></div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-3 rounded-2xl bg-sky-500/20 text-sky-400"><i data-lucide="book-marked" class="w-7 h-7"></i></div>
                 <div>
-                  <h3 class="text-2xl md:text-3xl font-black text-white">Skills (전문 작업 매뉴얼)</h3>
-                  <span class="text-sm md:text-base text-sky-300 font-bold">"업무 비법 바인더를 AI 두뇌에 장착!"</span>
+                  <h3 class="text-xl md:text-2xl font-black text-white">1. Skills (업무 매뉴얼)</h3>
+                  <span class="text-xs md:text-sm text-sky-300 font-bold">"일하는 절차·노하우"</span>
                 </div>
               </div>
-              <p class="text-base md:text-lg text-slate-200 leading-relaxed font-semibold mb-4 break-keep">
-                매번 길게 설명할 필요 없이, AI에게 <strong>규칙·절차·서식(SKILL.md)</strong>을 미리 넣어두면 필요할 때 자동으로 전문가처럼 일합니다.
+              <p class="text-sm md:text-base text-slate-200 leading-relaxed font-semibold mb-4 break-keep">
+                AI 두뇌에 <strong>규칙·절차·서식(SKILL.md)</strong>을 미리 넣어두어 매번 길게 설명하지 않아도 전문가처럼 일합니다.
               </p>
-              <div class="bg-slate-950 p-4 md:p-5 rounded-2xl border border-sky-500/30 text-sm md:text-base text-slate-200 space-y-2 font-mono">
-                <p class="text-sky-300 font-black">🏫 교실 활용 예시:</p>
-                <p>• 학생 생기부 행동특성 서술어 자동 검토 스킬</p>
-                <p>• 교육청 공문 양식 맞춤 알림장 생성 스킬</p>
-                <p>• 초등 수학/사회 인터랙티브 퀴즈 출제 스킬</p>
+              <div class="bg-slate-950 p-3.5 rounded-2xl border border-sky-500/30 text-xs md:text-sm text-slate-200 space-y-1.5 font-mono">
+                <p class="text-sky-300 font-black">🏫 활용 예시:</p>
+                <p>• 생기부 행동특성 서술어 검토 스킬</p>
+                <p>• 교육청 공문 양식 알림장 생성 스킬</p>
               </div>
             </div>
-            <div class="mt-4 text-base md:text-lg font-black text-sky-300 text-center">
-              👉 AI의 전문 지식 & 노하우 (Know-How)
+            <div class="mt-4 text-sm md:text-base font-black text-sky-300 text-center">
+              👉 AI의 업무 노하우 (Know-How)
             </div>
           </div>
 
-          <!-- MCP Box -->
-          <div class="glass-card p-6 md:p-8 rounded-3xl border border-purple-500/40 bg-purple-950/20 flex flex-col justify-between">
+          <!-- 2. MCP Box -->
+          <div class="glass-card p-6 rounded-3xl border border-purple-500/40 bg-purple-950/20 flex flex-col justify-between">
             <div>
-              <div class="flex items-center gap-4 mb-4">
-                <div class="p-3.5 rounded-2xl bg-purple-500/20 text-purple-400"><i data-lucide="plug" class="w-8 h-8"></i></div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-3 rounded-2xl bg-purple-500/20 text-purple-400"><i data-lucide="plug" class="w-7 h-7"></i></div>
                 <div>
-                  <h3 class="text-2xl md:text-3xl font-black text-white">MCP (만능 도구 USB 연결잭)</h3>
-                  <span class="text-sm md:text-base text-purple-300 font-bold">"AI에게 진짜 손발과 도구를 연결!"</span>
+                  <h3 class="text-xl md:text-2xl font-black text-white">2. MCP (만능 연결잭)</h3>
+                  <span class="text-xs md:text-sm text-purple-300 font-bold">"손발과 외부 플랫폼 연결"</span>
                 </div>
               </div>
-              <p class="text-base md:text-lg text-slate-200 leading-relaxed font-semibold mb-4 break-keep">
-                화면 안에 갇힌 AI를 <strong>캔바(Canva), 구글 드라이브, 학교 DB</strong>와 안전하게 연결해 실제 디자인과 데이터를 직접 조작하게 합니다.
+              <p class="text-sm md:text-base text-slate-200 leading-relaxed font-semibold mb-4 break-keep">
+                갇혀 있던 AI를 <strong>캔바(Canva), 구글 드라이브, 깃허브</strong>와 연결해 실제 문서를 수정하고 도구를 직접 씁니다.
               </p>
-              <div class="bg-slate-950 p-4 md:p-5 rounded-2xl border border-purple-500/30 text-sm md:text-base text-slate-200 space-y-2 font-mono">
-                <p class="text-purple-300 font-black flex items-center gap-1.5">
-                  <i data-lucide="palette" class="w-4 h-4"></i> 🎨 Canva MCP 연결 (추천 실습):
-                </p>
-                <p class="text-xs md:text-sm text-cyan-300 break-all">• 캔바 템플릿 연동 예시: <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="underline text-amber-300 hover:text-amber-200 font-bold">https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit</a></p>
-                <p class="text-xs md:text-sm text-slate-300">• 안티그래비티 대화창에서 캔바 디자인 자동 생성·수정</p>
-                <p class="text-xs md:text-sm text-purple-300">• 구글 시트 출석부 / Firebase 실시간 랭킹도 MCP 하나로 끝!</p>
+              <div class="bg-slate-950 p-3.5 rounded-2xl border border-purple-500/30 text-xs md:text-sm text-slate-200 space-y-1.5 font-mono">
+                <p class="text-purple-300 font-black">🎨 Canva MCP 추천 실습:</p>
+                <p class="truncate">• 캔바: <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="underline text-amber-300 font-bold">모덕초 페스티벌 포스터</a></p>
+                <p>• 대화창에서 캔바 디자인 자동 수정</p>
               </div>
             </div>
-            <div class="mt-4 text-base md:text-lg font-black text-purple-300 text-center">
-              👉 AI의 외부 도구 & 디자인·DB 제어 (Tool & Design)
+            <div class="mt-4 text-sm md:text-base font-black text-purple-300 text-center">
+              👉 AI의 도구 & 플랫폼 제어 (Tools)
+            </div>
+          </div>
+
+          <!-- 3. API Box (NEW) -->
+          <div class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-950/20 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400"><i data-lucide="cloud-lightning" class="w-7 h-7"></i></div>
+                <div>
+                  <h3 class="text-xl md:text-2xl font-black text-white">3. API (실시간 데이터 배달)</h3>
+                  <span class="text-xs md:text-sm text-emerald-300 font-bold">"살아있는 정보 가져오기"</span>
+                </div>
+              </div>
+              <p class="text-sm md:text-base text-slate-200 leading-relaxed font-semibold mb-4 break-keep">
+                인터넷의 <strong>공공데이터·실시간 급식·날씨</strong>를 주소(URL) 하나로 웹앱에 즉시 배달받아 화면에 띄웁니다.
+              </p>
+              <div class="bg-slate-950 p-3.5 rounded-2xl border border-emerald-500/30 text-xs md:text-sm text-slate-200 space-y-1.5 font-mono">
+                <p class="text-emerald-300 font-black">⚡ 가장 쉬운 학교 무료 API 예시:</p>
+                <p class="text-emerald-200">• <strong>나이스(NEIS) 급식 API</strong>: 오늘 식단 자동 표시</p>
+                <p class="text-emerald-200">• <strong>기상청 날씨/미세먼지 API</strong>: 운동장 체육 가능 여부</p>
+              </div>
+            </div>
+            <div class="mt-4 text-sm md:text-base font-black text-emerald-300 text-center">
+              👉 AI의 실시간 데이터 급식소 (Live Data)
             </div>
           </div>
         </div>
 
-        <!-- Canva MCP Configuration Banner -->
-        <div class="p-4 md:p-5 rounded-3xl bg-slate-900/90 border border-purple-500/50 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div class="text-left">
-            <span class="px-2.5 py-1 rounded bg-purple-500/30 text-purple-300 text-xs font-mono font-bold mr-2">mcp_config.json</span>
-            <span class="text-white font-bold text-sm md:text-base">캔바 MCP 1분 연동 코드 :</span>
-            <code class="block md:inline-block mt-1 md:mt-0 ml-0 md:ml-2 text-xs md:text-sm text-amber-300 bg-black/60 px-2 py-1 rounded font-mono">
-              "canva": { "command": "npx", "args": ["-y", "mcp-remote", "https://mcp.canva.com/mcp"] }
-            </code>
+        <!-- Practical Code & Prompt Banner (Canva MCP + NEIS API) -->
+        <div class="p-4 rounded-3xl bg-slate-900/90 border border-slate-700 flex flex-col lg:flex-row items-center justify-between gap-4">
+          <div class="text-left space-y-1 text-xs md:text-sm">
+            <div>
+              <span class="px-2 py-0.5 rounded bg-purple-500/30 text-purple-300 font-mono font-bold mr-2">MCP 설정</span>
+              <code class="text-amber-300 bg-black/60 px-2 py-0.5 rounded font-mono">"canva": { "command": "npx", "args": ["-y", "mcp-remote", "https://mcp.canva.com/mcp"] }</code>
+            </div>
+            <div>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/30 text-emerald-300 font-mono font-bold mr-2">API 프롬프트</span>
+              <span class="text-slate-200 font-mono">"나이스 급식 API(open.neis.go.kr) 연동해서 오늘 우리 학교 급식 메뉴 보여주는 위젯 넣어줘"</span>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs md:text-sm flex items-center gap-1.5 shadow transition-all whitespace-nowrap">
-              <i data-lucide="external-link" class="w-4 h-4"></i> 캔바 예시 열기
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs flex items-center gap-1 shadow">
+              <i data-lucide="palette" class="w-4 h-4"></i> 캔바 포스터 열기
+            </a>
+            <a href="https://open.neis.go.kr" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1 shadow">
+              <i data-lucide="external-link" class="w-4 h-4"></i> 나이스 오픈API 보기
             </a>
           </div>
         </div>
       </div>
     `,
     "agentInsights": {
-      "pm": "Skills와 MCP의 개념을 설명하면서 초등 교사들이 매일 쓰는 캔바(Canva)를 대표 MCP 실습 사례로 제시했습니다.",
-      "content": "mcp_config.json 파일의 캔바 연결 코드와 실제 강의용 캔바 예시 링크(https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit)를 직접 배치했습니다.",
-      "design": "스카이 vs 퍼플 카드 구조를 유지하면서 하단에 원클릭 캔바 연동 가이드 배너를 신설했습니다.",
-      "qa": "캔바 MCP 공식 npx 명령어와 외부 링크가 온전하게 연결되고 열리는지 검증했습니다.",
-      "consultant": "'AI에게 캔바 템플릿 주소를 주면 교실 게시판 포스터나 학습지를 알아서 수정해준다'는 맥락이 교사들에게 가장 매력적인 무기가 됩니다."
+      "pm": "Skills, MCP에 이어 교실 앱 개발의 핵심 축인 API(Application Programming Interface)를 추가하여 '3대 핵심 무기'로 완성했습니다.",
+      "content": "선생님들이 매일 조회하는 나이스(NEIS) 급식 API와 날씨/미세먼지 API를 가장 쉬운 실전 예시로 들어 기술 장벽을 완전히 낮췄습니다.",
+      "design": "스카이(Skills) / 퍼플(MCP) / 에메랄드(API) 3단 균형 카드 레이아웃으로 가독성을 극대화했습니다.",
+      "qa": "나이스 오픈API 포털 링크 및 캔바 디자인 링크가 정상 작동하는지 확인했습니다.",
+      "consultant": "'Skill은 일하는 요리법, MCP는 주방 도구, API는 시장에서 신선한 식재료(실시간 데이터)를 배달받는 것'이라는 삼위일체 비유가 완벽합니다."
     },
     "presenterNote": `
       🎤 [강사용 추천 원고 & 시연 멘트]:
-      - "선생님들, 'Skills'가 AI에게 '일하는 업무 매뉴얼(요리책)'을 쥐어주는 것이라면, 'MCP'는 AI 손에 '진짜 도구와 USB'를 꽂아주는 것입니다."
-      - "대표적으로 선생님들이 수업 자료 만들 때 가장 많이 쓰시는 **캔바(Canva)**를 안티그래비티와 바로 연결할 수 있습니다!"
-      - "안티그래비티 설정 파일인 \`mcp_config.json\`에 딱 세 줄, npx로 \`https://mcp.canva.com/mcp\`만 적어두면 캔바 MCP 연결이 끝납니다."
-      - "예를 들어 화면에 링크된 캔바 템플릿(https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit)을 안티그래비티에 보여주면서 '우리 반 3학년 2반 시간표 내용으로 텍스트랑 색상 바꿔줘'라고 지시하면, AI가 내 캔바 계정의 디자인을 직접 열어 뚝딱 완성해줍니다."
-      - "이제 디자인도 일일이 클릭하지 마시고, MCP로 안티그래비티에게 맡겨보세요!"
+      - "선생님들, 지금까지 배운 Skills와 MCP에 딱 하나만 더 더하면 웹앱의 신세계가 열립니다. 바로 **API(Application Programming Interface)**입니다!"
+      - "교실 요리에 비유해 볼까요?
+        1. **Skills**: 백종원 레시피 요리책 (AI가 일하는 규칙과 매뉴얼)
+        2. **MCP**: 믹서기와 오븐 (캔바, 구글 드라이브 같은 외부 프로그램 조작 도구)
+        3. **API**: 매일 아침 들어오는 신선한 식재료 배달 (실시간 급식, 날씨, 버스 도착 정보 등)"
+      - "대표적으로 교육청에서 무료로 주는 **'나이스(NEIS) 오픈 API'**가 있습니다. 키 하나만 넣으면 전국 모든 초·중·고의 오늘 점심 급식 식단표, 칼로리, 알레르기 정보를 실시간으로 내 웹앱에 띄울 수 있습니다."
+      - "안티그래비티에게 '우리 모덕초 오늘 급식 나이스 API로 가져와서 예쁘게 카드 형태로 보여줘'라고 말 한마디만 하면, AI가 API 주소를 알아서 연결해 오늘의 식단 위젯을 3초 만에 만들어냅니다!"
+      - "Skills(노하우) + MCP(캔바/도구) + API(급식/날씨 데이터) 이 3가지만 있으면 학교에서 못 만드는 앱이 없습니다!"
     `
   },
   {
