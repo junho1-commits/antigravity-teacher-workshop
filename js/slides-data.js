@@ -172,7 +172,7 @@ var SLIDES_DATA = [
                 <p class="text-purple-300 font-black flex items-center gap-1.5">
                   <i data-lucide="palette" class="w-4 h-4"></i> 🎨 Canva MCP 연결 (추천 실습):
                 </p>
-                <p class="text-xs md:text-sm text-cyan-300 break-all">• 캔바 템플릿 연동 예시: <a href="https://canva.link/u885da6pksqn87a" target="_blank" class="underline text-amber-300 hover:text-amber-200 font-bold">https://canva.link/u885da6pksqn87a</a></p>
+                <p class="text-xs md:text-sm text-cyan-300 break-all">• 캔바 템플릿 연동 예시: <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="underline text-amber-300 hover:text-amber-200 font-bold">https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit</a></p>
                 <p class="text-xs md:text-sm text-slate-300">• 안티그래비티 대화창에서 캔바 디자인 자동 생성·수정</p>
                 <p class="text-xs md:text-sm text-purple-300">• 구글 시트 출석부 / Firebase 실시간 랭킹도 MCP 하나로 끝!</p>
               </div>
@@ -193,7 +193,7 @@ var SLIDES_DATA = [
             </code>
           </div>
           <div class="flex items-center gap-2">
-            <a href="https://canva.link/u885da6pksqn87a" target="_blank" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs md:text-sm flex items-center gap-1.5 shadow transition-all whitespace-nowrap">
+            <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs md:text-sm flex items-center gap-1.5 shadow transition-all whitespace-nowrap">
               <i data-lucide="external-link" class="w-4 h-4"></i> 캔바 예시 열기
             </a>
           </div>
@@ -202,7 +202,7 @@ var SLIDES_DATA = [
     `,
     "agentInsights": {
       "pm": "Skills와 MCP의 개념을 설명하면서 초등 교사들이 매일 쓰는 캔바(Canva)를 대표 MCP 실습 사례로 제시했습니다.",
-      "content": "mcp_config.json 파일의 캔바 연결 코드와 실제 강의용 캔바 예시 링크(https://canva.link/u885da6pksqn87a)를 직접 배치했습니다.",
+      "content": "mcp_config.json 파일의 캔바 연결 코드와 실제 강의용 캔바 예시 링크(https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit)를 직접 배치했습니다.",
       "design": "스카이 vs 퍼플 카드 구조를 유지하면서 하단에 원클릭 캔바 연동 가이드 배너를 신설했습니다.",
       "qa": "캔바 MCP 공식 npx 명령어와 외부 링크가 온전하게 연결되고 열리는지 검증했습니다.",
       "consultant": "'AI에게 캔바 템플릿 주소를 주면 교실 게시판 포스터나 학습지를 알아서 수정해준다'는 맥락이 교사들에게 가장 매력적인 무기가 됩니다."
@@ -212,7 +212,7 @@ var SLIDES_DATA = [
       - "선생님들, 'Skills'가 AI에게 '일하는 업무 매뉴얼(요리책)'을 쥐어주는 것이라면, 'MCP'는 AI 손에 '진짜 도구와 USB'를 꽂아주는 것입니다."
       - "대표적으로 선생님들이 수업 자료 만들 때 가장 많이 쓰시는 **캔바(Canva)**를 안티그래비티와 바로 연결할 수 있습니다!"
       - "안티그래비티 설정 파일인 \`mcp_config.json\`에 딱 세 줄, npx로 \`https://mcp.canva.com/mcp\`만 적어두면 캔바 MCP 연결이 끝납니다."
-      - "예를 들어 화면에 링크된 캔바 템플릿(https://canva.link/u885da6pksqn87a)을 안티그래비티에 보여주면서 '우리 반 3학년 2반 시간표 내용으로 텍스트랑 색상 바꿔줘'라고 지시하면, AI가 내 캔바 계정의 디자인을 직접 열어 뚝딱 완성해줍니다."
+      - "예를 들어 화면에 링크된 캔바 템플릿(https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit)을 안티그래비티에 보여주면서 '우리 반 3학년 2반 시간표 내용으로 텍스트랑 색상 바꿔줘'라고 지시하면, AI가 내 캔바 계정의 디자인을 직접 열어 뚝딱 완성해줍니다."
       - "이제 디자인도 일일이 클릭하지 마시고, MCP로 안티그래비티에게 맡겨보세요!"
     `
   },

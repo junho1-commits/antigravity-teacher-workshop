@@ -77,9 +77,9 @@
 ```
 
 ### 2. 캔바 템플릿 연동 예시
-- **실습 예시 링크**: [https://canva.link/u885da6pksqn87a](https://canva.link/u885da6pksqn87a)
+- **실습 예시 링크**: [https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit](https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit)
 - **활용 프롬프트 예시**:
-  > *"이 캔바 템플릿 링크(https://canva.link/u885da6pksqn87a)를 참고해서 우리 학교 6학년 2학기 사회 탐구 활동지 표지 디자인을 파란색 톤으로 맞춰줘"*
+  > *"이 캔바 템플릿 링크(https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit)를 참고해서 우리 학교 6학년 2학기 사회 탐구 활동지 표지 디자인을 파란색 톤으로 맞춰줘"*
 
 ---
 
