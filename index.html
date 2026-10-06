@@ -66,6 +66,12 @@
 
     <!-- Right Quick Actions -->
     <div class="flex items-center gap-3">
+      <!-- High-visibility Intro Video Button -->
+      <button onclick="window.openIntroVideoModal()" data-tooltip="오프닝 모션그래픽 영상 (단축키: V / ㅍ)" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white border border-purple-400/40 text-xs md:text-sm font-extrabold transition-all flex items-center gap-1.5 shadow-lg shadow-purple-500/20 transform hover:scale-105 active:scale-95">
+        <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
+        <span>🎬 오프닝 영상</span>
+      </button>
+
       <!-- High-visibility PDF Export Button -->
       <button onclick="window.exportToPDF()" data-tooltip="강의 자료 PDF로 인쇄/저장 (단축키: Ctrl+P)" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border border-emerald-400/40 text-xs md:text-sm font-extrabold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20 transform hover:scale-105 active:scale-95">
         <i data-lucide="file-down" class="w-4 h-4 text-white"></i>
@@ -291,8 +297,60 @@
     </div>
   </div>
 
+  <!-- ========================================================= -->
+  <!-- INTRO MOTION GRAPHICS THEATER MODAL (오프닝 모션그래픽 극장 모드) -->
+  <!-- ========================================================= -->
+  <div id="intro-video-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-3 md:p-6 hidden">
+    <div class="glass-panel border border-indigo-500/50 rounded-3xl max-w-5xl w-full p-5 md:p-7 shadow-2xl flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700/80">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+            <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-extrabold border border-indigo-500/30">오프닝 모션그래픽</span>
+              <span class="text-xs text-slate-400 font-mono">38초 HD</span>
+            </div>
+            <h3 class="text-lg md:text-xl font-black text-white mt-0.5">왜 안티그래비티인가? (선생님의 PCK와 AI 에이전트)</h3>
+          </div>
+        </div>
+        <button onclick="window.closeIntroVideoModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all" title="닫기 (ESC)">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Video Player Frame -->
+      <div class="relative w-full rounded-2xl overflow-hidden bg-black aspect-video flex items-center justify-center shadow-2xl border border-indigo-500/30 ring-4 ring-indigo-500/10">
+        <video id="modal-intro-video" class="w-full h-full object-contain" controls preload="auto" poster="./video/poster.jpg">
+          <source src="./video/intro.mp4" type="video/mp4">
+          <source src="./모션그래픽/intro.mp4" type="video/mp4">
+          브라우저가 비디오 태그를 지원하지 않습니다.
+        </video>
+      </div>
+
+      <!-- Modal Footer Summary & Quick Action -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs md:text-sm text-slate-300">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-black border border-amber-500/30">핵심 메시지</span>
+          <span class="text-slate-200 font-semibold break-keep">"무엇을 만들지는 선생님이, 어떻게 만들지는 안티그래비티가! (코드는 AI가 씁니다)"</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.goToSlide(2); window.closeIntroVideoModal();" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-all flex items-center gap-1.5 shadow-md">
+            <span>영상 슬라이드로 이동</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+          <button onclick="window.closeIntroVideoModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-all">
+            닫기 (ESC)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="./js/slides-data.js?v=20260909_02"></script>
-  <script src="./js/app.js?v=20260909_02"></script>
+  <script src="./js/slides-data.js?v=20260928_01"></script>
+  <script src="./js/app.js?v=20260928_01"></script>
 </body>
 </html>

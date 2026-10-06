@@ -54,6 +54,35 @@
 
 ---
 
+## 🎨 캔바(Canva) MCP 연결 가이드
+
+안티그래비티와 디자인 플랫폼 **캔바(Canva)**를 MCP로 연동하면, 프롬프트 대화만으로 캔바 템플릿을 수정하고 수업용 포스터·학습지를 바로 제작할 수 있습니다.
+
+### 1. `mcp_config.json` 설정 방법
+안티그래비티 설정 폴더(`C:\Users\<사용자명>\.gemini\antigravity\mcp_config.json`) 또는 프로젝트 MCP 설정에 아래 내용을 추가합니다:
+
+```json
+{
+  "mcpServers": {
+    "canva": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.canva.com/mcp"
+      ]
+    }
+  }
+}
+```
+
+### 2. 캔바 템플릿 연동 예시
+- **실습 예시 링크**: [https://canva.link/u885da6pksqn87a](https://canva.link/u885da6pksqn87a)
+- **활용 프롬프트 예시**:
+  > *"이 캔바 템플릿 링크(https://canva.link/u885da6pksqn87a)를 참고해서 우리 학교 6학년 2학기 사회 탐구 활동지 표지 디자인을 파란색 톤으로 맞춰줘"*
+
+---
+
 ## 📁 파일 구조
 
 ```

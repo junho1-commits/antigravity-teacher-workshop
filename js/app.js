@@ -11,6 +11,7 @@ class PresentationApp {
     this.isPresenterModalOpen = false;
     this.isOverviewModalOpen = false;
     this.isFullScreen = false;
+    this.isIntroVideoModalOpen = false;
 
     this.initElements();
     this.initEvents();
@@ -31,6 +32,8 @@ class PresentationApp {
     this.presenterModal = document.getElementById('presenter-modal');
     this.overviewModal = document.getElementById('overview-modal');
     this.overviewGrid = document.getElementById('overview-grid');
+    this.introVideoModal = document.getElementById('intro-video-modal');
+    this.modalIntroVideo = document.getElementById('modal-intro-video');
 
     // 3 New Feature Elements
     this.editorToolbar = document.getElementById('editor-toolbar');
@@ -47,7 +50,7 @@ class PresentationApp {
   getStorageKey(slideIndex) {
     const pageName = decodeURIComponent(window.location.pathname.split('/').pop() || 'index.html');
     const idx = slideIndex !== undefined ? slideIndex + 1 : this.currentIndex + 1;
-    return `slide_custom_${pageName}_slide_${idx}`;
+    return `slide_custom_v3_${pageName}_slide_${idx}`;
   }
 
   initEvents() {
@@ -119,6 +122,12 @@ class PresentationApp {
         case 'M':
           this.toggleOverviewModal();
           break;
+        case 'v':
+        case 'V':
+        case 'ㅍ':
+          e.preventDefault();
+          this.toggleIntroVideoModal();
+          break;
         case 'Escape':
           this.closeAllModals();
           break;
@@ -150,6 +159,12 @@ class PresentationApp {
   // SLIDE RENDERING & LOCAL STORAGE SYNC
   // -------------------------------------------------------------
   renderSlide() {
+    // Pause any active slide video
+    const prevSlideVideo = document.getElementById('slide-intro-video');
+    if (prevSlideVideo && !prevSlideVideo.paused) {
+      prevSlideVideo.pause();
+    }
+
     const currentSlide = this.slides[this.currentIndex];
     if (!currentSlide) return;
 
@@ -570,6 +585,35 @@ class PresentationApp {
     }
   }
 
+  openIntroVideoModal() {
+    if (!this.introVideoModal) return;
+    this.closeAllModals();
+    this.introVideoModal.classList.remove('hidden');
+    this.isIntroVideoModalOpen = true;
+    if (this.modalIntroVideo) {
+      this.modalIntroVideo.currentTime = 0;
+      this.modalIntroVideo.play().catch(() => {});
+    }
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  closeIntroVideoModal() {
+    if (!this.introVideoModal) return;
+    this.introVideoModal.classList.add('hidden');
+    this.isIntroVideoModalOpen = false;
+    if (this.modalIntroVideo) {
+      this.modalIntroVideo.pause();
+    }
+  }
+
+  toggleIntroVideoModal() {
+    if (this.introVideoModal && !this.introVideoModal.classList.contains('hidden')) {
+      this.closeIntroVideoModal();
+    } else {
+      this.openIntroVideoModal();
+    }
+  }
+
   closeAllModals() {
     this.isAgentDrawerOpen = false;
     if (this.agentDrawer) this.agentDrawer.classList.add('translate-x-full');
@@ -696,6 +740,9 @@ if (document.readyState === 'loading') {
 
 
 // Global Window Helpers
+window.openIntroVideoModal = () => window.app && window.app.openIntroVideoModal();
+window.closeIntroVideoModal = () => window.app && window.app.closeIntroVideoModal();
+window.toggleIntroVideoModal = () => window.app && window.app.toggleIntroVideoModal();
 window.nextSlide = () => window.app.nextSlide();
 window.prevSlide = () => window.app.prevSlide();
 window.goToSlide = (num) => window.app.goToSlide(num);

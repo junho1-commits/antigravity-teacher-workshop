@@ -3,3 +3,5 @@ node_modules/
 *.log
 # Exclude original 96MB heavy textbook PDF (keep extracted 15-18p PDF)
 자료/society_6-2-1.pdf
+# Typecast API key
+모션그래픽/typecast_config.json
