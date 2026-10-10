@@ -629,7 +629,10 @@ class PresentationApp {
     if (this.btnToggleTeacher) this.btnToggleTeacher.classList.remove('active');
 
     const canvaMcpModal = document.getElementById('canva-mcp-modal');
-    if (canvaMcpModal) canvaMcpModal.classList.add('hidden');
+    if (canvaMcpModal) {
+      canvaMcpModal.classList.add('hidden');
+      canvaMcpModal.style.display = 'none';
+    }
   }
 
   updateAgentDrawerContent(slide) {
@@ -768,8 +771,17 @@ window.openCanvaMcpModal = () => {
   const modal = document.getElementById('canva-mcp-modal');
   if (modal) {
     modal.classList.remove('hidden');
-    if (window.lucide) window.lucide.createIcons();
-    if (window.playTone) window.playTone(660, 100);
+    modal.style.display = 'flex';
+    try {
+      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+    } catch (e) {
+      console.warn('Lucide icon init warning:', e);
+    }
+    try {
+      if (window.playTone) window.playTone(660, 100);
+    } catch (e) {}
+  } else {
+    console.error('Canva MCP modal element not found!');
   }
 };
 
@@ -777,6 +789,7 @@ window.closeCanvaMcpModal = () => {
   const modal = document.getElementById('canva-mcp-modal');
   if (modal) {
     modal.classList.add('hidden');
+    modal.style.display = 'none';
   }
 };
 
