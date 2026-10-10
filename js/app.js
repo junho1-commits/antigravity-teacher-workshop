@@ -627,6 +627,9 @@ class PresentationApp {
     this.isTeacherDrawerOpen = false;
     if (this.teacherDrawer) this.teacherDrawer.classList.remove('open');
     if (this.btnToggleTeacher) this.btnToggleTeacher.classList.remove('active');
+
+    const canvaMcpModal = document.getElementById('canva-mcp-modal');
+    if (canvaMcpModal) canvaMcpModal.classList.add('hidden');
   }
 
   updateAgentDrawerContent(slide) {
@@ -759,6 +762,70 @@ window.editorHideElement = () => window.app.editorHideElement();
 window.editorHideSlide = () => window.app.editorHideSlide();
 window.editorResetSlide = () => window.app.editorResetSlide();
 window.closeAllModals = () => window.app.closeAllModals();
+
+// Canva MCP Detailed Modal Handlers
+window.openCanvaMcpModal = () => {
+  const modal = document.getElementById('canva-mcp-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    if (window.lucide) window.lucide.createIcons();
+    if (window.playTone) window.playTone(660, 100);
+  }
+};
+
+window.closeCanvaMcpModal = () => {
+  const modal = document.getElementById('canva-mcp-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+};
+
+window.copyCanvaMcpConfig = () => {
+  const config = JSON.stringify({
+    "mcpServers": {
+      "canva": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "mcp-remote",
+          "https://mcp.canva.com/mcp"
+        ]
+      }
+    }
+  }, null, 2);
+
+  const notifySuccess = () => {
+    const btnTexts = document.querySelectorAll('#copy-btn-text');
+    btnTexts.forEach(el => {
+      const orig = el.innerText;
+      el.innerText = '✓ 복사 완료!';
+      setTimeout(() => { el.innerText = orig; }, 2000);
+    });
+    if (window.playTone) window.playTone(880, 150);
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(config).then(notifySuccess).catch(() => {
+      fallbackCopy(config);
+    });
+  } else {
+    fallbackCopy(config);
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      notifySuccess();
+    } catch (e) {
+      alert('클립보드 복사에 실패했습니다.');
+    }
+    document.body.removeChild(ta);
+  }
+};
 
 // -------------------------------------------------------------
 // Interactive Widgets Handlers

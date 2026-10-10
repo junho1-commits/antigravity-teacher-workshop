@@ -345,6 +345,178 @@
           </button>
         </div>
       </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- CANVA MCP DETAILED GUIDE MODAL (캔바 MCP 연동 상세 매뉴얼 세부 페이지) -->
+  <!-- ========================================================= -->
+  <div id="canva-mcp-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 md:p-6 hidden">
+    <div class="glass-panel border-2 border-purple-500/50 rounded-3xl max-w-5xl w-full max-h-[92vh] p-6 md:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-700/80 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
+            <i data-lucide="plug-zap" class="w-6 h-6 text-amber-300"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/30 text-purple-200 font-extrabold border border-purple-400/40">MCP 실전 연동 세부 매뉴얼</span>
+              <span class="text-xs text-amber-300 font-mono font-bold">⏱ 1분 완성 가이드</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-white mt-0.5 flex items-center gap-2">
+              <span>안티그래비티 × 캔바(Canva) MCP 연결 완전 정복</span>
+            </h3>
+          </div>
+        </div>
+        <button onclick="window.closeCanvaMcpModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all" title="닫기 (ESC)">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable Detailed Steps) -->
+      <div class="py-5 overflow-y-auto pr-2 space-y-6 flex-1 text-slate-200">
+        
+        <!-- Intro Hero Banner -->
+        <div class="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-purple-950/60 via-slate-900 to-indigo-950/60 border border-purple-500/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <h4 class="text-lg md:text-xl font-black text-white flex items-center gap-2 justify-center sm:justify-start">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+              <span>왜 안티그래비티와 캔바를 연결할까요?</span>
+            </h4>
+            <p class="text-xs md:text-sm text-slate-300 font-medium break-keep">
+              복잡한 그래픽 툴을 직접 만지지 않아도 <strong>"우리 학교 축제 포스터 제목 바꿔줘", "가정통신문 안내장 표지를 파란색 톤으로 맞춰줘"</strong>라고 말만 하면 안티그래비티가 캔바 디자인을 직접 열고 수정해 줍니다!
+            </p>
+          </div>
+          <div class="shrink-0 flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-xl bg-purple-500/20 text-purple-200 text-xs font-bold border border-purple-500/40">교사용 캔바 무료 계정 100% 호환</span>
+          </div>
+        </div>
+
+        <!-- 4 Step Detailed Guide Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Step 1 -->
+          <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-black">1단계</span>
+                <i data-lucide="settings" class="w-5 h-5 text-indigo-400"></i>
+              </div>
+              <h4 class="text-base md:text-lg font-black text-white mb-2">안티그래비티 MCP 설정창 열기</h4>
+              <p class="text-xs md:text-sm text-slate-300 leading-relaxed font-medium break-keep mb-3">
+                안티그래비티 화면 왼쪽 아래의 <strong>톱니바퀴 아이콘 (Settings)</strong> ➔ <strong>[MCP Servers]</strong> 메뉴를 클릭하거나, 설정 파일을 직접 엽니다.
+              </p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 break-all">
+              📁 설정 파일 위치: <br>
+              <code class="text-sky-300">~/.gemini/antigravity/mcp_config.json</code>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="p-5 rounded-2xl bg-slate-900/90 border border-purple-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-black">2단계 (핵심)</span>
+                <button onclick="window.copyCanvaMcpConfig()" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all flex items-center gap-1 shadow">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span id="copy-btn-text">코드 복사하기</span>
+                </button>
+              </div>
+              <h4 class="text-base md:text-lg font-black text-white mb-2">캔바 공식 MCP 원격 서버 코드 등록</h4>
+              <p class="text-xs md:text-sm text-slate-300 leading-relaxed font-medium break-keep mb-3">
+                설정 파일의 <code>mcpServers</code> 항목 안에 아래 <strong>캔바 원격 MCP 주소</strong>를 그대로 붙여넣습니다. (별도 설치 없이 npx로 1초 실행)
+              </p>
+            </div>
+            <div class="relative bg-slate-950 p-3 rounded-xl border border-purple-500/30 text-xs font-mono text-amber-300 overflow-x-auto">
+              <pre id="canva-mcp-code"><code>{
+  "mcpServers": {
+    "canva": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.canva.com/mcp"
+      ]
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black">3단계</span>
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+              </div>
+              <h4 class="text-base md:text-lg font-black text-white mb-2">캔바 계정 1회 로그인 및 권한 승인</h4>
+              <p class="text-xs md:text-sm text-slate-300 leading-relaxed font-medium break-keep mb-3">
+                설정 저장 후 안티그래비티 대화창에서 캔바 작업을 요청하면, 웹 브라우저에 <strong>캔바 공식 로그인 및 연동 허용창</strong>이 자동으로 뜹니다.
+              </p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-300">
+              ✨ <strong>[승인(Allow)]</strong> 버튼을 한 번만 누르면 연동 끝! (복잡한 API 키 발급 전혀 불필요)
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black">4단계</span>
+                <i data-lucide="message-square-code" class="w-5 h-5 text-amber-400"></i>
+              </div>
+              <h4 class="text-base md:text-lg font-black text-white mb-2">대화창에서 한국어로 지시하기</h4>
+              <p class="text-xs md:text-sm text-slate-300 leading-relaxed font-medium break-keep mb-3">
+                캔바 템플릿 링크를 대화창에 복사해 넣고 바꾸고 싶은 글자나 스타일을 한국어로 편안하게 말씀하세요.
+              </p>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-amber-200">
+              💬 <em>"이 캔바 템플릿(https://www.canva.com/...)에서 축제 날짜를 10월 25일로 고쳐줘"</em>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Live Practice Box & FAQ -->
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
+          <h4 class="text-sm font-black text-slate-200 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-purple-400"></i>
+            <span>선생님들이 가장 자주 묻는 질문 (FAQ)</span>
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+            <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+              <strong class="text-white block mb-1">Q. Node.js나 npx가 없다고 에러가 나면요?</strong>
+              <span>포털 사이트에서 <strong>'Node.js'</strong>를 검색해 LTS 버전(무료)을 한 번만 설치해 주시면 바로 해결됩니다.</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+              <strong class="text-white block mb-1">Q. 학교 컴퓨터 망이나 보안에 걸리지 않나요?</strong>
+              <span>캔바의 공식 HTTPS 웹 표준 주소(<code>https://mcp.canva.com/mcp</code>)로 직접 통신하므로 학교 교내망에서도 안전하게 작동합니다.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="pt-4 border-t border-slate-700/80 flex flex-wrap justify-between items-center gap-3 shrink-0">
+        <div class="flex items-center gap-3">
+          <a href="https://www.canva.com/design/DAHXPUCxF8U/r87SYS62LuMQJQafm3Ztgw/edit" target="_blank" class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs md:text-sm flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all transform hover:scale-105 active:scale-95">
+            <i data-lucide="palette" class="w-4 h-4"></i>
+            <span>🎨 모덕초 축제 캔바 템플릿 직접 열기</span>
+          </a>
+          <button onclick="window.copyCanvaMcpConfig()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs md:text-sm flex items-center gap-2 transition-all">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>설정 JSON 복사</span>
+          </button>
+        </div>
+        <button onclick="window.closeCanvaMcpModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs md:text-sm transition-all">
+          닫기 (ESC)
+        </button>
+      </div>
+
     </div>
   </div>
 
