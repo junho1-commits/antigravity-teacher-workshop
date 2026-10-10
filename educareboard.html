@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에듀케어보드 (EduCareBoard) - 스마트 학급 경영</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body { font-family: 'Inter', 'Gowun Dodum', sans-serif; background-color: #f8f9fa; user-select: none; overflow: hidden; }
+        .wood-pattern { background-color: #3d2314; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 100% 4px; }
+        .sidebar-item { transition: all 0.2s; cursor: pointer; }
+        .sidebar-item.active { background-color: #1a1a1a; color: white; border-radius: 12px; }
+        .sidebar-item:not(.active):hover { background-color: #f3f4f6; }
+        .card-pop { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s; }
+        .card-pop:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); }
+        .tab-item { cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .tab-item.active { border-bottom-color: #4f46e5; color: #1a1a1a; font-weight: 800; }
+        @keyframes float-up { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-60px); opacity: 0; } }
+        .floating-score { animation: float-up 0.8s ease-out forwards; position: absolute; z-index: 50; pointer-events: none; }
+        .main-container { height: 100vh; display: flex; }
+        .content-area { flex: 1; overflow-y: auto; background-color: #f3f4f6; min-width: 0; }
+        #classroom-rotation-container { transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: center center; }
+        .inverted-mode #classroom-rotation-container { transform: rotate(180deg); }
+        .inverted-mode .desk-card-active, .inverted-mode .desk-empty-active, .inverted-mode .cluster-label, .inverted-mode #main-chalkboard { transform: rotate(-180deg); }
+        #thermometer-fill { transition: width 1s ease-out; }
+        @media print { .no-print { display: none !important; } body { background: white !important; } }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- [왼쪽 사이드바: 학급 온도계 포함] -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col p-4 z-50 no-print shrink-0">
+            <div class="flex items-center justify-between mb-8 px-2">
+                <div class="flex items-center gap-2">
+                    <div class="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm">6-3</div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+                </div>
+            </div>
+
+            <nav class="flex-grow space-y-1">
+                <div onclick="switchView('classroom')" id="menu-classroom" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-bold">
+                    <i class="fa-solid fa-user-circle text-lg"></i> <span>교실</span>
+                </div>
+                <div onclick="switchView('report')" id="menu-report" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-600">
+                    <i class="fa-solid fa-file-invoice text-lg"></i> <span>학생 리포트</span>
+                </div>
+                <div onclick="switchView('tools')" id="menu-tools" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-600">
+                    <i class="fa-solid fa-toolbox text-lg text-amber-500"></i> <span>수업 도구</span>
+                </div>
+            </nav>
+
+            <!-- 학급 온도계 영역 -->
+            <div class="mt-auto px-2 mb-6">
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 shadow-inner">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-black text-indigo-600 uppercase tracking-tighter flex items-center gap-1.5">
+                            <i class="fa-solid fa-temperature-three-quarters animate-pulse"></i> 우리 반 온도계
+                        </span>
+                        <button onclick="openGoalSetting()" class="text-gray-300 hover:text-indigo-500 transition text-[10px]"><i class="fa-solid fa-gear"></i></button>
+                    </div>
+                    <div class="flex items-end justify-between mb-1.5">
+                        <span class="text-2xl font-black text-gray-800" id="class-total-pts">0</span>
+                        <span class="text-[10px] font-bold text-gray-400" id="class-target-label">목표 500점</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="thermometer-fill" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full w-0"></div>
+                    </div>
+                    <p class="text-[9px] text-gray-400 font-bold mt-2 text-right" id="thermometer-percent">현재 달성률 0%</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-gray-50 rounded-xl p-1 space-y-0.5">
+                    <div class="flex items-center justify-between px-3 py-2 text-[11px] font-bold text-gray-500 hover:bg-white rounded-lg cursor-pointer"><span>전체 가이드 & FAQ</span> <i class="fa-solid fa-arrow-right text-[9px]"></i></div>
+                </div>
+                <div class="border-t pt-4 flex items-center gap-3 px-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden"><i class="fa-solid fa-user"></i></div>
+                    <span class="text-xs font-bold text-gray-700">조준호 선생님</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- [메인 콘텐츠 영역] -->
+        <main class="content-area flex flex-col">
+            <!-- [교실 뷰] -->
+            <div id="view-classroom" class="view-content flex flex-col min-h-full">
+                <header class="bg-white border-b border-gray-200 px-8 no-print shrink-0">
+                    <div class="flex items-center gap-10">
+                        <div onclick="switchClassroomSubTab('seats')" id="classroom-tab-seats" class="tab-item py-4 text-sm font-semibold text-gray-800 active">자리배치도</div>
+                        <div onclick="switchClassroomSubTab('points')" id="classroom-tab-points" class="tab-item py-4 text-sm font-semibold text-gray-400">포인트</div>
+                        <div onclick="switchClassroomSubTab('students')" id="classroom-tab-students" class="tab-item py-4 text-sm font-semibold text-gray-400">학생명단관리</div>
+                    </div>
+                </header>
+
+                <!-- 1) 자리배치도 서브뷰 -->
+                <div id="subview-seats" class="classroom-sub-content flex-grow flex flex-col">
+                    <div class="px-6 py-4 flex items-center justify-between no-print shrink-0 flex-wrap gap-3">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <select id="layout-select" onchange="loadLayout(this.value)" class="bg-white border border-gray-300 rounded-xl px-4 py-2 font-bold text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm"></select>
+                            <input type="text" id="new-layout-name" placeholder="새 배치도 이름" class="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold shadow-sm outline-none w-32 focus:ring-1 focus:ring-indigo-500">
+                            <button onclick="saveCurrentLayout()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition">새 배치도 저장</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.print()" class="bg-white border border-gray-300 text-gray-600 p-2.5 rounded-xl hover:bg-gray-50 transition"><i class="fa-solid fa-print"></i></button>
+                            <button onclick="toggleEditMode()" id="edit-mode-btn" class="bg-white border border-gray-300 text-gray-600 p-2.5 rounded-xl hover:bg-gray-50 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="openCardSettingsModal()" class="bg-white border border-gray-300 text-gray-600 p-2.5 rounded-xl hover:bg-gray-50 transition"><i class="fa-solid fa-gear"></i></button>
+                            <button onclick="triggerAutoSeat()" class="bg-rose-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:bg-rose-600 transition">자동 자리배치 하기</button>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow p-6 flex flex-col justify-center overflow-y-auto no-print">
+                        <div id="classroom-rotation-container" class="w-full max-w-7xl mx-auto flex flex-col gap-6">
+                            <div class="flex justify-center" id="board-position-container">
+                                <div id="main-chalkboard" class="w-full max-w-lg bg-emerald-800 border-4 border-yellow-900/40 rounded-xl py-2.5 text-center text-white font-bold text-sm shadow-lg wood-pattern flex items-center justify-center gap-3">
+                                    <span class="tracking-[1em] ml-4 select-none">칠판</span>
+                                    <button onclick="toggleViewInversion()" class="bg-emerald-700/50 hover:bg-emerald-600 border border-emerald-500/30 text-white px-3 py-1 rounded-full text-[10px] font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-arrows-up-down"></i> <span id="view-dir-label">교사 시점</span></button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="desks-grid-container">
+                                <div id="cluster-block-left" class="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-gray-200/50 relative"><div id="label-cluster-left" class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 text-gray-400 text-[9px] px-3 py-0.5 rounded-full font-bold uppercase tracking-widest cluster-label">1 분단</div><div class="grid grid-cols-2 gap-4" id="cluster-left"></div></div>
+                                <div id="cluster-block-center" class="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-gray-200/50 relative"><div id="label-cluster-center" class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 text-gray-400 text-[9px] px-3 py-0.5 rounded-full font-bold uppercase tracking-widest cluster-label">2 분단</div><div class="grid grid-cols-2 gap-4" id="cluster-center"></div></div>
+                                <div id="cluster-block-right" class="bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-gray-200/50 relative"><div id="label-cluster-right" class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-100 text-gray-400 text-[9px] px-3 py-0.5 rounded-full font-bold uppercase tracking-widest cluster-label">3 분단</div><div class="grid grid-cols-2 gap-4" id="cluster-right"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2) 포인트 관리 서브뷰 -->
+                <div id="subview-points" class="classroom-sub-content hidden p-6 overflow-y-auto flex-grow space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white border rounded-3xl p-6 shadow-sm"><h4 class="font-black text-blue-600 mb-4 flex items-center gap-1.5"><i class="fa-solid fa-star text-amber-400"></i> 좋음 (으쓱 카드)</h4><div id="points-list-positive" class="space-y-3"></div></div>
+                        <div class="bg-white border rounded-3xl p-6 shadow-sm"><h4 class="font-black text-rose-600 mb-4 flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation text-rose-400"></i> 노력 (머쓱 카드)</h4><div id="points-list-negative" class="space-y-3"></div></div>
+                    </div>
+                </div>
+
+                <!-- 3) 학생명단관리 서브뷰 -->
+                <div id="subview-students" class="classroom-sub-content hidden p-6 overflow-y-auto flex-grow">
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-black text-gray-800">학생 명단 관리</h3>
+                            <div class="flex gap-2">
+                                <button onclick="openBackupModal()" class="bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl text-xs font-bold border border-emerald-100"><i class="fa-solid fa-cloud-arrow-down"></i> 구글 연동</button>
+                                <button onclick="addNewStudentRow()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md"><i class="fa-solid fa-plus-circle"></i> 학생추가</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead><tr class="border-b text-gray-400 text-xs bg-gray-50"><th class="p-3 text-center">캐릭터</th><th>번호*</th><th>이름*</th><th>성별</th><th class="text-right p-3">숨김/삭제</th></tr></thead>
+                                <tbody id="student-manage-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [학생 리포트 뷰] -->
+            <div id="view-report" class="view-content hidden flex flex-col min-h-full">
+                <header class="bg-white border-b border-gray-200 px-8 no-print shrink-0">
+                    <div class="flex items-center gap-10">
+                        <div onclick="switchReportSubTab('class')" id="report-tab-class" class="tab-item py-4 text-sm font-semibold text-gray-800 active">학급 전체</div>
+                        <div onclick="switchReportSubTab('individual')" id="report-tab-individual" class="tab-item py-4 text-sm font-semibold text-gray-400">개인별</div>
+                    </div>
+                </header>
+
+                <div class="p-8 flex-grow overflow-y-auto bg-gray-50">
+                    <!-- 학급 전체 리포트 -->
+                    <div id="report-view-class" class="max-w-5xl mx-auto space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-2xl font-black text-gray-800">학급 전체 포인트 현황</h2>
+                            <div class="flex items-center gap-1 bg-white border p-1 rounded-xl shadow-sm">
+                                <button onclick="changePeriodFilter('all')" id="class-period-all" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">전체</button>
+                                <button onclick="changePeriodFilter('day')" id="class-period-day" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500">일간</button>
+                                <button onclick="changePeriodFilter('month')" id="class-period-month" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500">월간</button>
+                                <button onclick="changePeriodFilter('custom')" id="class-period-custom" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500">직접선택</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 직접 선택용 날짜 입력기 영역 -->
+                        <div id="class-custom-dates" class="hidden flex items-center gap-1.5 mt-2 bg-white p-3 rounded-2xl border w-fit shadow-sm">
+                            <input type="date" id="class-start-date" onchange="onCustomDateChange('class')" class="bg-gray-50 border rounded-lg px-2.5 py-1 text-xs outline-none font-bold">
+                            <span class="text-gray-400 text-xs">~</span>
+                            <input type="date" id="class-end-date" onchange="onCustomDateChange('class')" class="bg-gray-50 border rounded-lg px-2.5 py-1 text-xs outline-none font-bold">
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-2 space-y-6">
+                                <div class="bg-white p-8 rounded-3xl border border-gray-200 flex items-center justify-center gap-12 shadow-sm">
+                                    <div class="text-center"><p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">좋음</p><div class="flex items-center gap-3"><i class="fa-solid fa-star text-3xl text-blue-500"></i> <span id="class-stat-pos" class="text-4xl font-black text-blue-600">0</span></div></div>
+                                    <div class="text-2xl text-gray-300 font-light">-</div>
+                                    <div class="text-center"><p class="text-[10px] font-bold text-rose-500 uppercase tracking-wider mb-1">노력</p><div class="flex items-center gap-3"><i class="fa-solid fa-star text-3xl text-rose-500"></i> <span id="class-stat-neg" class="text-4xl font-black text-rose-600">0</span></div></div>
+                                    <div class="text-2xl text-gray-300 font-light">=</div>
+                                    <div class="text-center"><p class="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-1">총점</p><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-3xl text-amber-500"></i> <span id="class-stat-total" class="text-4xl font-black text-amber-600">0</span></div></div>
+                                </div>
+                                <div class="bg-white p-8 rounded-3xl border border-gray-200 h-80 flex flex-col items-center justify-center relative shadow-sm">
+                                    <p class="absolute top-6 left-8 text-sm font-bold text-gray-400">포인트별 점수 통계</p>
+                                    <canvas id="class-score-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-3xl border border-gray-200 flex flex-col h-[520px] shadow-sm">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="font-black text-gray-800">포인트 지급 내역</h4>
+                                    <button onclick="exportToCSV()" class="text-[10px] font-bold text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-file-excel"></i> 엑셀 다운로드</button>
+                                </div>
+                                <div class="flex-grow overflow-y-auto space-y-4 pr-1" id="class-history-timeline"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 개인별 리포트 -->
+                    <div id="report-view-individual" class="hidden max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6 h-[72vh]">
+                        <div class="bg-white rounded-3xl border overflow-hidden flex flex-col">
+                            <div class="p-4 border-b bg-gray-50"><input type="text" id="report-search" oninput="filterReportStudents()" placeholder="학생 검색..." class="w-full border rounded-xl px-3 py-2 text-xs outline-none font-bold"></div>
+                            <div id="report-student-list" class="flex-grow overflow-y-auto p-2"></div>
+                        </div>
+                        <div class="lg:col-span-3 bg-white rounded-3xl border p-8 overflow-y-auto relative">
+                            <div id="report-placeholder" class="h-full flex flex-col items-center justify-center text-gray-300 gap-4 opacity-50"><i class="fa-solid fa-user-check text-8xl"></i><p class="font-bold">학생을 선택해주세요.</p></div>
+                            <div id="report-main-view" class="hidden space-y-8">
+                                <div class="flex items-center justify-between border-b pb-4 flex-wrap gap-3">
+                                    <div class="flex items-center gap-4"><span id="report-active-avatar" class="text-6xl">🦁</span><div><h4 id="report-active-name" class="text-3xl font-black">심지호</h4><p id="report-active-num" class="text-xs text-gray-500 font-bold">No.29</p></div></div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <button onclick="printStudentReport()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-md flex items-center gap-1.5"><i class="fa-solid fa-print"></i> 리포트 출력</button>
+                                        <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl shadow-inner">
+                                            <button onclick="changePeriodFilter('all')" id="ind-period-all" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">전체</button>
+                                            <button onclick="changePeriodFilter('day')" id="ind-period-day" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500">일간</button>
+                                            <button onclick="changePeriodFilter('month')" id="ind-period-month" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500">월간</button>
+                                            <button onclick="changePeriodFilter('custom')" id="ind-period-custom" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500">직접선택</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 개인별 직접선택 날짜 선택기 -->
+                                <div id="ind-custom-dates" class="hidden flex items-center gap-1.5 mt-2 bg-gray-50 p-3 rounded-2xl border w-fit shadow-sm">
+                                    <input type="date" id="report-start-date" onchange="onCustomDateChange('ind')" class="bg-white border rounded-lg px-2.5 py-1 text-xs outline-none font-bold">
+                                    <span class="text-gray-400 text-xs">~</span>
+                                    <input type="date" id="report-end-date" onchange="onCustomDateChange('ind')" class="bg-white border rounded-lg px-2.5 py-1 text-xs outline-none font-bold">
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-6">
+                                    <div class="bg-blue-50 p-6 rounded-3xl text-center border"><p class="text-[10px] font-bold text-blue-500">누적 좋음 (+)</p><p id="stat-pos" class="text-3xl font-black text-blue-600">+0</p></div>
+                                    <div class="bg-rose-50 p-6 rounded-3xl text-center border"><p class="text-[10px] font-bold text-rose-500">누적 노력 (-)</p><p id="stat-neg" class="text-3xl font-black text-rose-600">-0</p></div>
+                                    <div class="bg-amber-50 p-6 rounded-3xl text-center border"><p class="text-[10px] font-bold text-amber-500">현재 총점</p><p id="stat-total" class="text-3xl font-black text-amber-600">0점</p></div>
+                                </div>
+                                <div class="bg-gray-50 rounded-3xl p-6 h-64 flex items-center justify-center border relative"><canvas id="score-chart"></canvas></div>
+                                <div id="report-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [수업 도구 뷰] -->
+            <div id="view-tools" class="view-content hidden p-10 bg-gray-50 h-full overflow-y-auto">
+                <div class="max-w-4xl mx-auto space-y-8">
+                    <h2 class="text-3xl font-black text-gray-800 flex items-center gap-3"><i class="fa-solid fa-toolbox text-amber-500"></i> 수업 유틸리티 도구</h2>
+                    <div class="grid grid-cols-2 gap-6">
+                        <button onclick="triggerRandomPick()" class="bg-white border p-8 rounded-[40px] shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all flex flex-col items-center gap-4 text-center">
+                            <div class="bg-indigo-50 text-indigo-600 w-20 h-20 rounded-3xl flex items-center justify-center text-3xl"><i class="fa-solid fa-shuffle"></i></div>
+                            <div><h3 class="text-xl font-black">발표자 랜덤 뽑기</h3><p class="text-sm text-gray-400 mt-1">공정한 발표자 선정</p></div>
+                        </button>
+                        <button onclick="openTimerModal()" class="bg-white border p-8 rounded-[40px] shadow-sm hover:shadow-xl hover:border-blue-200 transition-all flex flex-col items-center gap-4 text-center">
+                            <div class="bg-blue-50 text-blue-600 w-20 h-20 rounded-3xl flex items-center justify-center text-3xl"><i class="fa-solid fa-clock"></i></div>
+                            <div><h3 class="text-xl font-black">집중 활동 타이머</h3><p class="text-sm text-gray-400 mt-1">남은 시간을 관리해요</p></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- [공통 모달 섹션] -->
+    <!-- 목표 점수 설정 모달 -->
+    <div id="goal-setting-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl">
+            <h3 class="text-lg font-black text-gray-800 mb-4">온도계 목표 설정</h3>
+            <div class="space-y-4">
+                <div><label class="text-[10px] font-bold text-gray-400 ml-1">달성 목표 포인트</label><input type="number" id="target-score-input" class="w-full mt-1 bg-gray-50 border rounded-2xl px-4 py-3 text-sm font-black focus:ring-2 focus:ring-indigo-500 outline-none"></div>
+                <div class="flex gap-2"><button onclick="saveGoalScore()" class="bg-indigo-600 text-white font-bold flex-1 py-3 rounded-2xl text-sm shadow-md transition">저장</button><button onclick="closeGoalSetting()" class="bg-gray-100 text-gray-400 font-bold px-5 py-3 rounded-2xl text-sm transition">취소</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 구글 시트 연동 모달 -->
+    <div id="backup-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+            <div class="bg-emerald-600 text-white px-6 py-5 flex items-center justify-between"><h3 class="font-bold flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down"></i> 구글 스프레드시트 통합 백업 연동</h3><button onclick="closeBackupModal()"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="p-6 space-y-4">
+                <div><label class="text-xs font-bold text-gray-600">구글 Apps Script URL</label><div class="flex gap-2 mt-1"><input type="text" id="gas-url" class="flex-grow border rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"><button onclick="saveGasUrl()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">저장</button></div></div>
+                <div class="grid grid-cols-2 gap-2"><button onclick="fetchFromGoogleSheets()" class="border-2 border-emerald-500 text-emerald-700 py-3 rounded-2xl font-bold text-sm hover:bg-emerald-50 transition">시트에서 로드</button><button onclick="saveToGoogleSheets()" class="bg-emerald-600 text-white py-3 rounded-2xl font-bold text-sm">시트에 저장</button></div>
+                <textarea id="csv-textarea" class="w-full h-24 bg-gray-50 border rounded-xl p-3 text-[10px] font-mono outline-none" placeholder="번호,이름,아바타,점수..."></textarea>
+                <div class="flex gap-2"><button onclick="exportToCSV()" class="bg-gray-100 flex-1 py-2 rounded-xl text-xs font-bold">CSV 내보내기</button><button onclick="importFromCSV()" class="bg-amber-600 text-white flex-1 py-2 rounded-xl text-xs font-bold">CSV 덮어쓰기</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 카드 커스텀 설정 모달 -->
+    <div id="card-settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-gray-100 flex flex-col transform transition-all duration-300">
+            <div class="bg-indigo-600 text-white px-6 py-4 flex items-center justify-between"><h3 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-tags"></i> 으쓱 / 머쓱 카드 설정</h3><button onclick="closeCardSettingsModal()"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="p-6 overflow-y-auto max-h-[75vh] flex flex-col gap-4">
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4">
+                    <form id="new-card-form" onsubmit="addCustomCard(event)" class="grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
+                        <div><label class="text-[9px] font-bold text-gray-500">종류</label><select id="new-card-type" class="w-full mt-1 px-3 py-2 bg-white border rounded-xl text-xs font-semibold"><option value="positive">🌟 으쓱 (칭찬)</option><option value="negative">🌧️ 머쓱 (노력)</option></select></div>
+                        <div><label class="text-[9px] font-bold text-gray-500">이모지</label><input type="text" id="new-card-emoji" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs text-center font-bold" readonly placeholder="선택"></div>
+                        <div><label class="text-[9px] font-bold text-gray-500">지도 내용</label><input type="text" id="new-card-label" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs" required placeholder="내용 입력"></div>
+                        <div class="flex gap-1"><div class="flex-grow"><label class="text-[9px] font-bold text-gray-500">점수</label><input type="number" id="new-card-pts" class="w-full mt-1 px-3 py-2 border rounded-xl text-xs text-center" required></div><button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition h-[36px] self-end">+</button></div>
+                    </form>
+                    <div class="mt-3 pt-3 border-t flex flex-wrap gap-1" id="emoji-picker-grid">
+                        <button type="button" onclick="pickEmoji('🌟')" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded border">🌟</button>
+                        <button type="button" onclick="pickEmoji('🏆')" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded border">🏆</button>
+                        <button type="button" onclick="pickEmoji('👏')" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded border">👏</button>
+                        <button type="button" onclick="pickEmoji('📚')" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded border">📚</button>
+                        <button type="button" onclick="pickEmoji('📢')" class="w-7 h-7 flex items-center justify-center hover:bg-white rounded border">📢</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="bg-white border rounded-2xl p-3"><h5 class="text-[10px] font-bold text-indigo-600 mb-2">등록된 으쓱 카드</h5><div id="card-list-positive" class="space-y-1.5 max-h-40 overflow-y-auto"></div></div>
+                    <div class="bg-white border rounded-2xl p-3"><h5 class="text-[10px] font-bold text-rose-600 mb-2">등록된 머쓱 카드</h5><div id="card-list-negative" class="space-y-1.5 max-h-40 overflow-y-auto"></div></div>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-gray-50 border-t text-right"><button onclick="closeCardSettingsModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md">설정 완료</button></div>
+        </div>
+    </div>
+
+    <!-- 알림창/토스트 -->
+    <div id="alert-modal" class="fixed top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-4 rounded-3xl shadow-2xl z-[200] flex items-center gap-3 transform transition-all duration-300 scale-90 opacity-0 pointer-events-none border border-white/10"><i class="fa-solid fa-circle-info text-indigo-400" id="alert-icon"></i><span class="text-sm font-black" id="alert-message"></span></div>
+
+    <!-- 대표 캐릭터 선택 팝업 모달 -->
+    <div id="edit-student-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl border border-gray-100 relative">
+            <h3 class="text-xl font-black text-gray-800 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-indigo-500"></i> 학생 정보 설정
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 ml-1">출석번호</label>
+                    <input type="number" id="edit-std-num" class="w-full mt-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold" placeholder="번호">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 ml-1">이름</label>
+                    <input type="text" id="edit-std-name" class="w-full mt-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold" placeholder="이름">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 ml-1">대표 이모지 캐릭터</label>
+                    <div class="grid grid-cols-6 gap-2 mt-2 max-h-32 overflow-y-auto p-1 border border-gray-100 rounded-2xl" id="avatar-selector-grid"></div>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-8">
+                <button onclick="saveStudentDetails()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-5 rounded-2xl flex-grow text-sm shadow-md transition">저장</button>
+                <button onclick="closeEditStudentModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold py-3 px-5 rounded-2xl text-sm transition">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 피드백 행동 으쓱/머쓱 모달 -->
+    <div id="feedback-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col transition-all duration-300 scale-95 opacity-0" id="feedback-modal-content">
+            <div class="bg-indigo-600 p-8 text-white relative">
+                <button onclick="closeFeedbackModal()" class="absolute right-6 top-6 bg-black/10 w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/20 transition"><i class="fa-solid fa-xmark"></i></button>
+                <div class="flex items-center gap-6"><span class="text-6xl drop-shadow-md" id="modal-student-avatar"></span><div><h2 class="text-3xl font-black" id="modal-student-name"></h2><p class="text-sm font-bold text-white/70 mt-1" id="modal-student-info"></p></div></div>
+            </div>
+            <div class="flex border-b border-gray-100"><button onclick="setFeedbackTab('positive')" id="tab-btn-pos" class="flex-1 py-5 text-center font-black text-sm border-b-4 border-indigo-600 text-indigo-600 transition">으쓱 카드</button><button onclick="setFeedbackTab('negative')" id="tab-btn-neg" class="flex-1 py-5 text-center font-black text-sm border-b-4 border-transparent text-gray-400 transition">머쓱 카드</button></div>
+            <div class="p-8 grid grid-cols-2 gap-4" id="feedback-options-container"></div>
+            <div class="px-8 py-4 bg-gray-50 text-right"><button onclick="closeFeedbackModal()" class="text-sm font-bold text-gray-400 hover:text-gray-600">닫기</button></div>
+        </div>
+    </div>
+
+    <!-- 집중 활동 타이머 모달 -->
+    <div id="timer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-[40px] p-8 text-center shadow-2xl border border-gray-100">
+            <h3 class="text-lg font-black text-gray-400 mb-4 tracking-widest uppercase">Focus Timer</h3>
+            <div id="timer-display" class="text-7xl font-black text-slate-800 my-10 tabular-nums">03:00</div>
+            <div class="flex gap-2"><button id="timer-run-btn" onclick="toggleTimer()" class="bg-blue-600 text-white font-black py-4 rounded-2xl flex-grow text-lg shadow-md transition">시작</button><button onclick="resetTimer()" class="bg-gray-200 px-6 py-4 rounded-2xl text-gray-500 font-bold">리셋</button><button onclick="document.getElementById('timer-modal').classList.add('hidden')" class="bg-white border text-gray-400 font-bold px-6 py-4 rounded-2xl">닫기</button></div>
+        </div>
+    </div>
+
+    <!-- 발표 추첨 모달 -->
+    <div id="random-pick-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-[40px] p-10 text-center shadow-2xl relative border border-gray-100">
+            <h3 class="text-2xl font-black text-gray-800 mb-8 flex items-center justify-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> 발표자 추첨</h3>
+            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-[40px] py-16 mb-8">
+                <div id="slot-avatar" class="text-8xl mb-6">❓</div>
+                <div id="slot-name" class="text-5xl font-black">누구일까요?</div>
+            </div>
+            <div class="flex gap-4"><button id="spin-btn" onclick="startSpinning()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-10 py-5 rounded-2xl flex-grow text-xl shadow-lg transition">추첨 시작</button><button onclick="document.getElementById('random-pick-modal').classList.add('hidden')" class="bg-gray-100 px-8 py-5 rounded-2xl font-bold text-gray-500">닫기</button></div>
+        </div>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script>
+        const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzfy-dtIUbqzthvCXhPXUXYdRAJCXy7Jz4M5znMgRohYlk-wfbQ-40M4Ky5tmD8xXXy/exec";
+        
+        let studentsList = [];
+        let feedbackCards = [];
+        let isEditMode = false;
+        let isInverted = false;
+        let selectedStudentId = null;
+        let reportChart = null;
+        let classReportChart = null;
+        
+        // 자리 스왑 상태제어 변수
+        let selectedSeatForSwap = null;
+        // 기간 필터 상태제어 변수 ('all', 'day', 'week', 'month', 'custom')
+        let currentPeriodFilter = 'all';
+
+        // 다양한 자리 배치 보관소 전역 변수
+        let layouts = {};
+        let currentLayoutName = "3월 자리배치도 (기본)";
+        
+        // 이모지 선택 중인 대상을 식별하기 위한 바인딩 타겟 ID 변수
+        let rosterEmojiTargetId = null;
+
+        // 학급 온도계 목표치 기본값
+        let targetScore = 500;
+
+        // 집중 활동 타이머 상태제어 변수
+        let timerSeconds = 180;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        const defaultFeedback = [
+            { id: "c1", type: "positive", label: "수업에 적극적으로 참여했어요.", pts: 1, icon: "💖" },
+            { id: "c2", type: "positive", label: "발표를 멋지게 잘했어요.", pts: 1, icon: "👑" },
+            { id: "c3", type: "positive", label: "숙제를 열심히 잘했어요.", pts: 1, icon: "📝" },
+            { id: "c4", type: "negative", label: "수업에 좀 더 집중해 주세요.", pts: -1, icon: "🐸" },
+            { id: "c5", type: "negative", label: "수업 중 딴짓을 하지 마세요.", pts: -1, icon: "💭" }
+        ];
+
+        // 아바타 캐릭터 이모지 리스트
+        const defaultEmojis = ["🦊", "🐺", "🦉", "🐥", "🦁", "🐻", "🐿️", "🐯", "🐹", "🐸", "🐼", "🐨", "🐧", "🐷", "🐩", "🐱", "🦝", "🦔", "🦖", "🦄", "🐵", "🐰", "🐝"];
+
+        const demoInitial = [
+            { id: "std_1", student_num: 1, name: "김가빈", avatar_url: "🐥", total_points: 41, cluster: "left", row: 3, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_2", student_num: 2, name: "김나연", avatar_url: "🐨", total_points: 13, cluster: "center", row: 3, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_3", student_num: 3, name: "박세은", avatar_url: "🐻", total_points: 42, cluster: "left", row: 4, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_4", student_num: 4, name: "박주원", avatar_url: "🐷", total_points: 48, cluster: "center", row: 4, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_5", student_num: 5, name: "박지언", avatar_url: "🐹", total_points: 42, cluster: "center", row: 2, col: 1, gender: "female", hidden: false, history: [] },
+            { id: "std_6", student_num: 6, name: "변서희", avatar_url: "🐯", total_points: 43, cluster: "center", row: 1, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_7", student_num: 7, name: "이수은", avatar_url: "🦁", total_points: 31, cluster: "left", row: 4, col: 1, gender: "female", hidden: false, history: [] },
+            { id: "std_8", student_num: 8, name: "정보민", avatar_url: "🦔", total_points: 34, cluster: "right", row: 4, col: 1, gender: "female", hidden: false, history: [] },
+            { id: "std_9", student_num: 9, name: "정지우", avatar_url: "🐧", total_points: 29, cluster: "center", row: 4, col: 1, gender: "female", hidden: false, history: [] },
+            { id: "std_10", student_num: 10, name: "정희경", avatar_url: "🦉", total_points: 30, cluster: "left", row: 2, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_11", student_num: 11, name: "하윤정", avatar_url: "🐸", total_points: 37, cluster: "center", row: 2, col: 2, gender: "female", hidden: false, history: [] },
+            { id: "std_12", student_num: 12, name: "강민수", avatar_url: "🦝", total_points: 12, cluster: "right", row: 3, col: 2, gender: "male", hidden: false, history: [] },
+            { id: "std_21", student_num: 21, name: "곽건", avatar_url: "🐼", total_points: 31, cluster: "center", row: 3, col: 1, gender: "male", hidden: false, history: [] },
+            { id: "std_22", student_num: 22, name: "김도현", avatar_url: "🦊", total_points: -11, cluster: "left", row: 3, col: 1, gender: "male", hidden: false, history: [] },
+            { id: "std_23", student_num: 23, name: "김승준", avatar_url: "🦁", total_points: 10, cluster: "right", row: 2, col: 2, gender: "male", hidden: false, history: [] },
+            { id: "std_24", student_num: 24, name: "김예준", avatar_url: "🐩", total_points: -5, cluster: "right", row: 1, col: 1, gender: "male", hidden: false, history: [] },
+            { id: "std_25", student_num: 25, name: "박시원", avatar_url: "🐻", total_points: -14, cluster: "right", row: 1, col: 2, gender: "male", hidden: false, history: [] },
+            { id: "std_26", student_num: 26, name: "박재휘", avatar_url: "🐱", total_points: 24, cluster: "right", row: 2, col: 1, gender: "male", hidden: false, history: [] },
+            { id: "std_27", student_num: 27, name: "박태언", avatar_url: "🐥", total_points: 49, cluster: "right", row: 3, col: 1, gender: "male", hidden: false, history: [] },
+            { id: "std_28", student_num: 28, name: "심이찬", avatar_url: "🐹", total_points: 38, cluster: "right", row: 4, col: 2, gender: "male", hidden: false, history: [] },
+            { id: "std_29", student_num: 29, name: "심지호", avatar_url: "🐺", total_points: -10, cluster: "left", row: 2, col: 1, gender: "male", hidden: false, history: [] },
+            { id: "std_30", student_num: 30, name: "여수현", avatar_url: "🐿️", total_points: 40, cluster: "center", row: 1, col: 1, gender: "male", hidden: false, history: [] }
+        ];
+
+        // 알림창/토스트 띄워주는 함수
+        function showAlert(msg, type='info') {
+            const modal = document.getElementById('alert-modal');
+            const messageEl = document.getElementById('alert-message');
+            const iconEl = document.getElementById('alert-icon');
+            if (messageEl) messageEl.textContent = msg;
+            if (iconEl) {
+                iconEl.className = type === 'success' 
+                    ? 'fa-solid fa-circle-check text-emerald-400' 
+                    : (type === 'error' ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-circle-info text-indigo-400');
+            }
+            if (modal) {
+                modal.classList.remove('scale-90', 'opacity-0', 'pointer-events-none');
+                modal.classList.add('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    modal.classList.remove('scale-100', 'opacity-100');
+                    modal.classList.add('scale-90', 'opacity-0', 'pointer-events-none');
+                }, 2000);
+            }
+        }
+
+        // 알림음 재생 함수
+        function playSound(type) {
+            try { 
+                const synth = new Tone.Synth().toDestination(); 
+                if (type === 'positive' || type > 0) synth.triggerAttackRelease("C5", "8n"); 
+                else synth.triggerAttackRelease("F3", "4n"); 
+            } catch(e) {}
+        }
+
+        // 대시보드 뷰 체인저
+        function switchView(viewId) {
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewId}`);
+            if (target) target.classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            const menuBtn = document.getElementById(`menu-${viewId}`);
+            if (menuBtn) menuBtn.classList.add('active');
+
+            if (viewId === 'report') {
+                switchReportSubTab('class');
+            }
+        }
+
+        // '교실' 하위 탭 전환 처리
+        function switchClassroomSubTab(subTabId) {
+            document.querySelectorAll('.classroom-sub-content').forEach(v => v.classList.add('hidden'));
+            const subview = document.getElementById(`subview-${subTabId}`);
+            if (subview) subview.classList.remove('hidden');
+            
+            document.querySelectorAll('#view-classroom header .tab-item').forEach(i => i.classList.remove('active', 'text-gray-800'));
+            const activeTab = document.getElementById(`classroom-tab-${subTabId}`);
+            if (activeTab) activeTab.classList.add('active', 'text-gray-800');
+
+            isEditMode = false;
+            selectedSeatForSwap = null;
+            const editBtn = document.getElementById('edit-mode-btn');
+            if (editBtn) {
+                editBtn.className = "bg-white border border-gray-300 text-gray-600 p-2.5 rounded-xl hover:bg-gray-50 transition";
+                editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+            }
+
+            if (subTabId === 'seats') renderSeatingChart();
+            else if (subTabId === 'points') renderPointsDashboard();
+            else if (subTabId === 'students') renderStudentManageTable();
+        }
+
+        // '학생 리포트' 하위 서브 탭 전환 함수
+        function switchReportSubTab(subTabId) {
+            document.getElementById('report-view-class').classList.add('hidden');
+            document.getElementById('report-view-individual').classList.add('hidden');
+            document.getElementById('report-tab-class').classList.remove('active', 'text-gray-800');
+            document.getElementById('report-tab-class').classList.add('text-gray-400');
+            document.getElementById('report-tab-individual').classList.remove('active', 'text-gray-800');
+            document.getElementById('report-tab-individual').classList.add('text-gray-400');
+
+            if (subTabId === 'class') {
+                document.getElementById('report-view-class').classList.remove('hidden');
+                document.getElementById('report-tab-class').classList.add('active', 'text-gray-800');
+                renderClassReport();
+            } else {
+                document.getElementById('report-view-individual').classList.remove('hidden');
+                document.getElementById('report-tab-individual').classList.add('active', 'text-gray-800');
+                renderReportStudentList();
+            }
+        }
+
+        // 🌟 오류 해결의 핵심: 누적/일간/월간/직접선택 기간 필터링 헬퍼 함수 복원 정의
+        function getFilteredHistory(historyArray) {
+            if (!historyArray) return [];
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            return historyArray.filter(h => {
+                const hDate = new Date(h.date);
+                if (currentPeriodFilter === 'day') {
+                    return hDate >= startOfToday;
+                } else if (currentPeriodFilter === 'week') {
+                    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    return hDate >= oneWeekAgo;
+                } else if (currentPeriodFilter === 'month') {
+                    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                    return hDate >= startOfMonth;
+                } else if (currentPeriodFilter === 'custom') {
+                    const startDateStr = document.getElementById('report-start-date')?.value || document.getElementById('class-start-date')?.value;
+                    const endDateStr = document.getElementById('report-end-date')?.value || document.getElementById('class-end-date')?.value;
+                    if (startDateStr) {
+                        const s = new Date(startDateStr);
+                        s.setHours(0,0,0,0);
+                        if (hDate < s) return false;
+                    }
+                    if (endDateStr) {
+                        const e = new Date(endDateStr);
+                        e.setHours(23,59,59,999);
+                        if (hDate > e) return false;
+                    }
+                    return true;
+                }
+                return true;
+            });
+        }
+
+        // 학급 온도계 합계 및 연동 갱신 로직
+        function calculateClassTotal() {
+            const total = studentsList.reduce((acc, cur) => acc + (cur.total_points || 0), 0);
+            const classTotalEl = document.getElementById('class-total-pts');
+            const fillEl = document.getElementById('thermometer-fill');
+            const percentEl = document.getElementById('thermometer-percent');
+
+            if (classTotalEl) classTotalEl.textContent = total;
+            const percentage = Math.min(Math.round((total / targetScore) * 100), 100);
+            if (fillEl) fillEl.style.width = percentage + '%';
+            if (percentEl) percentEl.textContent = `현재 달성률 ${percentage}%`;
+        }
+
+        // 자리 배치도 다중 저장 및 불러오기 엔진
+        function saveCurrentLayout() {
+            const name = document.getElementById('new-layout-name').value.trim();
+            if (!name) {
+                showAlert("저장할 배치도 이름을 적어주세요.", "error");
+                return;
+            }
+            layouts[name] = studentsList.map(s => ({
+                id: s.id,
+                cluster: s.cluster,
+                row: s.row,
+                col: s.col
+            }));
+            currentLayoutName = name;
+            saveLayoutsToLocalStorage();
+            updateLayoutDropdown();
+            document.getElementById('new-layout-name').value = '';
+            showAlert(`[${name}] 자리배치 레이아웃이 저장되었습니다.`, "success");
+        }
+
+        function loadLayout(name) {
+            if (!layouts[name]) return;
+            currentLayoutName = name;
+            localStorage.setItem('current_layout_name', currentLayoutName);
+            
+            const config = layouts[name];
+            studentsList.forEach(s => {
+                s.cluster = "";
+                s.row = 0;
+                s.col = 0;
+            });
+            
+            config.forEach(pos => {
+                const s = studentsList.find(x => x.id === pos.id);
+                if (s) {
+                    s.cluster = pos.cluster;
+                    s.row = pos.row;
+                    s.col = pos.col;
+                }
+            });
+            
+            renderSeatingChart();
+            saveToLocalStorage();
+            showAlert(`[${name}] 배치를 화면에 로드했습니다.`, "success");
+        }
+
+        function deleteCurrentLayout() {
+            if (currentLayoutName === "3월 자리배치도 (기본)") {
+                showAlert("기본 배치 레이아웃은 안전을 위해 지울 수 없습니다.", "error");
+                return;
+            }
+            delete layouts[currentLayoutName];
+            saveLayoutsToLocalStorage();
+            currentLayoutName = "3월 자리배치도 (기본)";
+            localStorage.setItem('current_layout_name', currentLayoutName);
+            updateLayoutDropdown();
+            loadLayout(currentLayoutName);
+            showAlert("선택한 자리배치도가 삭제되었습니다.");
+        }
+
+        function updateLayoutDropdown() {
+            const select = document.getElementById('layout-select');
+            if (select) {
+                select.innerHTML = Object.keys(layouts).map(name => 
+                    `<option value="${name}" ${name === currentLayoutName ? 'selected' : ''}>${name}</option>`
+                ).join('');
+            }
+        }
+
+        function saveLayoutsToLocalStorage() {
+            localStorage.setItem('seating_layouts', JSON.stringify(layouts));
+        }
+
+        // 자리 수동 교체(스왑) 제어 로직
+        function handleSeatSwapClick(studentId) {
+            if (!selectedSeatForSwap) {
+                selectedSeatForSwap = studentId;
+                renderSeatingChart();
+                const student = studentsList.find(s => s.id === studentId);
+                showAlert(`${student.name} 학생의 자리를 이동할 새로운 위치(다른 학생 혹은 빈자리)를 선택하세요.`);
+            } else if (selectedSeatForSwap === studentId) {
+                selectedSeatForSwap = null;
+                renderSeatingChart();
+                showAlert("선택이 취소되었습니다.");
+            } else {
+                const studentA = studentsList.find(s => s.id === selectedSeatForSwap);
+                const studentB = studentsList.find(s => s.id === studentId);
+                if (studentA && studentB) {
+                    const tempCluster = studentA.cluster;
+                    const tempRow = studentA.row;
+                    const tempCol = studentA.col;
+
+                    studentA.cluster = studentB.cluster;
+                    studentA.row = studentB.row;
+                    studentA.col = studentB.col;
+
+                    studentB.cluster = tempCluster;
+                    studentB.row = tempRow;
+                    studentB.col = tempCol;
+
+                    selectedSeatForSwap = null;
+                    renderSeatingChart();
+                    saveToLocalStorage();
+                    showAlert(`${studentA.name} 학생과 ${studentB.name} 학생의 자리를 맞교환했습니다.`, 'success');
+                }
+            }
+        }
+
+        function handleEmptySeatClick(cluster, row, col) {
+            if (selectedSeatForSwap) {
+                const studentA = studentsList.find(s => s.id === selectedSeatForSwap);
+                if (studentA) {
+                    studentA.cluster = cluster;
+                    studentA.row = row;
+                    studentA.col = col;
+
+                    selectedSeatForSwap = null;
+                    renderSeatingChart();
+                    saveToLocalStorage();
+                    showAlert(`${studentA.name} 학생을 지정한 자리로 이동했습니다.`, 'success');
+                }
+            } else {
+                assignNewStudentToSeat(cluster, row, col);
+            }
+        }
+
+        // 자리배치도 학생 카드 및 그리드 렌더링
+        function renderSeatingChart() {
+            ['left', 'center', 'right'].forEach(cl => {
+                const container = document.getElementById(`cluster-${cl}`);
+                if (!container) return;
+                container.innerHTML = '';
+                
+                const rows = [1, 2, 3, 4, 5];
+                rows.forEach(r => {
+                    for(let c=1; c<=2; c++) {
+                        const s = studentsList.find(x => x.cluster === cl && x.row === r && x.col === c && !x.hidden);
+                        const desk = document.createElement('div');
+                        if(s) {
+                            desk.className = `relative card-pop p-3 bg-[#f1e6d8] border border-orange-200/50 rounded-[18px] cursor-pointer shadow-sm h-24 flex flex-col justify-between overflow-hidden desk-card-active`;
+                            
+                            desk.onclick = () => isEditMode ? handleSeatSwapClick(s.id) : openFeedbackModal(s.id);
+                            
+                            desk.ondblclick = (e) => {
+                                if(isEditMode) {
+                                    e.stopPropagation();
+                                    startEditStudent(s.id);
+                                }
+                            };
+
+                            desk.innerHTML = `
+                                <div class="flex justify-between items-center text-[10px] font-black text-gray-500/70 shrink-0 mb-1">
+                                    <span>No.${s.student_num}</span>
+                                    <span class="${s.total_points >= 0 ? 'text-blue-600' : 'text-rose-600'} font-extrabold text-sm md:text-base bg-white/95 border border-gray-100 rounded-full px-2 py-0.5 shadow-sm leading-none flex items-center justify-center">
+                                        ${s.total_points >= 0 ? '+' : ''}${s.total_points}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1.5 mt-1 min-w-0 w-full justify-start">
+                                    <span class="text-3xl md:text-4xl shrink-0 drop-shadow-sm ml-1 select-none leading-none">${s.avatar_url}</span>
+                                    <span class="text-xl md:text-2xl font-black text-gray-800 tracking-tighter truncate leading-tight flex-grow">${s.name}</span>
+                                </div>
+                                <div class="absolute -top-4 right-0" id="float-${s.id}"></div>
+                            `;
+
+                            if(isEditMode) {
+                                if(selectedSeatForSwap === s.id) {
+                                    desk.className += " ring-4 ring-amber-400 animate-pulse";
+                                } else {
+                                    desk.className += " ring-2 ring-indigo-500";
+                                }
+                            }
+                        } else {
+                            desk.className = 'border-2 border-dashed border-gray-200 rounded-[18px] h-24 flex items-center justify-center text-gray-300 text-[10px] font-bold desk-empty-active';
+                            if (isEditMode) {
+                                desk.className += " hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition";
+                                desk.innerHTML = '<i class="fa-solid fa-plus-circle text-2xl text-indigo-300"></i>';
+                                desk.onclick = () => handleEmptySeatClick(cl, r, c);
+                            } else {
+                                desk.innerHTML = '빈 자리';
+                            }
+                        }
+                        container.appendChild(desk);
+                    }
+                });
+            });
+            calculateClassTotal();
+        }
+
+        // 포인트 지급 카드 목록 렌더링
+        function renderPointsDashboard() {
+            const posList = document.getElementById('points-list-positive');
+            const fontNegList = document.getElementById('points-list-negative');
+            if(!posList || !fontNegList) return;
+
+            const makeItem = (c) => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 border rounded-2xl hover:bg-gray-100 transition shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-300 cursor-grab"><i class="fa-solid fa-grip-vertical"></i></span>
+                        <span class="w-10 h-10 bg-white border border-gray-100 shadow-sm rounded-full flex items-center justify-center text-xl relative">
+                            ${c.icon}
+                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full text-[9px] font-black text-white flex items-center justify-center ${c.type === 'positive' ? 'bg-blue-500' : 'bg-rose-500'}">
+                                ${Math.abs(c.pts)}
+                            </span>
+                        </span>
+                        <div>
+                            <p class="text-xs font-black text-gray-800">${c.label}</p>
+                            <span class="text-[10px] font-bold ${c.type === 'positive' ? 'text-blue-600' : 'text-rose-600'}">
+                                ${c.pts > 0 ? '+' : ''}${c.pts}점
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="deleteCard('${c.id}')" class="text-gray-300 hover:text-rose-500 p-2 text-sm transition" title="포인트 카드 삭제">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+
+            const posCards = feedbackCards.filter(c => c.type === 'positive');
+            const negCards = feedbackCards.filter(c => c.type === 'negative');
+
+            posList.innerHTML = posCards.length ? posCards.map(makeItem).join('') : '<p class="text-center text-xs text-gray-400 py-10">등록된 으쓱 카드가 없습니다.</p>';
+            fontNegList.innerHTML = negCards.length ? negCards.map(makeItem).join('') : '<p class="text-center text-xs text-gray-400 py-10">등록된 머쓱 카드가 없습니다.</p>';
+        }
+
+        // 학생명단표 스프레드시트 관리 테이블 렌더링
+        function renderStudentManageTable() {
+            const tbody = document.getElementById('student-manage-tbody');
+            if(!tbody) return;
+            
+            tbody.innerHTML = studentsList.map(s => `
+                <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50/40 transition">
+                    <td class="p-3 text-center">
+                        <button onclick="openEmojiPickerForRoster('${s.id}')" class="w-10 h-10 bg-gray-50 hover:bg-indigo-50 border rounded-xl flex items-center justify-center text-2xl transition shadow-sm" title="캐릭터 변경">
+                            ${s.avatar_url || '🦁'}
+                        </button>
+                    </td>
+                    <td class="p-3">
+                        <input type="number" value="${s.student_num}" onchange="updateStudentField('${s.id}', 'student_num', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-center outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 transition">
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${s.name}" onchange="updateStudentField('${s.id}', 'name', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs font-black outline-none focus:bg-white focus:ring-1 focus:ring-indigo-500 transition">
+                    </td>
+                    <td class="p-3">
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-500 select-none">
+                                <input type="radio" name="gender-${s.id}" value="none" ${(!s.gender || s.gender==='none') ? 'checked' : ''} onchange="updateStudentField('${s.id}', 'gender', 'none')" class="text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5">
+                                <span>선택안함</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-500 select-none">
+                                <input type="radio" name="gender-${s.id}" value="male" ${s.gender==='male' ? 'checked' : ''} onchange="updateStudentField('${s.id}', 'gender', 'male')" class="text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5">
+                                <span>남</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-gray-500 select-none">
+                                <input type="radio" name="gender-${s.id}" value="female" ${s.gender==='female' ? 'checked' : ''} onchange="updateStudentField('${s.id}', 'gender', 'female')" class="text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5">
+                                <span>여</span>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="p-3 text-right">
+                        <div class="inline-flex gap-1.5">
+                            <button onclick="toggleStudentVisibility('${s.id}')" class="px-3.5 py-2 rounded-xl border text-xs font-bold transition shadow-sm ${s.hidden ? 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border-gray-200'}">
+                                ${s.hidden ? '보이기' : '숨김'}
+                            </button>
+                            <button onclick="deleteStudentFromRoster('${s.id}')" class="px-3.5 py-2 rounded-xl border bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-100 transition text-xs font-bold shadow-sm">
+                                삭제
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStudentField(studentId, field, value) {
+            const s = studentsList.find(x => x.id === studentId);
+            if (!s) return;
+            if (field === 'student_num') {
+                s.student_num = parseInt(value) || 0;
+            } else {
+                s[field] = value;
+            }
+            saveToLocalStorage();
+            renderSeatingChart();
+        }
+
+        function toggleStudentVisibility(studentId) {
+            const s = studentsList.find(x => x.id === studentId);
+            if (!s) return;
+            s.hidden = !s.hidden;
+            saveToLocalStorage();
+            renderStudentManageTable();
+            renderSeatingChart();
+            showAlert(`[${s.name}] 학생을 자리배치도에서 ${s.hidden ? '숨겼습니다.' : '보이게 설정했습니다.'}`);
+        }
+
+        function deleteStudentFromRoster(studentId) {
+            const s = studentsList.find(x => x.id === studentId);
+            if (!s) return;
+            if (confirm(`정말로 [${s.name}] 학생을 학급 명단에서 완전히 삭제하시겠습니까?`)) {
+                studentsList = studentsList.filter(x => x.id !== studentId);
+                saveToLocalStorage();
+                renderStudentManageTable();
+                renderSeatingChart();
+                showAlert(`[${s.name}] 학생을 학급 명단에서 제거했습니다.`);
+            }
+        }
+
+        function addNewStudentRow() {
+            const nextNum = studentsList.length > 0 ? Math.max(...studentsList.map(s => s.student_num)) + 1 : 1;
+            const newStudent = {
+                id: `std_${Date.now()}`,
+                student_num: nextNum,
+                name: `신규학생_${nextNum}`,
+                avatar_url: "🦊",
+                total_points: 0,
+                cluster: "center",
+                row: 1,
+                col: 1,
+                gender: "none",
+                hidden: false,
+                history: []
+            };
+            studentsList.push(newStudent);
+            saveToLocalStorage();
+            renderStudentManageTable();
+            renderSeatingChart();
+            showAlert("신규 학생 행이 추가되었습니다.", "success");
+        }
+
+        function openEmojiPickerForRoster(studentId) {
+            rosterEmojiTargetId = studentId;
+            const modal = document.getElementById('emoji-picker-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeEmojiPicker() {
+            const modal = document.getElementById('emoji-picker-modal');
+            if (modal) modal.classList.add('hidden');
+            rosterEmojiTargetId = null;
+        }
+
+        function pickRosterEmoji(emoji) {
+            if (rosterEmojiTargetId) {
+                updateStudentField(rosterEmojiTargetId, 'avatar_url', emoji);
+                renderStudentManageTable();
+                closeEmojiPicker();
+                playSound('positive');
+                showAlert("대표 캐릭터 이모지가 변경되었습니다.");
+            }
+        }
+
+        function selectEditAvatar(emoji, btnElement) {
+            document.querySelectorAll('#avatar-selector-grid button').forEach(b => b.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-50'));
+            btnElement.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-50');
+        }
+
+        function saveGoalScore() { 
+            const input = document.getElementById('target-score-input');
+            targetScore = input ? parseInt(input.value) || 500 : 500; 
+            document.getElementById('class-target-label').textContent = `목표 ${targetScore}점`;
+            saveToLocalStorage(); 
+            calculateClassTotal(); 
+            closeGoalSetting(); 
+            showAlert("목표가 수정되었습니다.", "success"); 
+        }
+
+        function openGoalSetting() { 
+            const modal = document.getElementById('goal-setting-modal');
+            if (modal) {
+                modal.classList.remove('hidden'); 
+                document.getElementById('target-score-input').value = targetScore; 
+            }
+        }
+
+        function closeGoalSetting() { 
+            const modal = document.getElementById('goal-setting-modal');
+            if (modal) modal.classList.add('hidden'); 
+        }
+
+        // 로컬 스토리지 일괄 영구 기록
+        function saveToLocalStorage() {
+            localStorage.setItem('students_list', JSON.stringify(studentsList));
+            localStorage.setItem('feedback_cards', JSON.stringify(feedbackCards));
+            localStorage.setItem('target_score', targetScore);
+        }
+
+        window.onload = () => {
+            const savedStudents = localStorage.getItem('students_list');
+            studentsList = savedStudents ? JSON.parse(savedStudents) : [...demoInitial];
+            const savedCards = localStorage.getItem('feedback_cards');
+            feedbackCards = savedCards ? JSON.parse(savedCards) : [...defaultFeedback];
+            const savedGoal = localStorage.getItem('target_score');
+            targetScore = savedGoal ? parseInt(savedGoal) : 500;
+
+            const targetLabelEl = document.getElementById('class-target-label');
+            if (targetLabelEl) {
+                targetLabelEl.textContent = `목표 ${targetScore}점`;
+            }
+
+            const rosterEmojiGrid = document.getElementById('roster-emoji-grid');
+            if (rosterEmojiGrid) {
+                rosterEmojiGrid.innerHTML = defaultEmojis.map(emoji => `
+                    <button type="button" onclick="pickRosterEmoji('${emoji}')" class="w-10 h-10 border border-gray-100 hover:bg-indigo-50 rounded-xl flex items-center justify-center text-xl transition">
+                        ${emoji}
+                    </button>
+                `).join('');
+            }
+
+            // 아바타 설정용 이모지 바인딩
+            const grid = document.getElementById('avatar-selector-grid');
+            if (grid) {
+                defaultEmojis.forEach(emoji => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center text-lg hover:bg-indigo-50 focus:outline-none transition';
+                    btn.textContent = emoji;
+                    btn.onclick = () => selectEditAvatar(emoji, btn);
+                    grid.appendChild(btn);
+                });
+            }
+
+            // 레이아웃 보관소 초기 바인딩
+            const savedLayouts = localStorage.getItem('seating_layouts');
+            if (savedLayouts) {
+                try {
+                    layouts = JSON.parse(savedLayouts);
+                    currentLayoutName = localStorage.getItem('current_layout_name') || Object.keys(layouts)[0];
+                } catch(e) {
+                    layouts = { "3월 자리배치도 (기본)": demoInitial.map(s => ({ id: s.id, cluster: s.cluster, row: s.row, col: s.col })) };
+                    currentLayoutName = "3월 자리배치도 (기본)";
+                }
+            } else {
+                layouts = { "3월 자리배치도 (기본)": demoInitial.map(s => ({ id: s.id, cluster: s.cluster, row: s.row, col: s.col })) };
+                currentLayoutName = "3월 자리배치도 (기본)";
+                saveLayoutsToLocalStorage();
+            }
+
+            updateLayoutDropdown();
+            loadLayout(currentLayoutName);
+            switchClassroomSubTab('seats');
+
+            // 동기화 상태 갱신
+            const syncStatusEl = document.getElementById('sync-status');
+            if (syncStatusEl) {
+                syncStatusEl.textContent = "스마트 통합 연동 모드 활성화";
+            }
+        };
+    </script>
+</body>
+</html>

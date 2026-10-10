@@ -936,7 +936,7 @@ window.fireConfetti = () => {
 };
 
 // =============================================================
-// PDF Export Handler (전체 19개 슬라이드 일괄 인쇄/PDF 저장)
+// PDF Export Handler (전체 20개 슬라이드 일괄 인쇄/PDF 저장)
 // =============================================================
 window.exportToPDF = () => {
   const printContainer = document.getElementById('print-container');

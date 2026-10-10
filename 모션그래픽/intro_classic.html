@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>안티그래비티 인트로 (클래식)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,700;0,800;1,600&family=Cormorant+Garamond:wght@500;600&display=block">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  canvas { position: absolute; inset: 0; margin: auto; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; }
+  #play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 16px 34px; font: 600 22px "Noto Serif KR", serif;
+          border: 1px solid #c9a45c; border-radius: 4px; background: #12100c; color: #f1e7d0; cursor: pointer; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<button id="play">▶ 재생</button>
+<audio id="aud" src="audio/intro_classic_mix.wav" preload="auto"></audio>
+<script src="timeline.js"></script>
+<script>
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const W = 1920, H = 1080, BAR = 110;           // 시네마 레터박스 높이
+
+// ─── 타이밍: 음성 분석 결과(timeline.js) 기준 ───
+const OFF = 1.0, OUTRO = 3.8;
+const TL = window.TIMELINE;
+const SC = TL.scenes.map(s => ({ a: s.start + OFF, b: s.end + OFF, p: s.phrases.map(q => [q[0] + OFF, q[1] + OFF]) }));
+const END = TL.duration + OFF, TOTAL = END + OUTRO;
+const nextA = i => i < SC.length - 1 ? SC[i + 1].a : END;
+
+const LINES = [
+  ['수업에 쓸 퀴즈 앱이 필요했어요.', '그래서 재미나이에게 물었죠.'],
+  ['돌아온 건 긴 코드 한 뭉치.', '어디에 붙여야 하지?', '왜 안 되지?', '대답은 해주지만,', '만들어주지는 않았어요.'],
+  ['안티그래비티는 달라요.', '말로 부탁하면, 에이전트가 직접 파일을 만들고,', '실행해 보고,', '오류까지 스스로 고칩니다.'],
+  ['그러니 선생님이 코딩을 배울 필요는 없어요.', '코드는 AI가 씁니다.'],
+  ['대신 AI가 절대 대신할 수 없는 게 있죠.', '이 개념을 아이들이 어디서 헷갈리는지,', '어떤 순서로,', '어떤 활동으로 가르쳐야 하는지.', '바로 선생님의 PCK,', '교수내용지식입니다.'],
+  ['무엇을 만들지는 선생님이,', '어떻게 만들지는 안티그래비티가.', '코딩보다 수업을 아는 선생님이,', '가장 좋은 앱을 만듭니다.'],
+];
+const CHAP = ['제1장 · 밤의 교무실', '제2장 · 대답, 그러나', '제3장 · 안티그래비티', '제4장 · 코드는 누가', '제5장 · 가르침의 지식', '제6장 · 무엇을, 어떻게'];
+
+const C = { ink: '#12100c', ivory: '#f1e7d0', gold: '#c9a45c', goldL: '#ecd49c', goldD: '#9c7a3c', burg: '#a33d3d',
+            muted: '#9a8f7a', paper: '#eee2c4', inkText: '#2e2519' };
+const GOLD = [C.goldL, C.gold, C.goldD];
+const SERIF = '"Noto Serif KR",serif', PLAY = '"Playfair Display","Noto Serif KR",serif', CORM = '"Cormorant Garamond","Noto Serif KR",serif';
+const MONO = 'Consolas,"Courier New",monospace';
+
+// 강조 타이밍 / 효과음 / 화음
+const S1 = SC[0].p, S2 = SC[1].p, S3 = SC[2].p, S4 = SC[3].p, S5 = SC[4].p, S6 = SC[5].p;
+const STAMP = S2[4][0] + 0.35, STRIKE = S4[0][0] + 1.3, PCK_SLAM = S5[4][0] + 0.3;
+const NODE_T = [S3[1][0], S3[1][0] + 1.1, S3[2][0], S3[3][0]];
+const TYPE1 = '수업에 쓸 퀴즈 앱을', TYPE2 = '만들어 줄 수 있을까요?', TYPE_T0 = S1[0][0] + 0.3, TYPE_D = 1.5;
+const TYPE_N = TYPE1.length + TYPE2.length;
+const CUTS = [...SC.slice(1).map(s => s.a), END];
+window.SFX = [
+  [0.15, 'chime'], ...CUTS.map(c => [c - 1.1, 'swell']),
+  ...Array.from({ length: TYPE_N }, (_, i) => [TYPE_T0 + i * TYPE_D / TYPE_N, 'type']),
+  [S1[1][0] + 0.9, 'bell'], [SC[2].a + 0.15, 'timpani'], [SC[2].a + 0.2, 'chime'], ...NODE_T.map(t => [t, 'bell']),
+  [S2[3][0] + 0.3, 'bell'], [STAMP, 'pen'], [STAMP + 0.15, 'pen'], [STRIKE, 'pen'],
+  [PCK_SLAM, 'timpani'], [PCK_SLAM + 0.05, 'chime'], [S6[3][0] + 0.2, 'chime'], [END, 'timpani'], [END + 0.3, 'chime'],
+];
+window.MUSIC = 'classic';
+window.CHORDS = [[0, 'Am'], [S1[1][0], 'F'], [SC[1].a, 'Dm'], [S2[2][0], 'E'], [SC[2].a, 'C'], [S3[2][0], 'G'], [SC[3].a, 'Am'], [S4[1][0], 'F'],
+  [SC[4].a, 'Dm'], [S5[2][0], 'G'], [PCK_SLAM, 'C'], [S5[5][0], 'Am'], [SC[5].a, 'F'], [S6[1][0], 'G'], [S6[2][0], 'F'], [S6[3][0], 'G'], [END, 'C']];
+window.TOTAL = TOTAL;
+
+// ─── 도우미 ───
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const P = (t, a, d) => clamp((t - a) / d);
+const oCubic = x => 1 - Math.pow(1 - x, 3);
+const oQuint = x => 1 - Math.pow(1 - x, 5);
+const ioCubic = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const ioSine = x => -(Math.cos(Math.PI * x) - 1) / 2;
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const hex = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${n >> 8 & 255},${n & 255},${a})`; };
+function grad(x0, x1, cols) { const g = ctx.createLinearGradient(x0, 0, x1, 0); cols.forEach((c, i) => g.addColorStop(i / (cols.length - 1), c)); return g; }
+
+function T(s, x, y, size, color, o = {}) {
+  ctx.save();
+  ctx.font = `${o.w || 700} ${size}px ${o.font || SERIF}`;
+  ctx.textAlign = o.align || 'center'; ctx.textBaseline = 'middle';
+  ctx.letterSpacing = (o.ls ?? 0) + 'px';
+  ctx.globalAlpha *= o.a ?? 1;
+  if (o.blur) ctx.filter = `blur(${o.blur}px)`;
+  if (o.glow) { ctx.shadowColor = o.glowColor || color; ctx.shadowBlur = o.glow; }
+  if (o.grad) { const w = ctx.measureText(s).width; const x0 = o.align === 'left' ? x : o.align === 'right' ? x - w : x - w / 2; ctx.fillStyle = grad(x0, x0 + w, o.grad); }
+  else ctx.fillStyle = color;
+  ctx.fillText(s, x, y);
+  ctx.restore();
+}
+// 흐릿하게 떠오르는 등장 (자간이 넓었다가 제자리로)
+function F(s, x, y, size, color, t0, t, o = {}) {
+  if (t < t0) return;
+  const k = oCubic(P(t, t0, o.dur || 0.9)), out = o.out != null ? P(t, o.out, 0.4) : 0;
+  if (out >= 1) return;
+  T(s, x, y + (1 - k) * (o.rise ?? 18) - out * 10, size, color, { ...o, a: (o.a ?? 1) * k * (1 - out), blur: (1 - k) * 10 + out * 6, ls: (o.ls ?? 0) + (1 - k) * size * 0.12 });
+}
+// 한 글자씩 부드럽게
+function CF(s, x, y, size, color, t0, t, o = {}) {
+  if (t < t0) return;
+  ctx.save(); ctx.font = `${o.w || 700} ${size}px ${o.font || SERIF}`; ctx.letterSpacing = (o.ls ?? 0) + 'px';
+  const chars = [...s], total = ctx.measureText(s).width, x0 = x - total / 2;
+  chars.forEach((ch, i) => {
+    const k = oCubic(P(t, t0 + i * (o.stagger ?? 0.05), 0.7)); if (k <= 0) return;
+    const cx = x0 + ctx.measureText(chars.slice(0, i).join('')).width;
+    ctx.save(); ctx.globalAlpha *= k; ctx.filter = `blur(${(1 - k) * 6}px)`; ctx.textBaseline = 'middle';
+    ctx.fillStyle = o.grad ? grad(x0 - cx, x0 + total - cx, o.grad) : color;
+    ctx.translate(cx, y + (1 - k) * 14); ctx.fillText(ch, 0, 0); ctx.restore();
+  });
+  ctx.restore();
+}
+// 가운데 마름모 장식이 있는 금색 선
+function rule(x, y, w, k, color = C.gold) {
+  if (k <= 0) return;
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.globalAlpha *= 0.9;
+  const hw = w / 2 * oQuint(k);
+  ctx.beginPath(); ctx.moveTo(x - hw, y); ctx.lineTo(x - 14, y); ctx.moveTo(x + 14, y); ctx.lineTo(x + hw, y); ctx.stroke();
+  ctx.translate(x, y); ctx.rotate(Math.PI / 4); ctx.fillStyle = color; const d = 6 * k; ctx.fillRect(-d, -d, d * 2, d * 2);
+  ctx.restore();
+}
+// 이중선 액자가 그려지는 효과
+function frame(x, y, w, h, k, color = C.gold) {
+  if (k <= 0) return;
+  ctx.save(); ctx.strokeStyle = color;
+  [[0, 1.5], [12, 1]].forEach(([inset, lw]) => {
+    const rx = x + inset, ry = y + inset, rw = w - inset * 2, rh = h - inset * 2, per = 2 * (rw + rh);
+    ctx.lineWidth = lw; ctx.setLineDash([per * oCubic(k), per]); ctx.beginPath();
+    ctx.moveTo(rx + rw / 2, ry); ctx.lineTo(rx + rw, ry); ctx.lineTo(rx + rw, ry + rh); ctx.lineTo(rx, ry + rh); ctx.lineTo(rx, ry); ctx.closePath(); ctx.stroke();
+  });
+  ctx.setLineDash([]); ctx.fillStyle = color; ctx.globalAlpha *= P(k, 0.7, 0.3);
+  [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(([cx, cy]) => { ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.PI / 4); ctx.fillRect(-7, -7, 14, 14); ctx.restore(); });
+  ctx.restore();
+}
+// 펜으로 긋듯 경로를 따라 그리기
+function stroke(pts, k, color, lw) {
+  if (k <= 0) return;
+  let len = 0; const seg = [];
+  for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); len += d; }
+  ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.setLineDash([len * k, len]); ctx.beginPath(); ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.stroke(); ctx.restore();
+}
+const wavy = (x0, y0, x1, y1, amp, waves) => Array.from({ length: 40 }, (_, i) => { const u = i / 39; return [lerp(x0, x1, u), lerp(y0, y1, u) + Math.sin(u * Math.PI * waves) * amp]; });
+function circleText(s, cx, cy, r, rot, size, color, font) {
+  ctx.save(); ctx.font = `600 ${size}px ${font}`; ctx.letterSpacing = '4px'; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  let ang = rot;
+  [...s].forEach(ch => { const w = ctx.measureText(ch).width; ang += w / 2 / r;
+    ctx.save(); ctx.translate(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r); ctx.rotate(ang + Math.PI / 2); ctx.fillText(ch, 0, 0); ctx.restore(); ang += w / 2 / r; });
+  ctx.restore();
+}
+
+// ─── 배경: 따뜻한 어둠 + 먼지 + 필름 그레인 ───
+const R = rng(11);
+const DUST = Array.from({ length: 90 }, () => ({ x: R() * W, y: R() * H, s: R() * 1.8 + 0.5, v: R() * 25 + 8, ph: R() * 6.28 }));
+const GRAIN = Array.from({ length: 4 }, (_, n) => {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), img = g.createImageData(256, 256), r = rng(100 + n);
+  for (let i = 0; i < img.data.length; i += 4) { const v = r() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+  g.putImageData(img, 0, 0); return c;
+});
+function background(t) {
+  ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H);
+  const lx = W * (0.35 + 0.3 * Math.sin(t * 0.12)), g = ctx.createRadialGradient(lx, H * 0.35, 0, lx, H * 0.35, 1100);
+  g.addColorStop(0, 'rgba(120,88,45,0.30)'); g.addColorStop(1, 'rgba(120,88,45,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // 떠오르는 금빛 먼지 (3장부터 조금 더 빨리)
+  const lift = t < SC[2].a ? t * 0.4 : SC[2].a * 0.4 + (t - SC[2].a) * 1.4;
+  DUST.forEach(d => { const y = ((d.y - lift * d.v) % H + H) % H, x = d.x + Math.sin(t * 0.5 + d.ph) * 20;
+    ctx.globalAlpha = 0.25 + 0.25 * Math.sin(t * 1.3 + d.ph); ctx.fillStyle = C.goldL; ctx.beginPath(); ctx.arc(x, y, d.s, 0, 7); ctx.fill(); });
+  ctx.globalAlpha = 1;
+}
+function finish(t) {
+  const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 1.0);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.75)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+  // 필름 그레인 + 미세한 깜빡임
+  ctx.save(); ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = 0.14;
+  const gi = GRAIN[Math.floor(t * 24) % 4], ox = Math.floor((t * 977) % 256);
+  for (let x = -ox; x < W; x += 256) for (let y = -ox; y < H; y += 256) ctx.drawImage(gi, x, y);
+  ctx.restore();
+  ctx.fillStyle = `rgba(0,0,0,${0.04 + 0.03 * Math.sin(t * 37) * Math.sin(t * 11)})`; ctx.fillRect(0, 0, W, H);
+}
+
+// 장면 래퍼: 천천히 밝아지고, 어둠으로 사라지며, 느린 켄 번즈 줌
+function scene(i, t, fn) {
+  const a = SC[i].a, b = nextA(i);
+  if (t < a - 0.1 || t > b) return;
+  ctx.save();
+  ctx.globalAlpha = P(t, a - 0.1, 0.55) * (1 - P(t, b - 0.35, 0.35));
+  const s = 1 + 0.035 * P(t, a, b - a);
+  ctx.translate(W / 2, H / 2); ctx.scale(s, s); ctx.translate(-W / 2, -H / 2);
+  chapter(i, t);
+  fn(t, SC[i].p);
+  ctx.restore();
+}
+function chapter(i, t) {
+  const k = oCubic(P(t, SC[i].a, 1));
+  ctx.save(); ctx.globalAlpha *= k * (i === 4 ? 1 - P(t, S5[4][0], 0.4) : 1);   // PCK 등장 때는 비켜줌
+  ctx.font = `600 26px ${SERIF}`; ctx.letterSpacing = '6px';
+  const w = ctx.measureText(CHAP[i]).width;
+  T(CHAP[i], 960, 170, 26, C.gold, { w: 600, ls: 6 });
+  ctx.strokeStyle = hex(C.gold, 0.5); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(960 - w / 2 - 30 - 80 * k, 170); ctx.lineTo(960 - w / 2 - 30, 170); ctx.moveTo(960 + w / 2 + 30, 170); ctx.lineTo(960 + w / 2 + 30 + 80 * k, 170); ctx.stroke();
+  ctx.restore();
+}
+function dips(t) {
+  CUTS.forEach(c => { const d = 1 - Math.abs(t - c) / 0.4; if (d > 0) { ctx.fillStyle = `rgba(0,0,0,${d * 0.6})`; ctx.fillRect(0, 0, W, H); } });
+}
+function letterbox(t) {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, BAR); ctx.fillRect(0, H - BAR, W, BAR);
+  let cur = null;
+  SC.forEach((s, i) => s.p.forEach(([a, b], j) => { if (t >= a - 0.08 && t <= b + 0.15) cur = { s: LINES[i][j], a, b }; }));
+  if (cur) T(cur.s, W / 2, H - BAR / 2, 34, C.ivory, { w: 600, ls: 1, a: 0.92 * P(t, cur.a - 0.08, 0.15) * (1 - P(t, cur.b + 0.05, 0.12)) });
+}
+
+// ─── 오프닝 ───
+function intro(t) {
+  if (t > OFF + 0.3) return;
+  ctx.save(); ctx.globalAlpha = P(t, 0, 0.3) * (1 - P(t, OFF - 0.2, 0.45));
+  rule(960, 560, 620, P(t, 0.05, 0.8));
+  F('A SHORT FILM FOR TEACHERS', 960, 500, 30, C.goldL, 0.15, t, { font: CORM, w: 600, ls: 12, dur: 0.7 });
+  ctx.restore();
+}
+
+// ─── 제1장: 밤, 재미나이에게 쓴 편지 ───
+function writeIn(s, x, y, size, color, t0, dur, t, o = {}) {
+  const k = P(t, t0, dur); if (k <= 0) return;
+  ctx.save(); ctx.font = `${o.w || 600} ${size}px ${SERIF}`; const w = ctx.measureText(s).width;
+  ctx.beginPath(); ctx.rect(x - 4, y - size, (w + 8) * k, size * 2); ctx.clip();
+  T(s, x, y, size, color, { align: 'left', w: o.w || 600 }); ctx.restore();
+}
+function scene1(t, p) {
+  const glow = ctx.createRadialGradient(960, 250, 0, 960, 250, 900);
+  glow.addColorStop(0, hex(C.gold, 0.2 * P(t, p[0][0] - 0.3, 1.2))); glow.addColorStop(1, hex(C.gold, 0));
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+  const e = oCubic(P(t, p[0][0], 1.0));
+  ctx.save(); ctx.translate(960, 575 + (1 - e) * 40); ctx.rotate(-0.018); ctx.globalAlpha *= e;
+  ctx.shadowColor = 'rgba(0,0,0,0.65)'; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
+  ctx.fillStyle = C.paper; ctx.fillRect(-470, -250, 940, 500); ctx.shadowColor = 'transparent';
+  const pg = ctx.createRadialGradient(0, 0, 100, 0, 0, 620); pg.addColorStop(0, 'rgba(0,0,0,0)'); pg.addColorStop(1, 'rgba(90,60,20,0.25)');
+  ctx.fillStyle = pg; ctx.fillRect(-470, -250, 940, 500);
+  ctx.strokeStyle = hex(C.goldD, 0.6); ctx.lineWidth = 1.5; ctx.strokeRect(-446, -226, 892, 452);
+  ctx.strokeStyle = 'rgba(110,80,40,0.14)'; ctx.lineWidth = 1;
+  for (let y = -60; y <= 160; y += 74) { ctx.beginPath(); ctx.moveTo(-380, y + 30); ctx.lineTo(380, y + 30); ctx.stroke(); }
+  T('밤 11시 47분', 390, -170, 26, '#8a7556', { align: 'right', w: 600, ls: 2 });
+  // 타자기로 찍히는 질문
+  const n = Math.floor(P(t, TYPE_T0, TYPE_D) * TYPE_N);
+  T(TYPE1.slice(0, n), -380, -10, 50, C.inkText, { align: 'left', w: 700 });
+  T(TYPE2.slice(0, Math.max(0, n - TYPE1.length)), -380, 64, 50, C.inkText, { align: 'left', w: 700 });
+  // 받는 이 + 봉랍
+  writeIn('To. 재미나이', -380, -170, 34, '#6b5536', p[1][0], 0.7, t, { w: 700 });
+  const sk = P(t, p[1][0] + 0.9, 0.35);
+  if (sk > 0) { ctx.save(); ctx.translate(330, 150); const s = lerp(1.5, 1, oCubic(sk)); ctx.scale(s, s); ctx.globalAlpha *= sk; ctx.rotate(0.2);
+    ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 10; ctx.fillStyle = C.burg; ctx.beginPath(); ctx.arc(0, 0, 54, 0, 7); ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = 'rgba(255,220,200,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 42, 0, 7); ctx.stroke();
+    T('✦', 0, 2, 40, '#f3d9c9', { w: 400 }); ctx.restore(); }
+  ctx.restore();
+}
+
+// ─── 제2장: 긴 코드, 그러나 만들어 주지는 않았다 ───
+const CODE = ['function checkAnswer(q, a) {', '  const score = quiz.map(x => x.ok);', "document.querySelector('#quiz')", '}); // TODO: fix', "import React from 'react';",
+  '<div class="quiz-card">', '  if (answer === correct) {', "fetch('/api/score', { method: 'POST' })", 'export default function App() {', '  const [idx, setIdx] = useState(0);',
+  'npm install && npm run dev', '<\/script>', '    score += 10;', 'let timer = setInterval(tick, 1000);', '.quiz-card { display: grid; }', '  return <Question data={q} />;'];
+const ERRS = ['SyntaxError: Unexpected token', 'ReferenceError: quiz is not defined', '404 Not Found', "TypeError: Cannot read 'map'", "Module not found: 'react'", 'npm ERR! code ENOENT'];
+const R2 = rng(5), ERRPOS = ERRS.map(() => [260 + R2() * 1400, 300 + R2() * 480, (R2() - .5) * 0.2]);
+function scene2(t, p) {
+  // P0: 끝없이 풀리는 두루마리
+  const fade0 = 1 - P(t, p[1][0], 0.45);
+  if (fade0 > 0) {
+    ctx.save(); ctx.globalAlpha *= lerp(0.12, 1, fade0);
+    const h = lerp(60, 680, ioCubic(P(t, p[0][0], 1.7))), x = 1180, y0 = 220;
+    ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 40; ctx.fillStyle = C.paper; ctx.fillRect(x - 330, y0, 660, h); ctx.shadowColor = 'transparent';
+    ctx.save(); ctx.beginPath(); ctx.rect(x - 330, y0, 660, h); ctx.clip();
+    const scroll = Math.max(0, (t - p[0][0]) * 300 - h + 60);
+    for (let i = 0; i < 70; i++) { const y = y0 + 40 + i * 34 - scroll; if (y < y0 - 30) continue; if (y > y0 + h + 30) break;
+      T(CODE[i % CODE.length], x - 300, y, 21, C.inkText, { align: 'left', font: MONO, w: 500, a: 0.8 }); }
+    ctx.restore();
+    ctx.fillStyle = '#c9b88f'; ctx.fillRect(x - 350, y0 + h - 6, 700, 26); ctx.fillStyle = C.goldD; ctx.fillRect(x - 362, y0 + h - 2, 12, 18); ctx.fillRect(x + 350, y0 + h - 2, 12, 18);
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha *= fade0;
+    F('긴 코드', 470, 470, 110, C.ivory, p[0][0] + 0.15, t, { w: 900 });
+    F('한 뭉치', 470, 610, 110, C.gold, p[0][0] + 0.45, t, { w: 900 });
+    const lines = Math.floor(ioCubic(P(t, p[0][0], 1.8)) * 1284);
+    T(`${lines.toLocaleString()} lines`, 470, 730, 40, C.muted, { font: PLAY, w: 600, a: P(t, p[0][0] + 0.6, 0.4) });
+    ctx.restore();
+  }
+  // P1: 물음
+  if (t >= p[1][0] && t < p[3][0]) {
+    T('?', 960, 560, 760, C.gold, { font: PLAY, w: 600, a: 0.07 * P(t, p[1][0], 0.5) * (1 - P(t, p[2][0], 0.3)) });
+    F('어디에 붙여야 하지?', 960, 540, 96, C.ivory, p[1][0], t, { w: 700, out: p[2][0] - 0.15, dur: 0.6 });
+  }
+  // P2: 붉은 오류
+  if (t >= p[2][0] && t < p[3][0] + 0.4) {
+    const out = P(t, p[3][0] - 0.1, 0.4);
+    ctx.save(); ctx.globalAlpha *= 1 - out;
+    ERRS.forEach((e, i) => { const [x, y, r] = ERRPOS[i]; ctx.save(); ctx.translate(x, y); ctx.rotate(r);
+      T(e, 0, 0, 26, C.burg, { font: MONO, w: 500, a: 0.45 * P(t, p[2][0] + i * 0.08, 0.3) }); ctx.restore(); });
+    F('왜 안 되지?', 960, 520, 120, C.burg, p[2][0], t, { w: 900, dur: 0.5, glow: 30, glowColor: hex(C.burg, 0.6) });
+    stroke(wavy(730, 620, 1190, 612, 7, 7), P(t, p[2][0] + 0.25, 0.4), hex(C.burg, 0.9), 5);
+    ctx.restore();
+  }
+  // P3~P4: 대답 ✓ / 만들기 ✗
+  if (t >= p[3][0]) {
+    ctx.save(); ctx.strokeStyle = hex(C.gold, 0.5); ctx.lineWidth = 1;
+    const vk = oCubic(P(t, p[3][0], 0.8)); ctx.beginPath(); ctx.moveTo(960, 540 - 250 * vk); ctx.lineTo(960, 540 + 250 * vk); ctx.stroke(); ctx.restore();
+    F('ANSWER', 560, 340, 30, C.gold, p[3][0], t, { font: CORM, w: 600, ls: 12 });
+    F('대답', 560, 520, 150, C.ivory, p[3][0] + 0.1, t, { w: 900 });
+    stroke([[505, 690], [548, 735], [630, 640]], P(t, p[3][0] + 0.3, 0.45), C.gold, 8);
+    if (t >= p[4][0]) {
+      F('MAKING', 1360, 340, 30, C.gold, p[4][0], t, { font: CORM, w: 600, ls: 12 });
+      F('만들기', 1360, 520, 150, C.ivory, p[4][0] + 0.05, t, { w: 900, a: t > STAMP ? lerp(1, 0.4, P(t, STAMP, 0.3)) : 1 });
+      stroke([[1190, 400], [1530, 660]], P(t, STAMP, 0.16), C.burg, 14);
+      stroke([[1530, 400], [1190, 660]], P(t, STAMP + 0.15, 0.16), C.burg, 14);
+    }
+  }
+}
+
+// ─── 제3장: 안티그래비티 타이틀 카드 ───
+const STEPS = [['I', '말로 부탁'], ['II', '파일 생성'], ['III', '실행'], ['IV', '오류 수정']];
+function scene3(t, p) {
+  const a = SC[2].a, up = ioCubic(P(t, p[1][0], 0.8));
+  ctx.save(); ctx.globalAlpha *= 1 - up; frame(310, 290, 1300, 520, P(t, a, 1.3)); ctx.restore();
+  ctx.save(); ctx.translate(960, lerp(540, 255, up)); ctx.scale(lerp(1, 0.55, up), lerp(1, 0.55, up)); ctx.translate(-960, -540);
+  ctx.save(); ctx.globalAlpha *= 1 - up;
+  F('INTRODUCING', 960, 395, 30, C.goldL, a + 0.1, t, { font: CORM, w: 600, ls: 14, dur: 0.7 });
+  ctx.restore();
+  ctx.save(); ctx.font = `800 150px ${PLAY}`; ctx.letterSpacing = '22px'; ctx.textBaseline = 'middle';
+  const word = 'ANTIGRAVITY', tw = ctx.measureText(word).width, x0 = 960 - tw / 2;
+  [...word].forEach((ch, i) => { const k = oCubic(P(t, a + 0.2 + i * 0.05, 0.8)); if (k <= 0) return;
+    const cx = x0 + ctx.measureText(word.slice(0, i)).width;
+    ctx.save(); ctx.globalAlpha *= k; ctx.filter = `blur(${(1 - k) * 8}px)`; ctx.shadowColor = hex(C.gold, 0.45); ctx.shadowBlur = 30;
+    ctx.fillStyle = grad(x0 - cx, x0 + tw - cx, GOLD); ctx.translate(cx, 530 + (1 - k) * 30 + Math.sin(t * 1.4 + i * 0.5) * 4); ctx.fillText(ch, 0, 0); ctx.restore(); });
+  ctx.restore();
+  rule(960, 625, 420, P(t, a + 0.5, 0.9));
+  ctx.restore();
+  F('안티그래비티는 달라요', 960, 700, 50, C.ivory, a + 0.6, t, { w: 600, out: p[1][0] - 0.1, ls: 2 });
+
+  if (t < p[1][0]) return;
+  F('말로 부탁하면, 에이전트가 직접', 960, 355, 38, C.muted, p[1][0] + 0.4, t, { w: 600, ls: 3 });
+  const xs = [360, 760, 1160, 1560], y = 620;
+  let reach = xs[0];
+  NODE_T.forEach((t0, k) => { if (t >= t0 - 0.35 && k > 0) reach = lerp(xs[k - 1], xs[k], oCubic(P(t, t0 - 0.35, 0.35))); });
+  ctx.save(); ctx.strokeStyle = hex(C.gold, 0.55); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xs[0], y); ctx.lineTo(reach, y); ctx.stroke(); ctx.restore();
+  STEPS.forEach(([num, lb], k) => {
+    const t0 = NODE_T[k]; if (t < t0) return;
+    const e = oCubic(P(t, t0, 0.6));
+    ctx.save(); ctx.globalAlpha *= e;
+    ctx.fillStyle = C.ink; ctx.strokeStyle = C.gold; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(xs[k], y, 16 * e, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = C.gold; ctx.beginPath(); ctx.arc(xs[k], y, 7 * e, 0, 7); ctx.fill();
+    const ring = P(t, t0, 1); ctx.strokeStyle = hex(C.gold, 0.6 * (1 - ring)); ctx.beginPath(); ctx.arc(xs[k], y, 16 + ring * 50, 0, 7); ctx.stroke();
+    ctx.restore();
+    F(num, xs[k], y - 95, 64, C.gold, t0, t, { font: PLAY, w: 600, dur: 0.6 });
+    F(lb, xs[k], y + 85, 46, C.ivory, t0 + 0.1, t, { w: 700, dur: 0.6 });
+  });
+}
+
+// ─── 제4장: 코드는 누가 쓰는가 ───
+function scene4(t, p) {
+  F('선생님이 배울 필요 없는 것', 960, 330, 40, C.muted, p[0][0] + 0.05, t, { w: 600, ls: 4, out: p[1][0] - 0.2 });
+  const up = ioCubic(P(t, p[1][0], 0.7));
+  ctx.save(); ctx.translate(960, lerp(580, 320, up)); ctx.scale(lerp(1, 0.45, up), lerp(1, 0.45, up)); ctx.translate(-960, -580);
+  F('코딩', 960, 580, 260, C.ivory, p[0][0] + 0.15, t, { w: 900, a: t > STRIKE ? lerp(1, 0.45, P(t, STRIKE, 0.4)) : 1 });
+  stroke(wavy(690, 600, 1230, 570, 6, 3), P(t, STRIKE, 0.35), C.burg, 18);
+  ctx.restore();
+  if (t < p[1][0]) return;
+  const qk = P(t, p[1][0] + 0.1, 0.8);
+  frame(560, 470, 800, 150, qk, hex(C.gold, 0.8));
+  F('“퀴즈 앱을 만들어 주세요.”', 960, 545, 48, C.ivory, p[1][0] + 0.25, t, { w: 600, ls: 1 });
+  F('코드는 AI가 씁니다', 960, 745, 86, C.goldL, p[1][0] + 0.5, t, { w: 900, grad: [C.ivory, C.goldL, C.gold] });
+}
+
+// ─── 제5장: 가르침의 지식, PCK ───
+const ITEMS = [['I.', '아이들이 어디서 헷갈리는지'], ['II.', '어떤 순서로 가르칠지'], ['III.', '어떤 활동으로 가르칠지']];
+function scene5(t, p) {
+  const hu = ioCubic(P(t, p[1][0], 0.6)), hout = P(t, p[4][0], 0.4);
+  ctx.save(); ctx.globalAlpha *= 1 - hout; ctx.translate(960, lerp(540, 285, hu)); ctx.scale(lerp(1, 0.6, hu), lerp(1, 0.6, hu)); ctx.translate(-960, -540);
+  CF('AI가 대신할 수 없는 것', 960, 540, 96, C.goldL, p[0][0] + 0.05, t, { w: 900, stagger: 0.06, grad: GOLD });
+  rule(960, 630, 360, P(t, p[0][0] + 0.9, 0.8));
+  ctx.restore();
+  ITEMS.forEach(([n, s], i) => {
+    const t0 = p[i + 1][0]; if (t < t0 || hout >= 1) return;
+    const k = oCubic(P(t, t0, 0.7)), y = 470 + i * 125;
+    ctx.save(); ctx.globalAlpha *= k * (1 - hout); ctx.translate((1 - k) * -40, 0);
+    T(n, 560, y, 54, C.gold, { font: PLAY, w: 600, align: 'right', blur: (1 - k) * 6 });
+    T(s, 610, y, 58, C.ivory, { w: 700, align: 'left', blur: (1 - k) * 6 });
+    ctx.restore();
+  });
+  if (t < p[4][0]) return;
+  F('선생님의', 960, 205, 44, C.ivory, p[4][0], t, { w: 600, ls: 8, dur: 0.6 });
+  const cx = 960, cy = 520, mk = P(t, PCK_SLAM - 0.1, 1.2);
+  const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 420); glow.addColorStop(0, hex(C.gold, 0.22 * mk)); glow.addColorStop(1, hex(C.gold, 0));
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.strokeStyle = C.gold; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(cx, cy, 255, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * oCubic(mk)); ctx.stroke();
+  ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, 218, Math.PI / 2, Math.PI / 2 + Math.PI * 2 * oCubic(P(t, PCK_SLAM, 1.2))); ctx.stroke();
+  ctx.restore();
+  ctx.save(); ctx.globalAlpha *= P(t, PCK_SLAM + 0.3, 0.8);
+  circleText('PEDAGOGICAL · CONTENT · KNOWLEDGE · PEDAGOGICAL · CONTENT · KNOWLEDGE · ', cx, cy, 236, t * 0.08, 19, C.goldL, CORM);
+  ctx.restore();
+  if (t >= PCK_SLAM) {
+    const k = oCubic(P(t, PCK_SLAM, 1.1)), s = lerp(1.15, 1, k);
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(s, s);
+    T('PCK', 0, 8, 180, C.gold, { font: PLAY, w: 800, grad: GOLD, a: k, blur: (1 - k) * 12, glow: 30, glowColor: hex(C.gold, 0.5), ls: 6 });
+    ctx.restore();
+  }
+  if (t < p[5][0]) return;
+  const lk = P(t, p[5][0], 0.9);
+  F('교수내용지식', 960, 860, 50, C.goldL, p[5][0] + 0.1, t, { w: 700, ls: 10 });
+  ctx.save(); ctx.strokeStyle = hex(C.gold, 0.6); ctx.lineWidth = 1.5; const L = 120 * oCubic(lk);
+  ctx.beginPath(); ctx.moveTo(790, 860); ctx.lineTo(790 - L, 860); ctx.moveTo(1130, 860); ctx.lineTo(1130 + L, 860); ctx.stroke(); ctx.restore();
+}
+
+// ─── 제6장: 무엇을, 어떻게 ───
+function scene6(t, p) {
+  const out = P(t, p[2][0], 0.5);
+  if (out < 1) {
+    ctx.save(); ctx.globalAlpha *= 1 - out;
+    F('WHAT', 560, 340, 30, C.gold, p[0][0], t, { font: CORM, w: 600, ls: 14 });
+    F('무엇을 만들지', 560, 420, 42, C.muted, p[0][0] + 0.1, t, { w: 600, ls: 2 });
+    F('선생님', 560, 590, 140, C.ivory, p[0][0] + 0.3, t, { w: 900 });
+    if (t >= p[1][0]) {
+      const vk = oCubic(P(t, p[1][0], 0.9));
+      ctx.strokeStyle = hex(C.gold, 0.5); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(960, 540 - 260 * vk); ctx.lineTo(960, 540 + 260 * vk); ctx.stroke();
+      F('HOW', 1360, 340, 30, C.gold, p[1][0], t, { font: CORM, w: 600, ls: 14 });
+      F('어떻게 만들지', 1360, 420, 42, C.muted, p[1][0] + 0.1, t, { w: 600, ls: 2 });
+      F('안티그래비티', 1360, 590, 112, C.gold, p[1][0] + 0.3, t, { w: 900, grad: GOLD });
+    }
+    ctx.restore();
+  }
+  if (t < p[2][0]) return;
+  T('“', 470, 420, 260, C.gold, { font: PLAY, w: 700, a: 0.35 * P(t, p[2][0] + 0.2, 0.6) });
+  CF('코딩보다 수업을 아는 선생님이,', 960, 480, 72, C.ivory, p[2][0] + 0.3, t, { w: 700, stagger: 0.035 });
+  if (t < p[3][0]) return;
+  CF('가장 좋은 앱을 만듭니다.', 960, 615, 92, C.gold, p[3][0], t, { w: 900, stagger: 0.05, grad: GOLD });
+  T('”', 1540, 690, 260, C.gold, { font: PLAY, w: 700, a: 0.35 * P(t, p[3][0] + 0.6, 0.6) });
+  rule(960, 725, 500, P(t, p[3][0] + 0.6, 1));
+}
+
+// ─── 엔딩 타이틀 ───
+function outro(t) {
+  if (t < END - 0.1) return;
+  ctx.save(); ctx.globalAlpha *= P(t, END - 0.1, 0.5);
+  frame(420, 300, 1080, 480, P(t, END, 1.4));
+  F('A LECTURE FOR TEACHERS', 960, 385, 26, C.goldL, END + 0.3, t, { font: CORM, w: 600, ls: 12 });
+  F('ANTIGRAVITY', 960, 505, 110, C.gold, END + 0.5, t, { font: PLAY, w: 800, ls: 16, grad: GOLD, glow: 24, glowColor: hex(C.gold, 0.4) });
+  rule(960, 585, 360, P(t, END + 0.9, 0.9));
+  F('선생님을 위한 AI 앱 만들기', 960, 655, 42, C.ivory, END + 1.1, t, { w: 600, ls: 4 });
+  ctx.restore();
+}
+
+// ─── 한 프레임 ───
+function draw(t) {
+  ctx.save();
+  background(t);
+  intro(t);
+  scene(0, t, scene1); scene(1, t, scene2); scene(2, t, scene3);
+  scene(3, t, scene4); scene(4, t, scene5); scene(5, t, scene6);
+  outro(t);
+  dips(t);
+  finish(t);
+  letterbox(t);
+  const fo = P(t, TOTAL - 0.9, 0.9); if (fo > 0) { ctx.fillStyle = `rgba(0,0,0,${fo})`; ctx.fillRect(0, 0, W, H); }
+  const fi = 1 - P(t, 0, 0.4); if (fi > 0) { ctx.fillStyle = `rgba(0,0,0,${fi})`; ctx.fillRect(0, 0, W, H); }
+  ctx.restore();
+}
+
+// ─── 실행 ───
+const params = new URLSearchParams(location.search);
+window.renderAt = t => { draw(t); return cv.toDataURL('image/jpeg', 0.93); };
+// 한글 웹폰트는 글자 범위별로 나뉘어 있어서, 페이지에 쓰인 글자를 전부 미리 불러온다
+const USED = [...new Set([...document.scripts].map(s => s.textContent).join(''))].join('');
+window.READY = Promise.all([
+  ...['400', '600', '700', '900'].map(w => document.fonts.load(`${w} 60px "Noto Serif KR"`, USED)),
+  document.fonts.load('800 60px "Playfair Display"', 'ANTIGRAVITY PCK'), document.fonts.load('italic 600 60px "Playfair Display"', 'I'),
+  document.fonts.load('600 60px "Playfair Display"', 'IVX“”? lines'), document.fonts.load('600 60px "Cormorant Garamond"', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ·'),
+]).then(() => new Promise(r => setTimeout(r, 300))).catch(() => {});
+const btn = document.getElementById('play'), aud = document.getElementById('aud');
+if (params.has('render')) btn.remove();
+window.READY.then(() => draw(params.has('t') ? +params.get('t') : 0));
+btn.onclick = () => {
+  btn.style.display = 'none'; aud.currentTime = 0; aud.play();
+  const loop = () => { draw(aud.currentTime); if (!aud.ended) requestAnimationFrame(loop); else btn.style.display = ''; };
+  loop();
+};
+</script>
+</body>
+</html>

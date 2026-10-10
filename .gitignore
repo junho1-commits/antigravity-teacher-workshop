@@ -5,3 +5,12 @@ node_modules/
 자료/society_6-2-1.pdf
 # Typecast API key
 모션그래픽/typecast_config.json
+
+# Cache and Python bytecode
+__pycache__/
+*.pyc
+
+# Motion graphics render assets (heavy audio, video and preview frames)
+모션그래픽/audio/
+모션그래픽/preview/
+모션그래픽/*.mp4
