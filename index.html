@@ -65,38 +65,20 @@
     </div>
 
     <!-- Right Quick Actions -->
-    <div class="flex items-center gap-3">
-      <!-- High-visibility Intro Video Button -->
-      <button onclick="window.openIntroVideoModal()" data-tooltip="오프닝 모션그래픽 영상 (단축키: V / ㅍ)" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white border border-purple-400/40 text-xs md:text-sm font-extrabold transition-all flex items-center gap-1.5 shadow-lg shadow-purple-500/20 transform hover:scale-105 active:scale-95">
-        <i data-lucide="play-circle" class="w-4 h-4 text-amber-300"></i>
-        <span>🎬 오프닝 영상</span>
-      </button>
-
-      <!-- High-visibility PDF Export Button -->
-      <button onclick="window.exportToPDF()" data-tooltip="강의 자료 PDF로 인쇄/저장 (단축키: Ctrl+P)" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border border-emerald-400/40 text-xs md:text-sm font-extrabold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20 transform hover:scale-105 active:scale-95">
+    <div class="flex items-center gap-2.5">
+      <!-- PDF Export Button -->
+      <button onclick="window.exportToPDF()" data-tooltip="강의 자료 PDF로 인쇄/저장 (단축키: Ctrl+P)" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border border-emerald-400/40 text-xs md:text-sm font-extrabold transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20 transform hover:scale-105 active:scale-95">
         <i data-lucide="file-down" class="w-4 h-4 text-white"></i>
         <span>📄 PDF 저장</span>
       </button>
 
-      <!-- Agent Insights Button -->
-      <button onclick="window.toggleAgentDrawer()" data-tooltip="5인 에이전트 회의록 (단축키: A)" class="px-3.5 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 text-xs md:text-sm font-bold transition-all flex items-center gap-2">
-        <i data-lucide="bot" class="w-4 h-4"></i>
-        <span class="hidden sm:inline">에이전트 인사이트</span>
-      </button>
-
-      <!-- Presenter Note Button -->
-      <button onclick="window.togglePresenterModal()" data-tooltip="강사용 티칭 꿀팁 (단축키: P)" class="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs md:text-sm font-bold transition-all flex items-center gap-2">
-        <i data-lucide="mic" class="w-4 h-4"></i>
-        <span class="hidden sm:inline">강사 꿀팁</span>
-      </button>
-
       <!-- Overview Grid Button -->
-      <button onclick="window.toggleOverviewModal()" data-tooltip="전체 목차 맵 (단축키: M)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+      <button onclick="window.toggleOverviewModal()" data-tooltip="전체 목차 맵 (단축키: M)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all" title="전체 목차 맵">
         <i data-lucide="layout-grid" class="w-5 h-5"></i>
       </button>
 
       <!-- Fullscreen Button -->
-      <button onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all">
+      <button id="btn-toggle-fullscreen" onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all" title="전체화면">
         <i data-lucide="maximize" class="w-5 h-5"></i>
       </button>
     </div>
@@ -143,31 +125,19 @@
     <div id="print-container" class="w-full"></div>
   </main>
 
-    <!-- ========================================================= -->
+  <!-- ========================================================= -->
   <!-- BOTTOM CONTROLLER BAR                                     -->
   <!-- ========================================================= -->
   <footer class="h-18 py-3 border-t border-slate-800/80 px-4 md:px-8 flex items-center justify-between glass-panel z-30 shrink-0">
-    <!-- Left: PDF Export & Smart Tool Buttons (고치기 / 전체 / 교사용) -->
+    <!-- Left: Smart Tool Buttons (고치기 / 교사용) -->
     <div class="flex items-center gap-2 md:gap-3">
-      <button onclick="window.exportToPDF()" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs md:text-sm font-bold transition-all flex items-center gap-1.5 shadow-sm">
-        <i data-lucide="file-down" class="w-4 h-4"></i>
-        <span>PDF 자료 출력</span>
-      </button>
-
-      <div class="h-6 w-[1px] bg-slate-700/80 mx-1 hidden sm:block"></div>
-
-      <!-- Smart Presentation Buttons (Never overlapping with nav buttons) -->
       <button id="btn-toggle-edit" onclick="window.toggleEditMode()" data-tooltip="슬라이드 글자 수정 (✎ 고치기)" class="smart-tool-btn">
         <i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i>
         <span>✎ 고치기</span>
       </button>
-      <button id="btn-toggle-fullscreen" onclick="window.toggleFullScreen()" data-tooltip="전체화면 (단축키: F / ㄹ)" class="smart-tool-btn">
-        <i data-lucide="maximize" class="w-4 h-4 text-sky-400"></i>
-        <span>⛶ 전체</span>
-      </button>
       <button id="btn-toggle-teacher" onclick="window.toggleTeacherDrawer()" data-tooltip="교사용 지도 팁 (단축키: T / ㅅ)" class="smart-tool-btn">
         <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-400"></i>
-        <span>교사용</span>
+        <span>교사용 팁</span>
       </button>
     </div>
 
